@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- OpenWebNet BUS gateway -->
+	<bridge-type id="bus_gateway">
+		<label>BUS Gateway</label>
+		<description><![CDATA[This thing allows to connect to a OpenWebNet BUS/SCS gateway (models: F454, MyHOMEServer1, F455, MH200N, F453, etc.) using the OpenWebNet protocol]]></description>
+
+		<properties>
+			<property name="vendor">BTicino</property>
+			<property name="model">Unknown</property> 
+			<property name="firmwareVersion"></property>
+		</properties>
+				
+		<config-description>
+
+			<parameter name="host" type="text">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>OpenWebNet gateway IP address / hostname (example: 192.168.1.35)</description>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>OpenWebNet gateway port (default: 20000)</description>
+				<required>false</required>
+			</parameter>
+			
+			<parameter name="passwd" type="text">
+				<context>password-create</context>
+				<label>Password</label>
+				<description>OpenWebNet gateway password (default: 12345)</description>
+				<required>false</required>
+			</parameter>
+
+		</config-description>
+
+	</bridge-type>
+
+</thing:thing-descriptions>

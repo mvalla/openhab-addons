@@ -1,0 +1,43 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.openwebnet
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/openwebnet-lib-0.9.14.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenWebNet Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.openwebnet;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.4.0.qualifier
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ javax.measure,
+ javax.measure.quantity,
+ org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
+ com.google.common.base,
+ com.google.common.collect,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.core.status,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
+ org.jupnp.model.meta,
+ gnu.io,
+ org.openhab.binding.openwebnet,
+ org.openhab.binding.openwebnet.handler,
+ org.slf4j
+Export-Package: org.openhab.binding.openwebnet,
+ org.openhab.binding.openwebnet.handler
+Service-Component: OSGI-INF/*.xml
+COMMENT-INFO: COMMENT the following line to release, UNCOMMENT for development
+COMMENT: Require-Bundle: openwebnet-lib
+
+
+
