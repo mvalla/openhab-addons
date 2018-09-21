@@ -182,6 +182,10 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     // change it to WHAT.DIM_20 (dimming to 10% is not allowed in OWN)
                     newWhat = Lighting.WHAT.DIM_20;
                 }
+                // save current brightness level before sending bri=0 command to device
+                if (newWhatInt == 0) {
+                    latestBrightnessWhatBeforeOff = latestBrightnessWhat;
+                }
                 lastBrightnessChangeSentTS = System.currentTimeMillis();
                 bridgeHandler.gateway.send(Lighting.requestDimTo(where, newWhat, lightingType));
                 logger.debug("################### {}", lastBrightnessChangeSentTS);
@@ -189,9 +193,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     updateState(channel, new PercentType(newWhatInt * 10));
                 }
                 updateState("dimmerLevel", new DecimalType(newWhatInt));
-                if (newWhatInt == 0) {
-                    latestBrightnessWhatBeforeOff = latestBrightnessWhat;
-                }
                 latestBrightnessWhat = newWhatInt;
             } else {
                 logger.debug("$ do nothing");

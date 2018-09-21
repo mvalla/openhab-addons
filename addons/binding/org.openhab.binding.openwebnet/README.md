@@ -274,8 +274,9 @@ String  LR_HeatingCoolingMode  "HeatingCoolingMode"                        (gLR_
 
 **v2.4.0-b8** - *NOT YET RELEASED*
 
-- [BUG] now decimal setpointTemperatures are sent correctly to the thermostat
-- TODO
+- [BUG] now a decimal setpointTemperature (21.5 °C) is sent as decimal to the thermostat and not as integer
+- [FIX #16] switches for(in) dimmers not discovered and don't save last state
+- TODO TODO
 
 **v2.4.0-b7** - 01/09/2018
 
