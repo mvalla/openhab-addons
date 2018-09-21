@@ -138,11 +138,14 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         if (command instanceof QuantityType) {
             QuantityType<Temperature> quantity = commandToQuantityType(command, unit);
             BigDecimal value = quantity.toBigDecimal();
-            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(toWhere(""), value.intValue()));
+            // TODO check setPoint OWN range (15-35??) and check it's int or x.5 decimal, if not, round to nearest
+            // x.0/x.5
+            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(toWhere(""), value.floatValue()));
             // TODO change to device where variable
         } else if (command instanceof DecimalType) {
             BigDecimal value = ((DecimalType) command).toBigDecimal();
-            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(toWhere(""), value.intValue()));
+            // TODO check setPoint range and decimal (see TODO before)
+            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(toWhere(""), value.floatValue()));
             // TODO change to device where variable
             updateState(CHANNEL_TEMP_SETPOINT, (DecimalType) command);
         } else {

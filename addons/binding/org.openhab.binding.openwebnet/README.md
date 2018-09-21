@@ -272,13 +272,18 @@ String  LR_HeatingCoolingMode  "HeatingCoolingMode"                        (gLR_
 
 ## Changelog
 
+**v2.4.0-b8** - *NOT YET RELEASED*
+
+- [BUG] now decimal setpointTemperatures are sent correctly to the thermostat
+- TODO
+
 **v2.4.0-b7** - 01/09/2018
 
-- **[NEW, FIX #5]** **Initial support for `WHO=4` Thermoregulation** on BUS. Currently supported: zones room thermostats and external (wireless) temperature sensors. Both heating and cooling functions are supported (*TESTING NEEDED!*)
-- The binding is now available on the [Eclipse IoT Marketplace](https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing)!
-- **[BUG]** corrected a **bad bug** on the connection part (originally taken from the BTicino 1.x binding) that caused loosing many monitoring (feedback) messages from the gateway when several messages were received together
-- **[FIX #13]** now commands sent close in a short time are sent re-using the same socket connection to the gateway. This should improve connection stability and speed in general and in particular with older BUS gateways (e.g. MH202)
-- **[FIX]** improved Shutter management and position estimation, thanks to previous 2 enhancements
+- [NEW, FIX #5] Initial support for `WHO=4` Thermoregulation on BUS. Currently supported: zones room thermostats and external (wireless) temperature sensors. Both heating and cooling functions are supported
+- The binding is now available on the [Eclipse IoT Marketplace](https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing)
+- [BUG] corrected a bad bug on the connection part (originally taken from the BTicino 1.x binding) that caused loosing many monitoring (feedback) messages from the gateway when several messages were received together
+- [FIX #13] now commands sent close in a short time are sent re-using the same socket connection to the gateway. This should improve connection stability and speed in general and in particular with older BUS gateways (e.g. MH202)
+- [FIX] improved Shutter management and position estimation, thanks to previous 2 enhancements
 - minimum requirement is now openHAB 2.3, which is needed to support measurements units like °C
 
 **v2.4.0-b6** - 02/07/2018
