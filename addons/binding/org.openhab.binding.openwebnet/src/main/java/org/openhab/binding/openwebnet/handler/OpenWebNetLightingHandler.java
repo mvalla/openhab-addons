@@ -125,11 +125,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         logger.debug("==OWN:LightingHandler== handleBrightnessCommand() (command={})", command);
         if (command instanceof PercentType) {
             int percent = ((PercentType) command).intValue();
-            if (percent > 0 && percent < 10) {
-                dimLightTo(1, command);
-            } else {
-                dimLightTo((int) Math.floor(percent / 10.0), command);
-            }
+            dimLightTo(percentToLevel(percent), command);
         } else if (command instanceof IncreaseDecreaseType) {
             if (IncreaseDecreaseType.INCREASE.equals(command)) {
                 dimLightTo(latestBrightnessWhat + 1, command);
@@ -169,8 +165,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             // ON after OFF/Unknown -> we reset channel to last value before OFF (if exists)
             if (latestBrightnessWhatBeforeOff > 0) {
                 newWhatInt = latestBrightnessWhatBeforeOff;
-                updateState(channel, new PercentType(newWhatInt * 10));
-            } else {
+                updateState(channel, new PercentType(levelToPercent(newWhatInt)));
+            } else { // we do not know last brightness -> set dimmer to 100%
                 newWhatInt = 10;
             }
         }
@@ -190,7 +186,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 bridgeHandler.gateway.send(Lighting.requestDimTo(where, newWhat, lightingType));
                 logger.debug("################### {}", lastBrightnessChangeSentTS);
                 if (!(command instanceof PercentType)) {
-                    updateState(channel, new PercentType(newWhatInt * 10));
+                    updateState(channel, new PercentType(levelToPercent(newWhatInt)));
                 }
                 updateState("dimmerLevel", new DecimalType(newWhatInt));
                 latestBrightnessWhat = newWhatInt;
@@ -278,10 +274,10 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             if (latestBrightnessWhat != newLevel) {
                 if (delta >= BRIGHTNESS_CHANGE_DELAY) {
                     logger.debug("$bri change sent >={}ms ago, updating state...", BRIGHTNESS_CHANGE_DELAY);
-                    updateState(channel, new PercentType(newLevel * 10));
+                    updateState(channel, new PercentType(levelToPercent(newLevel)));
                 } else if (msg.isOff()) {
                     logger.debug("$bri change just sent, but OFF from network received, updating state...");
-                    updateState(channel, new PercentType(newLevel * 10));
+                    updateState(channel, new PercentType(levelToPercent(newLevel)));
                 } else {
                     logger.debug("$bri change just sent, NO update needed.");
                 }
@@ -297,6 +293,27 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
         logger.debug("$$$ END  ---updateLightBr latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}",
                 latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);
+
+    }
+
+    /**
+     * Transforms a 0,1,2-10 level (int) to a percent (0-100%) int
+     */
+    private int levelToPercent(int level) {
+        // for now, we use a linear mapping
+        return level * 10;
+    }
+
+    /**
+     * Transforms a percent int (0-100%) into a 0,2-10 level (int)
+     */
+    private int percentToLevel(int percent) {
+        // for now, we use a linear mapping
+        if (percent > 0 && percent < 10) {
+            return 1;
+        } else {
+            return (int) Math.floor(percent / 10.0);
+        }
 
     }
 
