@@ -142,18 +142,15 @@
 		</state>
 	</channel-type>
 	
-	
 	<channel-type id="setpointTemperature">
-	<!--  <item-type>Number:Temperature</item-type>  -->
-	<item-type>Number</item-type>
+    	<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Setpoint temperature (read/write)</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<!--  <state pattern="%.1f %unit%" step="0.5" /> -->
-		<state pattern="%.1f" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 	
 	<channel-type id="setMode">
