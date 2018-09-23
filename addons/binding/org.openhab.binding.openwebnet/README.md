@@ -311,9 +311,7 @@ String  LR_HeatingCoolingMode  "HeatingCoolingMode"                        (gLR_
   
 Known problems:
 
-- Setpoint Temperature can be changed only once from PaperUI, then the browser page must be refreshed (F5) to change it again. This is a [PaperUI bug](https://community.openhab.org/t/paperui-number-item-with-unit-can-be-changed-only-once/49562) for all Number items, not just in relation to this binding
 - In some cases dimmers connected to a F429 Dali-interface cannot be discovered, even if switched ON and dimmed. This looks like as a limitation of some gateways that do not report Dali devices states when requested
-- When a Dimmer is swiched from OFF->ON via PaperUI the old dimmer level is not restored, instead the dimmer is put to 100%
 
 For a list of current open issues / features requests see [GitHub repo](https://github.com/mvalla/openhab-openwebnet/issues)
 
