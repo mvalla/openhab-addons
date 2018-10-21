@@ -213,6 +213,31 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 - if the gateways gets disconnected then the binding cannot know anymore where the shutter was: if `shutterRun` is defined (and correct), then just roll the shutter all Up / Down and its position will be estimated again
 - the shutter position is estimated based on UP/DOWN timing and therefore an error of ±2% is normal
 
+## Google Home / Alexa Integration
+
+Items created automatically with PaperUI (Simple Mode item linking: `Configuration > System > Item Linking > Simple mode > SAVE`) will integrate with Google Home / Alexa seamlessly as they will get automatically the proper tags. In particular items associated with these channels will have the following tags:
+
+- `switch` / `brightness` channels will have the `"Lighting"` tag
+- `temperature` channel will have the `"CurrentTemperature"` tag
+- `setpointTemperature` channel will have the `"TargetTemperature"` tag
+- `heatingCoolingMode` channel will have the `"homekit:HeatingCoolingMode"` tag
+
+These are the tags supported so far.
+
+It will be enough to link openHAB with myopenhab and Google Home / Alexa and you will be able to discover/control BTicino items.
+
+Names used will be the names of the channels (Brightness, etc.) that cannot be changed in PaperUI, you can change names in the assistants.
+
+However the most flexible configuration is obtained using `.items` file: see the examples below.
+
+You will need to associate tags manually for items created using PaperUI (Simple Mode item linking de-activated) or for items created using `.items` file.
+You can check which tags are set looking at the `tags` attribute in the REST API: http://openhabianpi:8080/rest/items.
+
+See these docs and other threads in the community for more information about Google Home / Alexa integration and configuration:
+
+- Google Assistant: https://www.openhab.org/docs/ecosystem/google-assistant/#setup-usage-on-google-assistant-app
+- Amazon Alexa: https://www.openhab.org/docs/ecosystem/alexa/#general-configuration-instructions
+
 
 ## Full Example
 
@@ -237,6 +262,8 @@ Bridge openwebnet:dongle:mydongle2  [serialPort="kkkkkkk"] {
 ```
 
 ### openwebnet.items:
+
+The items in the example (Light, Dimmer, Thermostat) will be discovered by Google Home / Alexa if tags are configured like in the example.
 
 ```xtend
 Switch         LR_Bus_Light    "Switch"                 <light>          (gLivingRoom)             [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:myswitch:switch" }
@@ -277,7 +304,7 @@ String  LR_HeatingCoolingMode  "HeatingCoolingMode"                        (gLR_
 - [FIX #18] at startup (for example after a power outage) the binding now tries periodically to connect to the BTicino Gateway
 - [BUG] now a decimal setpointTemperature (21.5 °C) is sent as decimal to the thermostat and not as integer
 - [FIX] setpointTemperature now uses QuantityType (Number:Temperature item)
-- [FIX #16] switches for(in) dimmers not discovered and don't save last state
+- [FIX #16] now in dimmers switches are discovered and save last state
 - TODO TODO
 
 **v2.4.0-b7** - 01/09/2018
