@@ -170,7 +170,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 newWhatInt = 10;
             }
         }
-        logger.debug("$ new={}, latest={}", newWhatInt, latestBrightnessWhat);
+        logger.debug("$ requested level={}", newWhatInt);
         if (newWhatInt != latestBrightnessWhat) {
             if (newWhatInt >= 0 && newWhatInt <= 10) {
                 newWhat = Lighting.WHAT.fromValue(newWhatInt);
@@ -269,27 +269,56 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             }
         } else {
             logger.debug("$bri update from network -> level should be present in WHAT part of the message");
-            int newLevel = msg.getWhat().value();
-            logger.debug("$bri latest {} ----> new {}", latestBrightnessWhat, newLevel);
-            if (latestBrightnessWhat != newLevel) {
-                if (delta >= BRIGHTNESS_CHANGE_DELAY) {
-                    logger.debug("$bri change sent >={}ms ago, updating state...", BRIGHTNESS_CHANGE_DELAY);
-                    updateState(channel, new PercentType(levelToPercent(newLevel)));
-                } else if (msg.isOff()) {
-                    logger.debug("$bri change just sent, but OFF from network received, updating state...");
-                    updateState(channel, new PercentType(levelToPercent(newLevel)));
+            if (msg.getWhat() != null) { // cmd
+                int newLevel = msg.getWhat().value();
+                logger.debug("$bri current level={} ----> new level={}", latestBrightnessWhat, newLevel);
+                if (latestBrightnessWhat != newLevel) {
+                    if (delta >= BRIGHTNESS_CHANGE_DELAY) {
+                        logger.debug("$bri change sent >={}ms ago, updating state...", BRIGHTNESS_CHANGE_DELAY);
+                        updateState(channel, new PercentType(levelToPercent(newLevel)));
+                    } else if (msg.isOff()) {
+                        logger.debug("$bri change just sent, but OFF from network received, updating state...");
+                        updateState(channel, new PercentType(levelToPercent(newLevel)));
+                    } else {
+                        logger.debug("$bri change just sent, NO update needed.");
+                    }
+                    updateState("dimmerLevel", new DecimalType(newLevel));
+                    if (msg.isOff()) {
+                        latestBrightnessWhatBeforeOff = latestBrightnessWhat;
+                    }
+                    latestBrightnessWhat = newLevel;
                 } else {
-                    logger.debug("$bri change just sent, NO update needed.");
+                    logger.debug("$bri no change");
                 }
-                updateState("dimmerLevel", new DecimalType(newLevel));
-                if (msg.isOff()) {
-                    latestBrightnessWhatBeforeOff = latestBrightnessWhat;
+                brightnessLevelRequested = false;
+            } else { // dimension notification
+                if (msg.getDim() == Lighting.DIM_DIMMER_LEVEL_100) {
+                    int newPercent;
+                    try {
+                        newPercent = Lighting.parseDimmerLevel100(msg);
+                    } catch (NumberFormatException nfe) {
+                        logger.warn(
+                                "==OWN:LightingHandler== updateLightBrightnessState() Wrong value for dimmerLevel100 in message: {}",
+                                msg);
+                        return;
+                    }
+                    int newLevel = Lighting.percentToWhat(newPercent).value();
+                    logger.debug("$bri latest level={} ----> new percent={} ----> new level={}", latestBrightnessWhat,
+                            newPercent, newLevel);
+                    updateState(channel, new PercentType(newPercent));
+                    updateState("dimmerLevel", new DecimalType(newLevel));
+                    if (newPercent == 0) {
+                        latestBrightnessWhatBeforeOff = latestBrightnessWhat;
+                    }
+                    latestBrightnessWhat = newLevel;
+                    brightnessLevelRequested = false;
+                } else {
+                    logger.warn(
+                            "==OWN:LightingHandler== updateLightBrightnessState() Cannot handle message {} for thing {}",
+                            msg, getThing().getUID());
+                    return;
                 }
-                latestBrightnessWhat = newLevel;
-            } else {
-                logger.debug("$bri no change");
             }
-            brightnessLevelRequested = false;
         }
         logger.debug("$$$ END  ---updateLightBr latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}",
                 latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);
