@@ -82,6 +82,11 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     private int positionRequested = POSITION_UNKNOWN;
     private int calibrating = CALIBRATION_INACTIVE;
     private static final int STEP_TIME_MIN = 50; // ms
+    private Command commandRequestedWhileMoving = null;
+
+    /// TODO GENERAL
+    /// consider making all Automation calls Aynch insted of Synch (blocking), as all the behavior is based on received
+    /// state notifications and not on command responses
 
     public OpenWebNetAutomationHandler(@NonNull Thing thing) {
         super(thing);
@@ -166,90 +171,101 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
      * @param command
      */
     private void handleShutterCommand(ChannelUID channel, Command command) {
-        // logger.debug("==OWN:AutomationHandler== # " + toWhere(channel) + " # handleShutterCommand() (command={})",
-        // command);
-        calibrating = CALIBRATION_INACTIVE;
-        if (command instanceof UpDownType) {
-            if (UpDownType.UP.equals(command)) { // UP
-                bridgeHandler.gateway.send(Automation.requestMoveUp(toWhere(channel), automationType));
-            } else { // DOWN
-                bridgeHandler.gateway.send(Automation.requestMoveDown(toWhere(channel), automationType));
-            }
-        } else if (StopMoveType.STOP.equals(command)) { // STOP
+        calibrating = CALIBRATION_INACTIVE; // cancel calibration if we receive a command
+        commandRequestedWhileMoving = null;
+        if (StopMoveType.STOP.equals(command)) { // STOP
             bridgeHandler.gateway.send(Automation.requestStop(toWhere(channel), automationType));
-        } else if (command instanceof PercentType) { // PERCENT
-            if (internalState != STATE_STOPPED) {
-                logger.debug(
-                        "==OWN:AutomationHandler==  # " + toWhere(channel) + " # already moving, ignoring go-to-XX%");
+        } else if (command instanceof UpDownType || command instanceof PercentType) {
+            if (internalState != STATE_STOPPED) { // already moving
+                logger.debug("==OWN:AutomationHandler==  # " + toWhere(channel)
+                        + " # already moving, STOP then defer command");
+                commandRequestedWhileMoving = command;
+                bridgeHandler.gateway.sendHighPriority(Automation.requestStop(toWhere(channel), automationType));
                 return;
-            }
-            int percent = ((PercentType) command).intValue();
-            if (percent != positionEst) {
-                if (percent == POSITION_DOWN) { // GO TO 100%
-                    bridgeHandler.gateway.send(Automation.requestMoveDown(toWhere(channel), automationType));
-                } else if (percent == POSITION_UP) { // GO TO 0%
-                    bridgeHandler.gateway.send(Automation.requestMoveUp(toWhere(channel), automationType));
-                } else {// GO TO XX%
-                    logger.debug("==OWN:AutomationHandler== # " + toWhere(channel) + " # {}% requested", percent);
-                    if (shutterRun == SHUTTER_RUN_UNDEFINED) {
-                        logger.debug("==OWN:AutomationHandler== & " + toWhere(channel) + " & " + toWhere(channel)
-                                + " & shutterRun not configured, starting CALIBRATION...");
-                        calibrating = CALIBRATION_ACTIVATED;
-                        bridgeHandler.gateway.send(Automation.requestMoveUp(toWhere(channel), automationType));
-                        positionRequested = percent;
-                    } else if (shutterRun > 0 && positionEst != POSITION_UNKNOWN) { // these two must be known to
-                                                                                    // calculate
-                                                                                    // moveTime
-                        // calculate how much time we have to move and set a deadline to stop after that time
-                        int moveTime = Math
-                                .round(((float) Math.abs(percent - positionEst) / POSITION_MAX_STEPS * shutterRun));
-                        logger.debug("==OWN:AutomationHandler== # " + toWhere(channel) + " # target moveTime={}",
-                                moveTime);
-                        if (moveTime > STEP_TIME_MIN) { // FIXME calibrate this
-                            if (moveSchedule != null && !moveSchedule.isDone()) {
-                                // a moveSchedule was already scheduled and is not done... let's cancel the schedule
-                                moveSchedule.cancel(false);
-                                logger.warn( // should not get here....
-                                        "==OWN:AutomationHandler== # " + toWhere(channel)
-                                                + " # new XX% requested, old moveSchedule cancelled");
-                            }
-                            // IMPORTANT IMPORTANT
-                            // start the schedule BEFORE sending the command, because the synch command waits for ACK
-                            // and can take some 300ms --- IS THIS STILL NEEDED ??
-                            logger.debug("==OWN:AutomationHandler== # " + toWhere(channel) + " # Starting schedule...");
-                            moveSchedule = scheduler.schedule(() -> {
-                                logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
-                                        + " # moveSchedule expired, sending STOP...");
-                                bridgeHandler.gateway
-                                        .sendHighPriority(Automation.requestStop(toWhere(channel), automationType));
-                            }, moveTime, TimeUnit.MILLISECONDS);
-                            logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
-                                    + " # ...schedule started, now sending highPriority command...");
-                            if (percent < positionEst) {
-                                bridgeHandler.gateway
-                                        .sendHighPriority(Automation.requestMoveUp(toWhere(channel), automationType));
-                            } else {
-                                bridgeHandler.gateway
-                                        .sendHighPriority(Automation.requestMoveDown(toWhere(channel), automationType));
-                            }
-                            logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
-                                    + " # ...gateway.sendHighPriority() returned");
-                        } else {
-                            logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
-                                    + " # moveTime < STEP_TIME_MIN, do nothing");
-                        }
-                    } else {
-                        logger.warn(
-                                "==OWN:AutomationHandler== Command {} cannot be executed: unknown position or shutterRun configuration param not set (thing={})",
-                                command, thing.getUID());
-                    }
-                }
             } else {
-                logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
-                        + " # handleShutterCommand() Command {}% == positionEst, nothing to do", percent);
+                if (command instanceof UpDownType) {
+                    if (UpDownType.UP.equals(command)) { // UP
+                        bridgeHandler.gateway.send(Automation.requestMoveUp(toWhere(channel), automationType));
+                    } else { // DOWN
+                        bridgeHandler.gateway.send(Automation.requestMoveDown(toWhere(channel), automationType));
+                    }
+                } else if (command instanceof PercentType) { // PERCENT
+                    handlePercentCommand(channel, (PercentType) command);
+                }
             }
         } else {
             logger.warn("==OWN:AutomationHandler== Command {} is not supported for thing {}", command, thing.getUID());
+        }
+    }
+
+    /**
+     * Handles Automation Percent command
+     *
+     * @param command
+     */
+    private void handlePercentCommand(ChannelUID channel, PercentType command) {
+        int percent = command.intValue();
+        if (percent == positionEst) {
+            logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
+                    + " # handleShutterCommand() Command {}% == positionEst, nothing to do", percent);
+            return;
+        }
+        if (percent == POSITION_DOWN) { // GO TO 100%
+            bridgeHandler.gateway.send(Automation.requestMoveDown(toWhere(channel), automationType));
+        } else if (percent == POSITION_UP) { // GO TO 0%
+            bridgeHandler.gateway.send(Automation.requestMoveUp(toWhere(channel), automationType));
+        } else { // GO TO XX%
+            logger.debug("==OWN:AutomationHandler== # " + toWhere(channel) + " # {}% requested", percent);
+            if (shutterRun == SHUTTER_RUN_UNDEFINED) {
+                logger.debug("==OWN:AutomationHandler== & " + toWhere(channel) + " & " + toWhere(channel)
+                        + " & shutterRun not configured, starting CALIBRATION...");
+                calibrating = CALIBRATION_ACTIVATED;
+                bridgeHandler.gateway.send(Automation.requestMoveUp(toWhere(channel), automationType));
+                positionRequested = percent;
+            } else if (shutterRun > 0 && positionEst != POSITION_UNKNOWN) { // these two must be known to
+                                                                            // calculate
+                                                                            // moveTime
+                // calculate how much time we have to move and set a deadline to stop after that time
+                int moveTime = Math.round(((float) Math.abs(percent - positionEst) / POSITION_MAX_STEPS * shutterRun));
+                logger.debug("==OWN:AutomationHandler== # " + toWhere(channel) + " # target moveTime={}", moveTime);
+                if (moveTime > STEP_TIME_MIN) { // FIXME calibrate this
+                    if (moveSchedule != null && !moveSchedule.isDone()) {
+                        // a moveSchedule was already scheduled and is not done... let's cancel the schedule
+                        moveSchedule.cancel(false);
+                        logger.warn( // should not get here....
+                                "==OWN:AutomationHandler== # " + toWhere(channel)
+                                        + " # new XX% requested, old moveSchedule cancelled");
+                    }
+                    // IMPORTANT IMPORTANT
+                    // start the schedule BEFORE sending the command, because the synch command waits for ACK
+                    // and can take some 300ms --- IS THIS STILL NEEDED ??
+                    logger.debug("==OWN:AutomationHandler== # " + toWhere(channel) + " # Starting schedule...");
+                    moveSchedule = scheduler.schedule(() -> {
+                        logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
+                                + " # moveSchedule expired, sending STOP...");
+                        bridgeHandler.gateway
+                                .sendHighPriority(Automation.requestStop(toWhere(channel), automationType));
+                    }, moveTime, TimeUnit.MILLISECONDS);
+                    logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
+                            + " # ...schedule started, now sending highPriority command...");
+                    if (percent < positionEst) {
+                        bridgeHandler.gateway
+                                .sendHighPriority(Automation.requestMoveUp(toWhere(channel), automationType));
+                    } else {
+                        bridgeHandler.gateway
+                                .sendHighPriority(Automation.requestMoveDown(toWhere(channel), automationType));
+                    }
+                    logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
+                            + " # ...gateway.sendHighPriority() returned");
+                } else {
+                    logger.debug("==OWN:AutomationHandler== # " + toWhere(channel)
+                            + " # moveTime < STEP_TIME_MIN, do nothing");
+                }
+            } else {
+                logger.warn(
+                        "==OWN:AutomationHandler== Command {} cannot be executed: unknown position or shutterRun configuration param not set (thing={})",
+                        command, thing.getUID());
+            }
         }
     }
 
@@ -301,6 +317,10 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 bridgeHandler.gateway.send(Automation.requestMoveDown(toWhere(channel), automationType));
             } else {
                 updateStateInt(STATE_STOPPED);
+                // do deferred command, if present
+                if (commandRequestedWhileMoving != null) {
+                    handleShutterCommand(channel, commandRequestedWhileMoving);
+                }
             }
         } else {
             logger.warn(
