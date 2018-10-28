@@ -176,7 +176,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         if (StopMoveType.STOP.equals(command)) { // STOP
             bridgeHandler.gateway.send(Automation.requestStop(toWhere(channel), automationType));
         } else if (command instanceof UpDownType || command instanceof PercentType) {
-            if (internalState != STATE_STOPPED) { // already moving
+            if (internalState == STATE_MOVING_UP || internalState == STATE_MOVING_DOWN) { // already moving
                 logger.debug("==OWN:AutomationHandler==  # " + toWhere(channel)
                         + " # already moving, STOP then defer command");
                 commandRequestedWhileMoving = command;
