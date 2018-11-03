@@ -303,10 +303,11 @@ String  LR_HeatingCoolingMode  "HeatingCoolingMode"                        (gLR_
 
 - [FIX #17] now a disconnection from the gateway is detected within few minutes
 - [FIX #10] now an automatic STOP command is sent when a new Position/UP/DOWN command is sent while already moving
-- [FIX #20] added support for dimmerLevel100 levels when dimmers are changed from myhomescreen or touchscreen 
 - [FIX #18] at startup (for example after a power outage) the binding now tries periodically to connect to the BTicino Gateway
 - [BUG] now a decimal setpointTemperature (21.5 °C) is sent as decimal to the thermostat and not as integer
+- [FIX #20] added support for dimmerLevel100 levels when dimmers are changed from myhomescreen or touchscreen 
 - [FIX #16] dimmers now save last state if switched off from openHAB
+- [FIX] now Command Translation (1000#WHAT) is supported in Lighting
 - [FIX] setpointTemperature now uses QuantityType (Number:Temperature item)
 
 **v2.4.0-b7** - 01/09/2018

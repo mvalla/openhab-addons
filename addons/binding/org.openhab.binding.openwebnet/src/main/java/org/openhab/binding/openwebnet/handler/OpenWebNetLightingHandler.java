@@ -175,8 +175,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             if (newWhatInt >= 0 && newWhatInt <= 10) {
                 newWhat = Lighting.WHAT.fromValue(newWhatInt);
                 if (newWhat.equals(Lighting.WHAT.ON)) {
-                    // change it to WHAT.DIM_20 (dimming to 10% is not allowed in OWN)
-                    newWhat = Lighting.WHAT.DIM_20;
+                    // change it to WHAT.DIMMER_20 (dimming to 10% is not allowed in OWN)
+                    newWhat = Lighting.WHAT.DIMMER_20;
                 }
                 // save current brightness level before sending bri=0 command to device
                 if (newWhatInt == 0) {
@@ -328,8 +328,9 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     /**
      * Transforms a 0,1,2-10 level (int) to a percent (0-100%) int
      */
+    // TODO push down in the OWN lib
     private int levelToPercent(int level) {
-        // for now, we use a linear mapping
+        // TODO for now, we use a linear mapping
         return level * 10;
     }
 
@@ -337,7 +338,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      * Transforms a percent int (0-100%) into a 0,2-10 level (int)
      */
     private int percentToLevel(int percent) {
-        // for now, we use a linear mapping
+        // TODO push down in the OWN lib
+        // TODO for now, we use a linear mapping
         if (percent > 0 && percent < 10) {
             return 1;
         } else {
