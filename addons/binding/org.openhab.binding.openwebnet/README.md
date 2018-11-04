@@ -301,6 +301,7 @@ String  LR_HeatingCoolingMode  "HeatingCoolingMode"                        (gLR_
 
 **v2.4.0-b8** - *NOT YET RELEASED*
 
+- added `Blinds` tag for shutter channels (Rollershutter items) 
 - [FIX #17] now a disconnection from the gateway is detected within few minutes
 - [FIX #10] now an automatic STOP command is sent when a new Position/UP/DOWN command is sent while already moving
 - [FIX #18] at startup (for example after a power outage) the binding now tries periodically to connect to the BTicino Gateway

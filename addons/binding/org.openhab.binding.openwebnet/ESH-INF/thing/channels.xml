@@ -43,6 +43,9 @@
 		<label>Roller shutter</label>
 		<description>Control the roller shutter position</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Blinds</tag>
+		</tags>
 	</channel-type>
 	
 	<!--  Thermo channels -->
