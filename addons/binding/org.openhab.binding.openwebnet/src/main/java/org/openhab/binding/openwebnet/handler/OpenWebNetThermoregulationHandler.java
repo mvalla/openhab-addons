@@ -157,8 +157,15 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private void handleModeCommand(Command command) {
         logger.debug("==OWN:ThermoHandler== handleModeCommand() (command={})", command);
         if (command instanceof StringType) {
-            Mode mode = Mode.valueOf(((StringType) command).toString());
-            Thermoregulation.WHAT modeWhat = modeToWhat(mode);
+            Thermoregulation.WHAT modeWhat = null;
+            try {
+                Mode mode = Mode.valueOf(((StringType) command).toString());
+                modeWhat = modeToWhat(mode);
+            } catch (IllegalArgumentException e) {
+                logger.warn("==OWN:ThermoHandler== Cannot handle command {} for thing {} ({})", command,
+                        getThing().getUID(), e.getMessage());
+                return;
+            }
             logger.debug("==OWN:ThermoHandler== handleModeCommand() modeWhat={}", modeWhat);
             if (modeWhat != null) {
                 bridgeHandler.gateway.send(Thermoregulation.requestSetMode("#" + toWhere(""), modeWhat));
