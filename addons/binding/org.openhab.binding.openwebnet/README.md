@@ -244,17 +244,19 @@ See these docs and other threads in the community for more information about Goo
 ### openwebnet.things:
 
 ```xtend
-Bridge openwebnet:bus_gateway:mybridge  [ host="192.168.1.35", passwd="abcde" ] {
-    bus_on_off_switch  myswitch       "Living room Light"       [ where="64#4#01" ]
-    bus_dimmer         mydimmer       "Living room Dimmer"      [ where="24" ]
-    bus_automation     myshutter      "Living room Shutter"     [ where="53", shutterRun="12000" ]
-    bus_thermostat     lrthermostat   "Living room Thermostat"  [ where="1" ]
-    bus_temp_sensor    exttempsensor  "External Sensor"         [ where="500" ]
+Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde" ] {
+      bus_on_off_switch  LR_switch        "Living Room Light"       [ where="11" ]
+      bus_dimmer         LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
+      bus_dimmer         LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
+      bus_automation     LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
+      bus_thermostat     LR_thermostat    "Living Room Thermostat"  [ where="1"]
+      bus_temp_sensor    EXT_tempsensor   "External Temperature"    [ where="500"]
 }
 ``` 
 
+
 ```xtend
-<TODO----- ZigBee Dongle configuration>
+<TODO----- ZigBee Dongle configuration only needed for radio devices >
 Bridge openwebnet:dongle:mydongle2  [serialPort="kkkkkkk"] {
     dimmer          myzigbeedimmer [ where="xxxxx"]
     on_off_switch   myzigbeeswitch [ where="yyyyy"]
@@ -263,26 +265,56 @@ Bridge openwebnet:dongle:mydongle2  [serialPort="kkkkkkk"] {
 
 ### openwebnet.items:
 
-The items in the example (Light, Dimmer, Thermostat) will be discovered by Google Home / Alexa if tags are configured like in the example.
+Items in the example (Light, Dimmer, Thermostat, etc.) will be discovered by Google Home / Alexa if tags are configured like in the example.
 
 ```xtend
-Switch         LR_Bus_Light    "Switch"                 <light>          (gLivingRoom)             [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:myswitch:switch" }
-Dimmer         LR_Bus_Dimmer   "Brightness [%.0f %%]"   <DimmableLight>  (gLivingRoom)             [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:mydimmer:brightness" }
+Switch         iLR_switch        "Switch"                 <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
+Dimmer         iLR_dimmer        "Brightness [%.0f %%]"   <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
+Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness" }
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
-Rollershutter  LR_Bus_Shutter  "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)                  { channel="openwebnet:bus_automation:mybridge:myshutter:shutter" }
-Number         Ext_Temp        "Temperature [%.1f °C]"  <temperature>                                              { channel="openwebnet:bus_temp_sensor:mybridge:exttempsensor:temperature" }
+Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
+Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
 
 /* Thermostat Setup (Google Home/Alexa require thermostat items to be grouped together) */
-Group   gLR_Thermostat         "Living room Thermostat"                                      [ "Thermostat" ]
-Number  LR_Temp                "Temperature [%.1f °C]"      <temperature>  (gLR_Thermostat)  [ "CurrentTemperature" ]          { channel="openwebnet:bus_thermostat:mybridge:lrthermostat:temperature" }
-Number  LR_SetpointTemp        "Set Temperature [%.1f °C]"  <temperature>  (gLR_Thermostat)  [ "TargetTemperature" ]           { channel="openwebnet:bus_thermostat:mybridge:lrthermostat:setpointTemperature" }
-String  LR_HeatingCoolingMode  "HeatingCoolingMode"                        (gLR_Thermostat)  [ "homekit:HeatingCoolingMode" ]  { channel="openwebnet:bus_thermostat:mybridge:lrthermostat:heatingCoolingMode" }
+Group   gLR_thermostat               "Living Room Thermostat"                                     [ "Thermostat" ]
+Number:Temperature  iLR_temp         "Temperature [%.1f °C]"  <temperature>  (gLR_Thermostat)     [ "CurrentTemperature" ]          { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:temperature" }
+String              iLR_offset       "Offset"                                (gLR_Thermostat)                                       { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:localMode" }
+Switch              iLR_heating      "Heating is"                            (gLR_Thermostat)                                       { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:heating" }
+Switch              iLR_cooling      "Cooling is"                            (gLR_Thermostat)                                       { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:cooling" }
+Number:Temperature  iLR_targetTemp   "Target [%.1f °C]"                      (gLR_Thermostat)                                       { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:targetTemperature" }
+String              iLR_activeMode   "Active Mode"                           (gLR_Thermostat)                                       { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:activeMode" }
+String              iLR_heatCool     "HeatingCoolingMode"                    (gLR_Thermostat)     [ "homekit:HeatingCoolingMode" ]  { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:heatingCoolingMode" }
+Number:Temperature  iLR_setpointTemp "Setpoint Temperature [%.1f °C]"  <temperature> (gLR_Thermostat)  [ "TargetTemperature" ]      { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:setpointTemperature" }
+String              iLR_setMode      "Set Mode"                              (gLR_Thermostat)                                       { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:setMode"}
 ```
 
 ### openwebnet.sitemap
 
 ```xtend
-<TODO----- example not available yet>
+sitemap test label="OpenWebNet Binding"
+{
+
+Frame label="Living Room"
+    {
+          Default item=iLR_light            icon="light" 
+          Default item=iLR_switch               
+          Default item=iLR_dimmer           icon="light" 
+          Default item=iLR_dalidimmer       icon="light" 
+
+          Group item=gLR_thermostat label="Thermostat" icon="heating"
+          { 
+             Default    item=iLR_temp  label="Current Temperature"  icon="temperature"
+             Default    item=iLR_targetTemp label="Target Temperature"  icon="temperature"
+             Default    item=iLR_offset  icon="heating"   visibility=[iLR_offset != "NORMAL"]
+             Text       item=iLR_heating icon="fire"  label="Heating is active" labelcolor=["red"]  visibility=[iLR_heating=="ON"]
+             Text       item=iLR_cooling icon="climate"  label="Cooling is active" labelcolor=["blue"] visibility=[iLR_cooling=="ON"]
+             Selection  item=iLR_activeMode icon="radiator" mappings=[AUTO="Auto", MANUAL="Manuale", PROTECTION="Anti-gelo", OFF="Spento"] valuecolor=[AUTO="green", MANUAL="orange", PROTECTION="blue", OFF="red"] 
+             Selection  item=iLR_setMode icon="heating"   mappings=[AUTO="Auto", MANUAL="Manuale", PROTECTION="Anti-gelo", OFF="Spento"] 
+             Setpoint   item=iLR_setpointTemp label="Set Temp [%.1f °C]" minValue=12.5 maxValue=30 step=0.5
+          }
+    }
+
+}
 ```
 
 ## Disclaimer
