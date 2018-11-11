@@ -152,7 +152,7 @@ To configure the gateway using PaperUI: go to *Inbox > "+" > OpenWebNet > click 
    - Example: `abcde`
    - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
 
-Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see example below [openwebnet.things](#openwebnet.things).
+Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
 **HELP NEEDED!!!**
 Start a gateway discovery, and then send your (DEBUG-level) log file to the openHAB Community OpenWebNet thread to see if UPnP discovery is supported by your BTicino IP gateway.
@@ -347,7 +347,7 @@ Frame label="Living Room"
 
 **v2.4.0-b7** - 01/09/2018
 
-- [NEW, FIX #5] Initial support for `WHO=4` Thermoregulation on BUS. Currently supported: zones room thermostats and external (wireless) temperature sensors. Both heating and cooling functions are supported
+- [FIX #5] Initial support for `WHO=4` Thermoregulation on BUS. Currently supported: zones room thermostats and external (wireless) temperature sensors. Both heating and cooling functions are supported
 - The binding is now available on the [Eclipse IoT Marketplace](https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing)
 - [BUG] corrected a bad bug on the connection part (originally taken from the BTicino 1.x binding) that caused loosing many monitoring (feedback) messages from the gateway when several messages were received together
 - [FIX #13] now commands sent close in a short time are sent re-using the same socket connection to the gateway. This should improve connection stability and speed in general and in particular with older BUS gateways (e.g. MH202)
@@ -364,7 +364,7 @@ Frame label="Living Room"
 
 **v2.3.0-b5** - 26/05/2018
 
-- [BUG #1] state monitoring from BUS (feedback) is no longer stopped if unsupported messages are received from BUS
+- [FIX #1] state monitoring from BUS (feedback) is no longer stopped if unsupported messages are received from BUS
 - [FIX] automatic reconnect to BUS when connection is lost
 - [NEW] support for Gateways with string passwords (HMAC authentication), like MyHOMEServer1 
 - [NEW] support for `WHO=2` Automation (shutters), both on BUS and ZigBee, with position feedback and  goto Percent. It requires setting the shutter run-time in the thing configuration. Experimental auto-calibration of the run-time is also supported!
