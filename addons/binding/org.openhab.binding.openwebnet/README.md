@@ -9,7 +9,7 @@ Support for both numeric (`12345`) and alpha-numeric (`abcde` - HMAC authenticat
 
 ## Prerequisites
 
-In order for this biding to work, an OpenWebNet gateway is needed in your home system to talk to devices.
+In order for this biding to work, a **BTicino/Legrand OpenWebNet gateway** is needed in your home system to talk to devices.
 Currently these gateways are supported by the binding:
 
 - **IP gateways** or scenario programmers, such as BTicino 
@@ -53,14 +53,15 @@ This binding requires **openHAB 2.3** or later.
 The easiest way to install this binding is from the [Eclipse IoT Marketplace](https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing).
 
 Make sure that the [marketplace plugin is activated](https://www.openhab.org/docs/configuration/eclipseiotmarket.html), and then install the *OpenWebNet binding* from PaperUI (Add-ons -> Bindings -> search for 'openwebnet' then INSTALL).
+If you cannot find the binding in the search, probably you have an issue with certificates in your Java environment, that must be updated. Follow [this solution](https://community.openhab.org/t/solved-failed-downloading-marketplace-entries-received-fatal-alert-handshake-failure/52045) to add the required certificates to access all bindings on the Marketplace.
 
 Be aware that you might have to re-install the binding after an openHAB upgrade. This is a limitation of the Eclipse Marketplace plugin and will be changed in future versions of openHAB.
 
 ### Install Manually
 
-Alternatively this binding can be installed manually:
+***Alternatively*** this binding can be installed manually:
 
-1. Download the [latest released JAR file](https://github.com/mvalla/openhab-openwebnet/releases)
+1. Download the [latest released JAR file](https://github.com/mvalla/openhab2-addons/releases)
 
 1. Copy the JAR file to your openHAB2 `addons` folder. On Linux or RaspberryPi is under: 
 
@@ -74,7 +75,7 @@ After the binding is installed, from Marketplace or manually, some features depe
     - `feature:install openhab-transport-serial`
     - if you are using  **openHAB 2.4.0-xxx** also type:
 	
- `feature:install esh-io-transport-upnp`
+         `feature:install esh-io-transport-upnp`
 
 The binding should now be installed: check in *PaperUI > Configuration > Bindings*.
 
@@ -151,11 +152,7 @@ To configure the gateway using PaperUI: go to *Inbox > "+" > OpenWebNet > click 
    - Example: `abcde`
    - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
 
-Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file:
-
-```
-Bridge openwebnet:bus_gateway:mybridge [ host="192.168.1.35", passwd="abcde" ]
-```
+Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see example below [openwebnet.things](#openwebnet.things).
 
 **HELP NEEDED!!!**
 Start a gateway discovery, and then send your (DEBUG-level) log file to the openHAB Community OpenWebNet thread to see if UPnP discovery is supported by your BTicino IP gateway.
@@ -186,7 +183,7 @@ Devices support some of the following channels:
 | Channel Type ID        | Item Type     | Description                                                             | Read/Write |
 |------------------------|---------------|-------------------------------------------------------------------------|:----------:|
 | switch                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
-| brightness             | Dimmer        | To adjust the brightness value (Percent,`ON`, `OFF`)                    |    R/W     |
+| brightness             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                    |    R/W     |
 | shutter                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [SEE NOTE](#notes-on-shutter-position)) |    R/W     |
 | temperature            | Number        | The zone currently sensed temperature (°C)                              |     R      |
 | targetTemperature      | Number        | The zone target temperature (°C). It considers `setPoint` but also `activeMode` and `localMode`  |      R     |
@@ -213,31 +210,34 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 - if the gateways gets disconnected then the binding cannot know anymore where the shutter was: if `shutterRun` is defined (and correct), then just roll the shutter all Up / Down and its position will be estimated again
 - the shutter position is estimated based on UP/DOWN timing and therefore an error of ±2% is normal
 
-## Google Home / Alexa Integration
+## Google Assistant / Amazon Alexa / Apple HomeKit Integration
 
-Items created automatically with PaperUI (Simple Mode item linking: `Configuration > System > Item Linking > Simple mode > SAVE`) will integrate with Google Home / Alexa seamlessly as they will get automatically the proper tags. In particular items associated with these channels will have the following tags:
+Items created automatically with PaperUI (Simple Mode item linking: `Configuration > System > Item Linking > Simple mode > SAVE`) will integrate with Google Assitant/Amazon Alexa/Apple HomeKit (Siri) seamlessly as they will get automatically the proper tags. In particular items associated with these channels will have the following tags:
 
 - `switch` / `brightness` channels will have the `"Lighting"` tag
+- `shutter` channel will have the `"Blinds"` tag
 - `temperature` channel will have the `"CurrentTemperature"` tag
 - `setpointTemperature` channel will have the `"TargetTemperature"` tag
 - `heatingCoolingMode` channel will have the `"homekit:HeatingCoolingMode"` tag
 
-These are the tags supported so far.
+These are the tags supported so far by the OpenWebNet binding, but you have to check which tags are supported by the openHAB add-on (Google Assistant/Alexa/HomeKit)
 
-It will be enough to link openHAB with myopenhab and Google Home / Alexa and you will be able to discover/control BTicino items.
+You will obtain the most flexible configuration is obtained using `.items` file: see the examples below.
 
-Names used will be the names of the channels (Brightness, etc.) that cannot be changed in PaperUI, you can change names in the assistants.
+After configuration, you can double-check which tags are set looking at the `tags` attribute in the REST API: http://openhabianpi.local:8080/rest/items.
 
-However the most flexible configuration is obtained using `.items` file: see the examples below.
+After tags are set, it will be enough to link openHAB with [myopenhab](https://www.openhab.org/addons/integrations/openhabcloud/) and with Google Assistant/Alexa/HomeKit add-on and you will be able to discover/control BTicino items.
 
+Names used will be the names of the channels (Brightness, etc.); they cannot be changed in PaperUI, you can change names in the assistants.
+
+See these official docs and other threads in the community for more information about Google Assistant/Alexa/HomeKit integration and configuration:
+
+- Google Assitant (Google Home): https://www.openhab.org/docs/ecosystem/google-assistant/
+- Amazon Alexa: https://www.openhab.org/docs/ecosystem/alexa/
+- Apple HomeKit (Siri): https://www.openhab.org/addons/integrations/homekit/
+
+***NOTE***
 You will need to associate tags manually for items created using PaperUI (Simple Mode item linking de-activated) or for items created using `.items` file.
-You can check which tags are set looking at the `tags` attribute in the REST API: http://openhabianpi:8080/rest/items.
-
-See these docs and other threads in the community for more information about Google Home / Alexa integration and configuration:
-
-- Google Assistant: https://www.openhab.org/docs/ecosystem/google-assistant/#setup-usage-on-google-assistant-app
-- Amazon Alexa: https://www.openhab.org/docs/ecosystem/alexa/#general-configuration-instructions
-
 
 ## Full Example
 
@@ -265,7 +265,7 @@ Bridge openwebnet:dongle:mydongle2  [serialPort="kkkkkkk"] {
 
 ### openwebnet.items:
 
-Items in the example (Light, Dimmer, Thermostat, etc.) will be discovered by Google Home / Alexa if tags are configured like in the example.
+Items in the example (Light, Dimmer, Thermostat, etc.) will be discovered by Google Assistant/Alexa/HomeKit if tags are configured like in the example.
 
 ```xtend
 Switch         iLR_switch        "Switch"                 <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
@@ -327,13 +327,13 @@ Frame label="Living Room"
   - frame parsing
   - monitoring events from BUS
 
-  The lib also uses few classes from the openHAB 1.x BTicino binding for socket handling and priority queues.
+  The lib also uses few modified classes from the openHAB 1.x BTicino binding for socket handling and priority queues.
 
 ## Changelog
 
-**v2.4.0-b8** - *NOT YET RELEASED*
+**v2.4.0-b8** - 11/11/2018
 
-- added `Blinds` tag for shutter channels (Rollershutter items) 
+- [FIX #25] added `Blinds` tag for shutter channels (Rollershutter items) 
 - [FIX #17] now a disconnection from the gateway is detected within few minutes
 - [FIX #10] now an automatic STOP command is sent when a new Position/UP/DOWN command is sent while already moving
 - [FIX #18] at startup (for example after a power outage) the binding now tries periodically to connect to the BTicino Gateway
@@ -342,6 +342,8 @@ Frame label="Living Room"
 - [FIX #16] dimmers now save last state if switched off from openHAB
 - [FIX] now Command Translation (1000#WHAT) is supported in Lighting
 - [FIX] setpointTemperature now uses QuantityType (Number:Temperature item)
+- updated README examples and added .sitemap example
+- moved to new repository, forked from openhab/openhab2-addons
 
 **v2.4.0-b7** - 01/09/2018
 
@@ -377,9 +379,9 @@ Known problems:
 
 - In some cases dimmers connected to a F429 Dali-interface cannot be discovered, even if switched ON and dimmed. This looks like as a limitation of some gateways that do not report Dali devices states when requested
 
-For a list of current open issues / features requests see [GitHub repo](https://github.com/mvalla/openhab-openwebnet/issues)
+For a list of current open issues / features requests see [GitHub repo](https://github.com/mvalla/openhab2-addons/issues)
 
 ## Special thanks
 
-Special thanks for helping on testing this binding go to: [@m4rk](https://community.openhab.org/u/m4rk/), [@enrico.mcc](https://community.openhab.org/u/enrico.mcc), [@bastler](https://community.openhab.org/u/bastler), [@k0nti](https://community.openhab.org/u/k0nti/), [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/) and many others at the fantastic openHAB community!
+Special thanks for helping on testing this binding go to: [@m4rk](https://community.openhab.org/u/m4rk/), [@enrico.mcc](https://community.openhab.org/u/enrico.mcc), [@bastler](https://community.openhab.org/u/bastler), [@k0nti](https://community.openhab.org/u/k0nti/), [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/), [@gozilla01](https://community.openhab.org/u/gozilla01) and many others at the fantastic openHAB community!
 
