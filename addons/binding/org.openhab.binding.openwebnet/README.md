@@ -331,6 +331,9 @@ Frame label="Living Room"
 
 ## Changelog
 
+**v2.4.0-b9** - **NOT YET RELEASED**
+
+
 **v2.4.0-b8** - 11/11/2018
 
 - [FIX #25] added `Blinds` tag for shutter channels (Rollershutter items) 
