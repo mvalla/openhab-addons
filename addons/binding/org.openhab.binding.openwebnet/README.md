@@ -81,19 +81,29 @@ The binding should now be installed: check in *PaperUI > Configuration > Binding
 
 ### Upgrade from previous binding release version
 
-Since openHAB uses some cache mechanisms to load bindings, it is not enough to remove and update the binding JAR file.
-
 It's suggested also to remove OpenWebNet Things before uninstalling the old binding, and discover/configure them again after binding has been updated.
+
+#### Upgrade - Manual installation
+
+Since openHAB uses some cache mechanisms to load bindings, it is not enough to remove and update the binding JAR file from `addons` folder:
 
 1. From [Karaf console](https://www.openhab.org/docs/administration/console.html):
     - `bundle:list` to list all bundles and take note of current bundle `<ID>` for the OpenWebNet Binding
     - `bundle:uninstall <ID>` to remove previous version of the binding
 1. remove the previous version of the binding JAR file from `addons/` folder
 1. copy the new version of the binding JAR file to `addons/` folder
- 
+
+#### Upgrade - Marketplace installation
+
+1. Goto PaperUI > Add-ons > Bindings > search `openweb` > UNINSTALL
+1. reload the page in the browser to make sure latest version is selected
+1. search again `openweb` > INSTALL
+
+
+The **new version** of the binding should now be installed, check the version number in *PaperUI > Configuration > Bindings*.
+
 While upgrading, there is no need to activate dependencies again.
 
-The new version of the binding should now be installed, check the version number in *PaperUI > Configuration > Bindings*.
 
 ## Debugging and Log Files
 
@@ -230,14 +240,15 @@ After tags are set, it will be enough to link openHAB with [myopenhab](https://w
 
 Names used will be the names of the channels (Brightness, etc.); they cannot be changed in PaperUI, you can change names in the assistants.
 
-See these official docs and other threads in the community for more information about Google Assistant/Alexa/HomeKit integration and configuration:
+See these official docs and other threads in the OH community for more information about Google Assistant/Alexa/HomeKit integration and configuration:
 
-- Google Assitant (Google Home): https://www.openhab.org/docs/ecosystem/google-assistant/
-- Amazon Alexa: https://www.openhab.org/docs/ecosystem/alexa/
-- Apple HomeKit (Siri): https://www.openhab.org/addons/integrations/homekit/
+- Google Assitant (Google Home): <https://www.openhab.org/docs/ecosystem/google-assistant/>
+    - updated list of supported tags: <https://github.com/openhab/openhab-google-assistant/blob/master/USAGE.md>
+- Amazon Alexa: <https://www.openhab.org/docs/ecosystem/alexa/>
+- Apple HomeKit (Siri): <https://www.openhab.org/addons/integrations/homekit/>
 
 ***NOTE***
-You will need to associate tags manually for items created using PaperUI (Simple Mode item linking de-activated) or for items created using `.items` file.
+You will need to associate tags manually for items created using PaperUI when Simple Mode item linking is de-activated, or for items created using `.items` file.
 
 ## Full Example
 
