@@ -53,6 +53,10 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_THERMO_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
             "bus_thermo_central_unit");
     public static final String THING_LABEL_BUS_THERMO_CENTRAL_UNIT = "BUS Thermo Central Unit";
+    public static final ThingTypeUID THING_TYPE_BUS_ENERGY_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
+            "bus_energy_central_unit");
+    public static final String THING_LABEL_BUS_ENERGY_CENTRAL_UNIT = "BUS Energy Central Unit";
+
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "on_off_switch");
     public static final String THING_LABEL_ON_OFF_SWITCH = "ZigBee Switch";
@@ -81,10 +85,15 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = Sets
             .newHashSet(THING_TYPE_BUS_TEMP_SENSOR, THING_TYPE_BUS_THERMOSTAT, THING_TYPE_BUS_THERMO_CENTRAL_UNIT);
 
+    // ## Energy Management
+    public static final Set<ThingTypeUID> ENERGY_SUPPORTED_THING_TYPES = Sets
+            .newHashSet(THING_TYPE_BUS_ENERGY_CENTRAL_UNIT);
+
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Sets.union(
             Sets.union(LIGHTING_SUPPORTED_THING_TYPES,
-                    Sets.union(AUTOMATION_SUPPORTED_THING_TYPES, THERMOREGULATION_SUPPORTED_THING_TYPES)),
+                    Sets.union(AUTOMATION_SUPPORTED_THING_TYPES,
+                            Sets.union(THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_SUPPORTED_THING_TYPES))),
             Sets.newHashSet(THING_TYPE_DEVICE));
 
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DONGLE,
@@ -110,10 +119,11 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_LOCAL_MODE = "localMode";
     public static final String CHANNEL_TEMP_SETPOINT = "setpointTemperature";
     public static final String CHANNEL_SET_MODE = "setMode";
-
     public static final String CHANNEL_ALL_TEMP_SETPOINT = "allSetpointTemperature";
     public static final String CHANNEL_ALL_SET_MODE = "allSetMode";
     public static final String CHANNEL_ALL_THERMO_FUNCTION = "allThermoFunction";
+    // energy management
+    public static final String CHANNEL_POWER = "power";
 
     // config properties
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";

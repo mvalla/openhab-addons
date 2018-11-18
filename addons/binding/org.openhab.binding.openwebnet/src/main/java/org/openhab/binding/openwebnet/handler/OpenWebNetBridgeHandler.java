@@ -41,6 +41,7 @@ import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.OpenWebNet;
 import org.openwebnet.message.Automation;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.EnergyManagement;
 import org.openwebnet.message.GatewayManagement;
 import org.openwebnet.message.Lighting;
 import org.openwebnet.message.OpenMessage;
@@ -295,7 +296,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the thing associated with this message...
-        if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation) {
+        if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
+                || baseMsg instanceof EnergyManagement) {
             String ownId = ownIdFromWhere(baseMsg.getWhere());
             logger.trace("==OWN==  ownId = {}", ownId);
             ThingUID thingUID = registeredDevices.get(ownId);

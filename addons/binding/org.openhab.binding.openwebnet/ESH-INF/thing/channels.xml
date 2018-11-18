@@ -170,4 +170,27 @@
 		</state>
 	</channel-type>
 	
+	<channel-type id="setMode">
+        <item-type>String</item-type>
+        <label>Set Mode</label>
+        <description>Set mode of the thermostat from Central Unit/openHAB (read/write)</description>
+        <state>
+            <options>
+                <option value="AUTO">Auto</option>
+                <option value="MANUAL">Manual</option>
+                <option value="PROTECTION">Protection</option>
+                <option value="OFF">Off</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <!-- Energy channels -->
+    <channel-type id="power">
+        <item-type>Number</item-type>
+        <label>Power</label>
+        <description>Actual active power usage</description>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.1f W"></state>
+    </channel-type>
+    
 </thing:thing-descriptions>

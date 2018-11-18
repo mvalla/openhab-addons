@@ -30,7 +30,8 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway    | `13`  | `bus_gateway`                     | *work in progress*                | n/a  | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N,...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F453AV, MH202. Some connection stability issues/gateway resets reported with MH202  |
 | Lightning | `1`   | `bus_on_off_switch`, `bus_dimmer` | Yes                | Yes                | BUS switches and dimmers                                                                 | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation | `2`   | `bus_automation`                | Yes | Yes                  | BUS roller shutters, with position feedback and auto-calibration via a *UP >> DOWN >> Position%* cycle                                                                                       | Successfully tested: LN4672M2  |
-| Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691 via BTI-3488 Central Unit; external probes: L/N/NT4577 + 3455 |
+| Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691 via 3488 Central Unit; external probes: L/N/NT4577 + 3455 |
+| Energy Management | `18`   | `bus_energy_central_unit`   | *work in progress* | Yes | Energy Management Central Unit | *Testing*: F521 |
 
 ### ZigBee (Radio)
 
@@ -302,7 +303,7 @@ String              iLR_setMode      "Set Mode"                              (gL
 ### openwebnet.sitemap
 
 ```xtend
-sitemap test label="OpenWebNet Binding"
+sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 {
 
 Frame label="Living Room"
@@ -344,6 +345,7 @@ Frame label="Living Room"
 
 **v2.4.0-b9** - **NOT YET RELEASED**
 
+- [FIX #11] **Initial support for `WHO=18` Energy Management** on BUS. Currently supported: Energy Management Central Unit (F521) power measures.
 
 **v2.4.0-b8** - 11/11/2018
 
