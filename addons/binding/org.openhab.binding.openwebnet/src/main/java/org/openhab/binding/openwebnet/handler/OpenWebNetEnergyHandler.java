@@ -55,13 +55,13 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("==OWN:EnergyHandler== requestChannelState() thingUID={} channel={}", thing.getUID(),
                 channel.getId());
-        bridgeHandler.gateway.send(EnergyManagement.requestStatus(toWhere(channel)));
+        bridgeHandler.gateway.send(EnergyManagement.requestActivePower(toWhere(channel)));
     }
 
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
 
-        logger.warn("==OWN:EnergyHandler== Unsupported command {}", command);
+        logger.warn("==OWN:EnergyHandler== Read only channel, unsupported command {}", command);
 
         // TODO
         // Note: if communication with thing fails for some reason,

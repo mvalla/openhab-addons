@@ -31,7 +31,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lightning | `1`   | `bus_on_off_switch`, `bus_dimmer` | Yes                | Yes                | BUS switches and dimmers                                                                 | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation | `2`   | `bus_automation`                | Yes | Yes                  | BUS roller shutters, with position feedback and auto-calibration via a *UP >> DOWN >> Position%* cycle                                                                                       | Successfully tested: LN4672M2  |
 | Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691 via 3488 Central Unit; external probes: L/N/NT4577 + 3455 |
-| Energy Management | `18`   | `bus_energy_central_unit`   | *work in progress* | Yes | Energy Management Central Unit | *Testing*: F521 |
+| Energy Management | `18`   | `bus_energy_central_unit`   | Yes | Yes | Energy Management Central Unit | *Testing*: F521 |
 
 ### ZigBee (Radio)
 
@@ -194,7 +194,7 @@ Devices support some of the following channels:
 | Channel Type ID        | Item Type     | Description                                                             | Read/Write |
 |------------------------|---------------|-------------------------------------------------------------------------|:----------:|
 | switch                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
-| brightness             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                    |    R/W     |
+| brightness             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
 | shutter                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [SEE NOTE](#notes-on-shutter-position)) |    R/W     |
 | temperature            | Number        | The zone currently sensed temperature (°C)                              |     R      |
 | targetTemperature      | Number        | The zone target temperature (°C). It considers `setPoint` but also `activeMode` and `localMode`  |      R     |
@@ -206,6 +206,7 @@ Devices support some of the following channels:
 | localMode              | String        | The zone current local mode, as set on the physical thermostat in the room: `-3/-2/-1/NORMAL/+1/+2/+3`, `PROTECTION`, or `OFF`  |      R     |
 | setpointTemperature    | Number        | The zone setpoint temperature (°C), as set from Central Unit or openHAB |     R/W    |
 | setMode                | String        | The zone set mode, as set from Central Unit or openHAB: `AUTO`, `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
+| power                  | Number        | The actual active power usage from Energy Management Central Unit       |     R      |
 
 [*] = advanced channel: in PaperUI can be shown from  *Thing config > Channel list > Show More* button. Link to an item by clicking on the channel blue button.
 
@@ -257,12 +258,13 @@ You will need to associate tags manually for items created using PaperUI when Si
 
 ```xtend
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde" ] {
-      bus_on_off_switch  LR_switch        "Living Room Light"       [ where="11" ]
-      bus_dimmer         LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
-      bus_dimmer         LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
-      bus_automation     LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
-      bus_thermostat     LR_thermostat    "Living Room Thermostat"  [ where="1"]
-      bus_temp_sensor    EXT_tempsensor   "External Temperature"    [ where="500"]
+      bus_on_off_switch        LR_switch        "Living Room Light"       [ where="11" ]
+      bus_dimmer               LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
+      bus_dimmer               LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
+      bus_automation           LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
+      bus_thermostat           LR_thermostat    "Living Room Thermostat"  [ where="1"]
+      bus_temp_sensor          EXT_tempsensor   "External Temperature"    [ where="500"]
+      bus_energy_central_unit  CENTRAL_energy   "Energy Management"       [ where="51" ]
 }
 ``` 
 
@@ -286,6 +288,7 @@ Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLiv
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
 Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
+Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>                                                      { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
 
 /* Thermostat Setup (Google Home/Alexa require thermostat items to be grouped together) */
 Group   gLR_thermostat               "Living Room Thermostat"                                     [ "Thermostat" ]
@@ -345,7 +348,7 @@ Frame label="Living Room"
 
 **v2.4.0-b9** - **NOT YET RELEASED**
 
-- [FIX #11] **Initial support for `WHO=18` Energy Management** on BUS. Currently supported: Energy Management Central Unit (F521) power measures.
+- [FIX #11] **Initial support for `WHO=18` Energy Management** on BUS with discovery. Currently supported: Energy Management Central Unit (F521) power measures.
 
 **v2.4.0-b8** - 11/11/2018
 
