@@ -193,4 +193,18 @@
         <state readOnly="true" pattern="%.1f W"></state>
     </channel-type>
     
+    <channel-type id="scenarioButton">
+        <item-type>String</item-type>
+        <label>Scenario Button</label>
+        <description>Scenario button for CEN/CEN+ scenarios</description>
+        <state>
+            <options>
+                <option value="start_pressure">start_pressure</option>
+                <option value="release_ext_pressure">Manual</option>
+                <option value="PROTECTION">Protection</option>
+                <option value="OFF">Off</option>
+            </options>
+        </state>
+    </channel-type>
+    
 </thing:thing-descriptions>

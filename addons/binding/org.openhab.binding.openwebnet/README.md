@@ -44,37 +44,39 @@ The following Things and OpenWebNet `WHOs` are supported:
 ## Installation
 
 The binding it's still *under development* and not part of the official openHAB distribution.
+You must follow carefully the following instructions in order to have the binding properly installed and working.
 
-### Requirements
+### 0. Requirements
 
 This binding requires **openHAB 2.3** or later.
 
-### Install from Marketplace
+### 1a. Install from Marketplace
 
 The easiest way to install this binding is from the [Eclipse IoT Marketplace](https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing).
 
 Make sure that the [marketplace plugin is activated](https://www.openhab.org/docs/configuration/eclipseiotmarket.html), and then install the *OpenWebNet binding* from PaperUI (Add-ons -> Bindings -> search for 'openwebnet' then INSTALL).
-If you cannot find the binding in the search, probably you have an issue with certificates in your Java environment, that must be updated. Follow [this solution](https://community.openhab.org/t/solved-failed-downloading-marketplace-entries-received-fatal-alert-handshake-failure/52045) to add the required certificates to access all bindings on the Marketplace.
+
+If you *cannot find the binding in the search*, probably you have an issue with certificates in your Java environment, that must be updated. Follow [this solution](https://community.openhab.org/t/solved-failed-downloading-marketplace-entries-received-fatal-alert-handshake-failure/52045) to add the required certificates to access all bindings on the Marketplace.
 
 Be aware that you might have to re-install the binding after an openHAB upgrade. This is a limitation of the Eclipse Marketplace plugin and will be changed in future versions of openHAB.
 
-### Install Manually
+### 1b. Install Manually
 
 ***Alternatively*** this binding can be installed manually:
 
 1. Download the [latest released JAR file](https://github.com/mvalla/openhab2-addons/releases)
 
-1. Copy the JAR file to your openHAB2 `addons` folder. On Linux or RaspberryPi is under: 
+1. Copy the JAR file to your openHAB2 `addons` folder. On Linux or RaspberryPi it is under: 
 
       `/usr/share/openhab2/addons/`
 
-### Activate Dependencies
+### 2. Activate Dependencies
 
-After the binding is installed, from Marketplace or manually, some features dependencies must be activated manually:
+After the binding is installed, from Marketplace or manually, some *features dependencies must be activated manually*:
 
 - from [Karaf console](https://www.openhab.org/docs/administration/console.html):
     - `feature:install openhab-transport-serial`
-    - if you are using  **openHAB 2.4.0-xxx** also type:
+    - if you are using  **openHAB 2.4.0-Mxxx** also type:
 	
          `feature:install esh-io-transport-upnp`
 
