@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Scenario Controllers (BTicino xxxx) -->
+	<thing-type id="bus_scenario_controller">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway" />
+		</supported-bridge-type-refs>
+		<label>BUS Scenario Controller 6-buttons</label>
+		<description>A OpenWebNet BUS/SCS Scenario Controller (6 buttons). BTicino models: xxxxxxx</description>
+		
+		<channels>
+			<channel id="button1" typeId="scenarioButton" />
+			<channel id="button2" typeId="scenarioButton" />
+			<channel id="button3" typeId="scenarioButton" />
+			<channel id="button4" typeId="scenarioButton" />
+			<channel id="button5" typeId="scenarioButton" />
+			<channel id="button6" typeId="scenarioButton" />
+		</channels>
+		
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-xxxx</property>
+			<property name="ownDeviceType">---</property>
+		</properties>
+		
+		<config-description>
+			<parameter name="where" type="text">
+				<label>OpenWebNet Device Address (WHERE)</label>
+                <description>Example: A/PL address: A=1 PL=3 --> WHERE=13. On local bus: WHERE=13#4#01</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+		
+	</thing-type>
+</thing:thing-descriptions>
+
