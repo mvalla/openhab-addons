@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
+import org.openwebnet.OpenDeviceType;
 import org.openwebnet.OpenError;
 import org.openwebnet.OpenGateway;
 import org.openwebnet.OpenGatewayBus;
@@ -41,6 +42,7 @@ import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.OpenWebNet;
 import org.openwebnet.message.Automation;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.CENScenario;
 import org.openwebnet.message.EnergyManagement;
 import org.openwebnet.message.GatewayManagement;
 import org.openwebnet.message.Lighting;
@@ -77,6 +79,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Nullable
     public OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
+    private boolean searchingGatewayDevices = false; // devices search is in progress on gateway
+    private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
+    @Nullable
+    private OpenNewDeviceListener deviceDiscoveryListener = null;
 
     public OpenWebNetBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -242,13 +248,51 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      *
      * @param listener to receive device found notifications
      */
-    public void searchDevices(OpenNewDeviceListener listener) {
+    public synchronized void searchDevices(OpenNewDeviceListener listener) {
         logger.debug("==OWN==  BridgeHandler.searchDevices()");
-        if (!gateway.isConnected()) {
-            logger.warn("==OWN==  gateway is NOT connected, cannot search for devices!");
-            return;
+        scanIsActive = true;
+        deviceDiscoveryListener = listener;
+        if (gateway != null) {
+            if (!searchingGatewayDevices) {
+                if (!gateway.isConnected()) {
+                    logger.warn("==OWN==  gateway is NOT connected, cannot search for devices");
+                    return;
+                }
+                searchingGatewayDevices = true;
+                try {
+                    gateway.discoverDevices(listener);
+                } catch (Exception e) {
+                    logger.error("==OWN==  Exception while searching device on gateway {}: {}",
+                            this.getThing().getLabel(), e.getMessage());
+                }
+                searchingGatewayDevices = false;
+            } else {
+                logger.warn("==OWN==  searching devices on gateway {} already activated", this.getThing().getLabel());
+                return;
+            }
+        } else {
+            logger.warn("==OWN== cannot search devices: no gateway associated to this handler");
         }
-        gateway.discoverDevices(listener);
+    }
+
+    /**
+     * NOtifies that the scan has been stopped/aborted by OpenWebNetDeviceDiscoveryService
+     *
+     */
+    public void scanStopped() {
+        scanIsActive = false;
+        deviceDiscoveryListener = null;
+    }
+
+    private void discoverByActivation(BaseOpenMessage baseMsg) {
+        logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
+        if (baseMsg instanceof CENScenario) {
+            CENScenario cenMsg = ((CENScenario) baseMsg);
+            if (cenMsg.isCommand()) { // ignore status/dimension frames for discovery
+                OpenDeviceType type = OpenDeviceType.MULTIFUNCTION_SCENARIO_CONTROL;
+                deviceDiscoveryListener.onNewDevice(cenMsg.getWhere(), type);
+            }
+        }
     }
 
     /**
@@ -286,7 +330,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.trace("==OWN==  RECEIVED <<<<< {}", msg);
         // TODO provide direct methods msg.isACK() and msg.isNACK()
         if (OpenMessage.ACK.equals(msg.getValue()) || OpenMessage.NACK.equals(msg.getValue())) {
-            return;// ignore
+            return; // we ignore ACKS/NACKS
         }
         // GATEWAY MANAGEMENT
         if (msg instanceof GatewayManagement) {
@@ -295,15 +339,20 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
-        // let's try to get the thing associated with this message...
+        // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
-                || baseMsg instanceof EnergyManagement) {
+                || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario) {
             String ownId = ownIdFromWhere(baseMsg.getWhere());
             logger.trace("==OWN==  ownId = {}", ownId);
             ThingUID thingUID = registeredDevices.get(ownId);
             Thing device = getThingByUID(thingUID);
             if (device == null) {
-                logger.debug("==OWN==  ownId={} has NO THING associated, ignoring it", ownId);
+                if (isBusGateway && !searchingGatewayDevices && scanIsActive && deviceDiscoveryListener != null) {
+                    // try device discovery by activation
+                    discoverByActivation(baseMsg);
+                } else {
+                    logger.debug("==OWN==  ownId={} has NO THING associated, ignoring it", ownId);
+                }
             } else {
                 OpenWebNetThingHandler deviceHandler = (OpenWebNetThingHandler) device.getHandler();
                 if (deviceHandler != null) {
@@ -312,10 +361,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     logger.debug("==OWN==  ownId={} has NO HANDLER associated, ignoring it", ownId);
                 }
             }
-        } else { // WHO not supported by the binding
-            logger.debug(
-                    "==OWN==  BridgeHandler ignoring frame {}. This message type (WHO={}) is not supported by the binding",
-                    baseMsg, baseMsg.getWho());
+        } else {
+            logger.debug("==OWN==  BridgeHandler ignoring frame {}. WHO={} is not supported by the binding", baseMsg,
+                    baseMsg.getWho());
         }
 
     }

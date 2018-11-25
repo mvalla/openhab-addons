@@ -67,14 +67,21 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        logger.info("==OWN:DeviceDiscovery== ------ startScan() - SEARCHING for devices...");
+        logger.info("==OWN:DeviceDiscovery== ------ startScan() - SEARCHING for DEVICES on bridge {} ({})...",
+                bridgeHandler.getThing().getLabel(), bridgeUID);
         bridgeHandler.searchDevices(this);
     }
 
     @Override
     protected void stopScan() {
-        logger.debug("==OWN:DeviceDiscovery== stopScan()");
-        // TOOD
+        logger.debug("==OWN:DeviceDiscovery== ------ stopScan()");
+        bridgeHandler.scanStopped();
+    }
+
+    @Override
+    public void abortScan() {
+        logger.debug("==OWN:DeviceDiscovery== ------ abortScan()");
+        bridgeHandler.scanStopped();
     }
 
     @Override
@@ -136,6 +143,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ENERGY_CENTRAL_UNIT;
                     break;
                 }
+                case MULTIFUNCTION_SCENARIO_CONTROL: {
+                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_SCENARIO_CONTROLLER;
+                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO_CONTROLLER;
+                    break;
+                }
                 default:
                     logger.warn(
                             "==OWN:DeviceDiscovery== ***** device type {} is not supported, default to generic device (WHERE={})",
@@ -161,7 +173,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_ON_OFF_SWITCH_2UNITS;
                 thingUID = new ThingUID(thingTypeUID, bridgeUID, ownId.replace('#', 'h'));
-                whereLabel = whereLabel.replace("02#", "00#");
+                whereLabel = whereLabel.replace("02#", "00#"); // replace unit '02' with all aunit '00'
                 logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
                         OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH,
                         OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS);

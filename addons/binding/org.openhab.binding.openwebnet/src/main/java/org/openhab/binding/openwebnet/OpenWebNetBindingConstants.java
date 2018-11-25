@@ -56,6 +56,9 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
             "bus_energy_central_unit");
     public static final String THING_LABEL_BUS_ENERGY_CENTRAL_UNIT = "BUS Energy Central Unit";
+    public static final ThingTypeUID THING_TYPE_BUS_SCENARIO_CONTROLLER = new ThingTypeUID(BINDING_ID,
+            "bus_scenario_controller");
+    public static final String THING_LABEL_BUS_SCENARIO_CONTROLLER = "BUS Scenario Controller";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "on_off_switch");
@@ -76,25 +79,23 @@ public class OpenWebNetBindingConstants {
     // ## Lighting
     public static final Set<ThingTypeUID> LIGHTING_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_ON_OFF_SWITCH,
             THING_TYPE_ON_OFF_SWITCH_2UNITS, THING_TYPE_DIMMER, THING_TYPE_BUS_ON_OFF_SWITCH, THING_TYPE_BUS_DIMMER);
-
     // ## Automation
     public static final Set<ThingTypeUID> AUTOMATION_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_AUTOMATION,
             THING_TYPE_BUS_AUTOMATION);
-
     // ## Thermoregulation
     public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = Sets
             .newHashSet(THING_TYPE_BUS_TEMP_SENSOR, THING_TYPE_BUS_THERMOSTAT, THING_TYPE_BUS_THERMO_CENTRAL_UNIT);
-
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_SUPPORTED_THING_TYPES = Sets
             .newHashSet(THING_TYPE_BUS_ENERGY_CENTRAL_UNIT);
-
+    // ## Scenarios
+    public static final Set<ThingTypeUID> SCENARIOS_SUPPORTED_THING_TYPES = Sets
+            .newHashSet(THING_TYPE_BUS_SCENARIO_CONTROLLER);
     // ## Groups
-    public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Sets.union(
-            Sets.union(LIGHTING_SUPPORTED_THING_TYPES,
-                    Sets.union(AUTOMATION_SUPPORTED_THING_TYPES,
-                            Sets.union(THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_SUPPORTED_THING_TYPES))),
-            Sets.newHashSet(THING_TYPE_DEVICE));
+    public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Sets.union(LIGHTING_SUPPORTED_THING_TYPES,
+            Sets.union(AUTOMATION_SUPPORTED_THING_TYPES,
+                    Sets.union(THERMOREGULATION_SUPPORTED_THING_TYPES, Sets.union(ENERGY_SUPPORTED_THING_TYPES,
+                            Sets.union(SCENARIOS_SUPPORTED_THING_TYPES, Sets.newHashSet(THING_TYPE_DEVICE))))));
 
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DONGLE,
             THING_TYPE_BUS_GATEWAY);
@@ -124,6 +125,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_ALL_THERMO_FUNCTION = "allThermoFunction";
     // energy management
     public static final String CHANNEL_POWER = "power";
+    // scenario button
+    public static final String CHANNEL_SCENARIO_BUTTON = "scenarioButton";
 
     // config properties
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
