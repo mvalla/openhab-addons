@@ -27,11 +27,13 @@ The following Things and OpenWebNet `WHOs` are supported:
 
 | Category   | WHO   | Thing Type IDs                    | Discovery?          | Feedback from BUS?          | Description                                                 | Status           |
 | ---------- | :---: | :-------------------------------: | :----------------: | :----------------: | ----------------------------------------------------------- | ---------------- |
-| Gateway    | `13`  | `bus_gateway`                     | *work in progress*                | n/a  | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N,...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F453AV, MH202. Some connection stability issues/gateway resets reported with MH202  |
+| Gateway Management   | `13`  | `bus_gateway`                     | *work in progress*                | n/a  | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N,...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F453AV, MH202. Some connection stability issues/gateway resets reported with MH202  |
 | Lightning | `1`   | `bus_on_off_switch`, `bus_dimmer` | Yes                | Yes                | BUS switches and dimmers                                                                 | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation | `2`   | `bus_automation`                | Yes | Yes                  | BUS roller shutters, with position feedback and auto-calibration via a *UP >> DOWN >> Position%* cycle                                                                                       | Successfully tested: LN4672M2  |
 | Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691 via 3488 Central Unit; external probes: L/N/NT4577 + 3455 |
+| CEN Commands (Scenario Control) | `15`   | `bus_scenario_control4`   | Yes (by activation) | Yes | Basic and Evolved CEN commands for scenario control | *Testing*: HC/HD/HS/L/N/NT4680 |
 | Energy Management | `18`   | `bus_energy_central_unit`   | Yes | Yes | Energy Management Central Unit | *Testing*: F521 |
+
 
 ### ZigBee (Radio)
 
@@ -135,7 +137,11 @@ Things discovery is supported using PaperUI by activating the discovery ("+") bu
 - IP and passoword (if needed) must be configured
 - Once the gateway is added manually as a Thing, a second discovery request from Inbox will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30-100%) at time of discovery, otherwise they will be discovered as simple On/Off switches
-    - *KNOWN ISSUE*: In some cases dimmers connected to F429 Dali-interface are not discovered with the current method. If they are not discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
+    - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
+
+If a Ligthing or CEN Scenario item cannot be discovered automatically, then, while item search is still active (spinning arrow in Inbox), activate the physical device (for example push a Scenario buton) to make it discoverable by the binding (*discovery by activation*).
+
+If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
 
 ### Wireless (ZigBee) Discovery
 
@@ -197,23 +203,24 @@ Devices support some of the following channels:
 |------------------------|---------------|-------------------------------------------------------------------------|:----------:|
 | switch                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
 | brightness             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
-| shutter                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [SEE NOTE](#notes-on-shutter-position)) |    R/W     |
+| shutter                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
 | temperature            | Number        | The zone currently sensed temperature (°C)                              |     R      |
 | targetTemperature      | Number        | The zone target temperature (°C). It considers `setPoint` but also `activeMode` and `localMode`  |      R     |
 | thermoFunction         | String        | The zone set thermo function: `HEAT`, `COOL` or `GENERIC` (heating + cooling)     |      R     |
 | heatingCoolingMode [*] | String        | The zone mode: `heat`, `cool`, `heatcool`, `off` (same as `thermoFunction`+ `off`, useful for Google Home integration)    |     R      |
-| heating  [*]           | Switch        | `ON` if the zone heating valve is currently active (heating is On)      |     R      |
-| cooling  [*]           | Switch        | `ON` if the zone cooling valve is currently active (cooling is On)      |     R      |
+| heating  [*]           | Switch        | `ON` if the zone heating actuator is currently active (heating is On) [see heating and cooling](#heating-and-cooling)     |     R      |
+| cooling  [*]           | Switch        | `ON` if the zone cooling actuator is currently active (cooling is On) [see heating and cooling](#heating-and-cooling)     |     R      |
 | activeMode             | String        | The zone current active mode (Operation Mode): `AUTO`, `MANUAL`, `PROTECTION`, `OFF`. It considers `setMode` and `localMode` (with priority)     |      R     |
 | localMode              | String        | The zone current local mode, as set on the physical thermostat in the room: `-3/-2/-1/NORMAL/+1/+2/+3`, `PROTECTION`, or `OFF`  |      R     |
 | setpointTemperature    | Number        | The zone setpoint temperature (°C), as set from Central Unit or openHAB |     R/W    |
 | setMode                | String        | The zone set mode, as set from Central Unit or openHAB: `AUTO`, `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
+| scenarioButton         | String        | Pressure of a CEN scenario button: `PRESSED`, `RELEASED`, `PRESSED_EXT`, `RELEASED_EXT`  |     R      |
 | power                  | Number        | The actual active power usage from Energy Management Central Unit       |     R      |
 
 [*] = advanced channel: in PaperUI can be shown from  *Thing config > Channel list > Show More* button. Link to an item by clicking on the channel blue button.
 
-
-### Notes on Shutter position
+### Notes on channels
+#### `shutter` position
 
 For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN.
 It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate shutterRun parameter automatically the first time a Percent command is sent to the shutter: a *UP >> DOWN >> Position%* cycle will be performed automatically.
@@ -223,6 +230,15 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 - before adding/configuring roller shutter Things (or installing a binding update) it is suggested to have all roller shutters `UP`, otherwise the Percent command won’t work until the roller shutter is fully rolled up
 - if the gateways gets disconnected then the binding cannot know anymore where the shutter was: if `shutterRun` is defined (and correct), then just roll the shutter all Up / Down and its position will be estimated again
 - the shutter position is estimated based on UP/DOWN timing and therefore an error of ±2% is normal
+
+#### `heating` and `cooling`
+
+`heating` and `cooling` channels assume that your BTicino heating/cooling actuators are configured as #1 and #2 respectively.
+To ensure the heating actuator is set up correctly for a Thermostat:
+1. open MyHome_Suite
+2. go to Thermostat configuration panel > *Plant settings* 
+3. in *Actuators section* check if the first actuator listed is numbered "1". This will be the actuator which state will be returned by the binding in the `heating` channel
+4. if it is not numbered "1", find the actuator device corresponding to the same Thermo zone of the Thermostat and set the "Device number" property to "1"
 
 ## Google Assistant / Amazon Alexa / Apple HomeKit Integration
 
@@ -267,6 +283,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_thermostat           LR_thermostat    "Living Room Thermostat"  [ where="1"]
       bus_temp_sensor          EXT_tempsensor   "External Temperature"    [ where="500"]
       bus_energy_central_unit  CENTRAL_energy   "Energy Management"       [ where="51" ]
+      bus_scenario_control4    LR_scenario      "Living Room Scenario Control" [ where="20" ]
 }
 ``` 
 
@@ -291,6 +308,7 @@ Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLiv
 Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
 Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>                                                      { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
+String         iLR_scenario                               <network>                                                      { channel="openwebnet:bus_scenario_control4:mybridge:LR_scenario:button1" }
 
 /* Thermostat Setup (Google Home/Alexa require thermostat items to be grouped together) */
 Group   gLR_thermostat               "Living Room Thermostat"                                     [ "Thermostat" ]
@@ -316,7 +334,8 @@ Frame label="Living Room"
           Default item=iLR_light            icon="light" 
           Default item=iLR_switch               
           Default item=iLR_dimmer           icon="light" 
-          Default item=iLR_dalidimmer       icon="light" 
+          Default item=iLR_dalidimmer       icon="light"
+          Selection item=iLR_scenario  valuecolor=[PRESSED="blue", RELEASED="gray",PRESSED_EXT="red", RELEASED_EXT="gray"]
 
           Group item=gLR_thermostat label="Thermostat" icon="heating"
           { 
@@ -337,20 +356,23 @@ Frame label="Living Room"
 ## Disclaimer
 
 - This binding is not associated by any means with BTicino or Legrand companies
+- Contributors of this binding have no liability for any direct, indirect, incidental, special, exemplary, or consequential damage to things or people caused by using the binding connected to a real BTicino/Legrand (OpenWebNet) plant/system and its physical devices. The final user is the only responsible for using this binding in a real environment. See Articles 5. and 6. of [Eclipse Public Licence 1.0](https://www.eclipse.org/legal/epl-v10.html) under which this binding software is distributed
 - The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [MyOpen Community website - https://www.myopen-legrandgroup.com/developers](https://www.myopen-legrandgroup.com/developers/)
 - OpenWebNet, MyHOME and MyHOME_Play are registered trademarks by BTicino/Legrand
 - This binding uses `openwebnet-lib 0.9.x`, an OpenWebNet Java lib partly based on [openwebnet/rx-openwebnet](https://github.com/openwebnet/rx-openwebnet) client library by @niqdev, to support:
-  - gateways and OWN frames for ZigBee
-  - frame parsing
-  - monitoring events from BUS
-
+    - gateways and OWN frames for ZigBee
+    - frame parsing
+    - monitoring events from BUS
   The lib also uses few modified classes from the openHAB 1.x BTicino binding for socket handling and priority queues.
 
 ## Changelog
 
 **v2.4.0-b9** - **NOT YET RELEASED**
 
-- [FIX #11] **Initial support for `WHO=18` Energy Management** on BUS with discovery. Currently supported: Energy Management Central Unit (F521) power measures.
+- **[FIX #6] Initial support for `WHO=15` Basic and Evolved CEN** for OH2 rules activation from Scenario Control devices (4-buttons Scenario Control: HC/HD/HS/L/N/NT4680)
+- **[FIX #11] Initial support for `WHO=18` Energy Management** on BUS, with discovery. Currently supported: Energy Management Central Unit (F521) power measures
+- [FIX #29] Added support for command translation (1000# ) for Automation
+- [FIX #27] Device discovery by activation for Lighting and CEN: if a BUS physical device is not found in Inbox during discovery, activate the device to discover it
 
 **v2.4.0-b8** - 11/11/2018
 
@@ -404,5 +426,5 @@ For a list of current open issues / features requests see [GitHub repo](https://
 
 ## Special thanks
 
-Special thanks for helping on testing this binding go to: [@m4rk](https://community.openhab.org/u/m4rk/), [@enrico.mcc](https://community.openhab.org/u/enrico.mcc), [@bastler](https://community.openhab.org/u/bastler), [@k0nti](https://community.openhab.org/u/k0nti/), [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/), [@gozilla01](https://community.openhab.org/u/gozilla01) and many others at the fantastic openHAB community!
+Special thanks for helping on testing this binding go to: [@m4rk](https://community.openhab.org/u/m4rk/), [@enrico.mcc](https://community.openhab.org/u/enrico.mcc), [@bastler](https://community.openhab.org/u/bastler), [@k0nti](https://community.openhab.org/u/k0nti/), [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/), [@gozilla01](https://community.openhab.org/u/gozilla01), [llegovich](https://community.openhab.org/u/llegovich) and many others at the fantastic openHAB community!
 

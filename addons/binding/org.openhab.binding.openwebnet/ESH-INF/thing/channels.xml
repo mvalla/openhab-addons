@@ -193,16 +193,17 @@
         <state readOnly="true" pattern="%.1f W"></state>
     </channel-type>
     
+    <!-- Scenarios channels -->
     <channel-type id="scenarioButton">
         <item-type>String</item-type>
         <label>Scenario Button</label>
         <description>Scenario button for CEN/CEN+ scenarios</description>
-        <state>
+        <state readOnly="true">
             <options>
-                <option value="pressure">pressure</option>
-                <option value="release">release</option>
-                <option value="pressure_ext">pressure_ext</option>
-                <option value="release_ext">release_ext</option>
+                <option value="PRESSED">pressed</option>
+                <option value="RELEASED">released</option>
+                <option value="PRESSED_EXT">pressed_ext</option>
+                <option value="RELEASED_EXT">released_ext</option>
             </options>
         </state>
     </channel-type>

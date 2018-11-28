@@ -249,29 +249,36 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param listener to receive device found notifications
      */
     public synchronized void searchDevices(OpenNewDeviceListener listener) {
-        logger.debug("==OWN==  BridgeHandler.searchDevices()");
+        logger.debug("==OWN==  -------- BridgeHandler.searchDevices()");
         scanIsActive = true;
+        logger.debug("==OWN== -------- scanIsActive={}", scanIsActive);
         deviceDiscoveryListener = listener;
         if (gateway != null) {
             if (!searchingGatewayDevices) {
                 if (!gateway.isConnected()) {
-                    logger.warn("==OWN==  gateway is NOT connected, cannot search for devices");
+                    logger.warn("==OWN== -------- Gateway is NOT connected, cannot search for devices");
                     return;
                 }
                 searchingGatewayDevices = true;
+                logger.info("==OWN== -------- STARTED active search for devices on gateway '{}'",
+                        this.getThing().getLabel());
                 try {
                     gateway.discoverDevices(listener);
                 } catch (Exception e) {
-                    logger.error("==OWN==  Exception while searching device on gateway {}: {}",
+                    logger.error("==OWN== -------- Exception while searching device on gateway {}: {}",
                             this.getThing().getLabel(), e.getMessage());
                 }
                 searchingGatewayDevices = false;
+                logger.info("==OWN== -------- FINISHED active search for devices on gateway '{}'",
+                        this.getThing().getLabel());
+
             } else {
-                logger.warn("==OWN==  searching devices on gateway {} already activated", this.getThing().getLabel());
+                logger.warn("==OWN== -------- Searching devices on gateway {} already activated",
+                        this.getThing().getLabel());
                 return;
             }
         } else {
-            logger.warn("==OWN== cannot search devices: no gateway associated to this handler");
+            logger.warn("==OWN== -------- Cannot search devices: no gateway associated to this handler");
         }
     }
 
@@ -282,15 +289,24 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void scanStopped() {
         scanIsActive = false;
         deviceDiscoveryListener = null;
+        logger.debug("==OWN== -------- scanIsActive={}", scanIsActive);
     }
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
-        if (baseMsg instanceof CENScenario) {
-            CENScenario cenMsg = ((CENScenario) baseMsg);
-            if (cenMsg.isCommand()) { // ignore status/dimension frames for discovery
+        if (baseMsg instanceof Lighting) {
+            Lighting lmsg = ((Lighting) baseMsg);
+            if (baseMsg.isCommand()) { // ignore status/dimension frames for discovery
+                OpenDeviceType type = OpenDeviceType.SCS_ON_OFF_SWITCH;
+                if (lmsg.getWhat() != Lighting.WHAT.OFF && lmsg.getWhat() != Lighting.WHAT.ON) {
+                    type = OpenDeviceType.SCS_DIMMER_SWITCH;
+                }
+                deviceDiscoveryListener.onNewDevice(lmsg.getWhere(), type);
+            }
+        } else if (baseMsg instanceof CENScenario) {
+            if (baseMsg.isCommand()) { // ignore status/dimension frames for discovery
                 OpenDeviceType type = OpenDeviceType.MULTIFUNCTION_SCENARIO_CONTROL;
-                deviceDiscoveryListener.onNewDevice(cenMsg.getWhere(), type);
+                deviceDiscoveryListener.onNewDevice(baseMsg.getWhere(), type);
             }
         }
     }
