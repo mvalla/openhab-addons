@@ -135,12 +135,12 @@ Things discovery is supported using PaperUI by activating the discovery ("+") bu
 - Gateway discovery using UPnP is *under development* and will be available only for IP gateways supporting UPnP
 - For the moment the OpenWebNet IP gateway should be added manually from PaperUI or in the .things file (see [Configuring BUS/SCS Gateway](#configuring-bus-scs-gateway) below)
 - IP and passoword (if needed) must be configured
-- Once the gateway is added manually as a Thing, a second discovery request from Inbox will discover BUS devices
-- BUS/SCS Dimmers must be ON and dimmed (30-100%) at time of discovery, otherwise they will be discovered as simple On/Off switches
+- Once the gateway is added manually as a Thing, a second Scan request from Inbox will discover BUS devices
+- BUS/SCS Dimmers must be ON and dimmed (30-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
 
-If a Ligthing or CEN Scenario item cannot be discovered automatically, then, while item search is still active (spinning arrow in Inbox), activate the physical device (for example push a Scenario buton) to make it discoverable by the binding (*discovery by activation*).
-
+If a Ligthing or CEN Scenario item cannot be discovered automatically, while a Scan is still active (spinning arrow in Inbox), activate the physical device (for example push a Scenario button, or dim the dimmer) to have it discovered by the binding (*discovery by activation*).
+ 
 If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
 
 ### Wireless (ZigBee) Discovery
@@ -201,21 +201,21 @@ Devices support some of the following channels:
 
 | Channel Type ID        | Item Type     | Description                                                             | Read/Write |
 |------------------------|---------------|-------------------------------------------------------------------------|:----------:|
-| switch                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
-| brightness             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
-| shutter                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
-| temperature            | Number        | The zone currently sensed temperature (°C)                              |     R      |
-| targetTemperature      | Number        | The zone target temperature (°C). It considers `setPoint` but also `activeMode` and `localMode`  |      R     |
-| thermoFunction         | String        | The zone set thermo function: `HEAT`, `COOL` or `GENERIC` (heating + cooling)     |      R     |
-| heatingCoolingMode [*] | String        | The zone mode: `heat`, `cool`, `heatcool`, `off` (same as `thermoFunction`+ `off`, useful for Google Home integration)    |     R      |
-| heating  [*]           | Switch        | `ON` if the zone heating actuator is currently active (heating is On) [see heating and cooling](#heating-and-cooling)     |     R      |
-| cooling  [*]           | Switch        | `ON` if the zone cooling actuator is currently active (cooling is On) [see heating and cooling](#heating-and-cooling)     |     R      |
-| activeMode             | String        | The zone current active mode (Operation Mode): `AUTO`, `MANUAL`, `PROTECTION`, `OFF`. It considers `setMode` and `localMode` (with priority)     |      R     |
-| localMode              | String        | The zone current local mode, as set on the physical thermostat in the room: `-3/-2/-1/NORMAL/+1/+2/+3`, `PROTECTION`, or `OFF`  |      R     |
-| setpointTemperature    | Number        | The zone setpoint temperature (°C), as set from Central Unit or openHAB |     R/W    |
-| setMode                | String        | The zone set mode, as set from Central Unit or openHAB: `AUTO`, `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
-| scenarioButton         | String        | Pressure of a CEN scenario button: `PRESSED`, `RELEASED`, `PRESSED_EXT`, `RELEASED_EXT`  |     R      |
-| power                  | Number        | The actual active power usage from Energy Management Central Unit       |     R      |
+| `switch`              | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
+| `brightness`             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
+| `shutter`                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+| `temperature`            | Number        | The zone currently sensed temperature (°C)                              |     R      |
+| `targetTemperature`      | Number        | The zone target temperature (°C). It considers `setPoint` but also `activeMode` and `localMode`  |      R     |
+| `thermoFunction`         | String        | The zone set thermo function: `HEAT`, `COOL` or `GENERIC` (heating + cooling)     |      R     |
+| `heatingCoolingMode` [*] | String        | The zone mode: `heat`, `cool`, `heatcool`, `off` (same as `thermoFunction`+ `off`, useful for Google Home integration)    |     R      |
+| `heating`  [*]           | Switch        | `ON` if the zone heating actuator is currently active (heating is On) [see heating and cooling](#heating-and-cooling)     |     R      |
+| `cooling`  [*]           | Switch        | `ON` if the zone cooling actuator is currently active (cooling is On) [see heating and cooling](#heating-and-cooling)     |     R      |
+| `activeMode`             | String        | The zone current active mode (Operation Mode): `AUTO`, `MANUAL`, `PROTECTION`, `OFF`. It considers `setMode` and `localMode` (with priority)     |      R     |
+| `localMode`              | String        | The zone current local mode, as set on the physical thermostat in the room: `-3/-2/-1/NORMAL/+1/+2/+3`, `PROTECTION`, or `OFF`  |      R     |
+| `setpointTemperature`    | Number        | The zone setpoint temperature (°C), as set from Central Unit or openHAB |     R/W    |
+| `setMode`                | String        | The zone set mode, as set from Central Unit or openHAB: `AUTO`, `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
+| `scenarioButton`         | String        | Pressure of a CEN scenario button: `PRESSED`, `RELEASED`, `PRESSED_EXT`, `RELEASED_EXT`  |     R      |
+| `power`                  | Number        | The actual active power usage from Energy Management Central Unit       |     R      |
 
 [*] = advanced channel: in PaperUI can be shown from  *Thing config > Channel list > Show More* button. Link to an item by clicking on the channel blue button.
 
@@ -283,7 +283,8 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_thermostat           LR_thermostat    "Living Room Thermostat"  [ where="1"]
       bus_temp_sensor          EXT_tempsensor   "External Temperature"    [ where="500"]
       bus_energy_central_unit  CENTRAL_energy   "Energy Management"       [ where="51" ]
-      bus_scenario_control4    LR_scenario      "Living Room Scenario Control" [ where="20" ]
+      bus_scenario_control4    LR_scenario      "Living Room Scenario Control-4" [ where="20" ]
+      
 }
 ``` 
 
@@ -308,7 +309,7 @@ Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLiv
 Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
 Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>                                                      { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
-String         iLR_scenario                               <network>                                                      { channel="openwebnet:bus_scenario_control4:mybridge:LR_scenario:button1" }
+String         iLR_scenario_btn1                          <network>                                                      { channel="openwebnet:bus_scenario_control4:mybridge:LR_scenario:button1" }
 
 /* Thermostat Setup (Google Home/Alexa require thermostat items to be grouped together) */
 Group   gLR_thermostat               "Living Room Thermostat"                                     [ "Thermostat" ]
@@ -335,7 +336,7 @@ Frame label="Living Room"
           Default item=iLR_switch               
           Default item=iLR_dimmer           icon="light" 
           Default item=iLR_dalidimmer       icon="light"
-          Selection item=iLR_scenario  valuecolor=[PRESSED="blue", RELEASED="gray",PRESSED_EXT="red", RELEASED_EXT="gray"]
+          Selection item=iLR_scenario_btn1  valuecolor=[PRESSED="blue", RELEASED="gray",PRESSED_EXT="red", RELEASED_EXT="gray"]
 
           Group item=gLR_thermostat label="Thermostat" icon="heating"
           { 
@@ -369,10 +370,10 @@ Frame label="Living Room"
 
 **v2.4.0-b9** - **NOT YET RELEASED**
 
-- **[FIX #6] Initial support for `WHO=15` Basic and Evolved CEN** for OH2 rules activation from Scenario Control devices (4-buttons Scenario Control: HC/HD/HS/L/N/NT4680)
+- **[FIX #6] Initial support for `WHO=15` Basic and Evolved CEN** for OH2 rules activation from Scenario Control devices (4-buttons Scenario Control: HC/HD/HS/L/N/NT4680). Use discovery by activation to discover CEN devices.
 - **[FIX #11] Initial support for `WHO=18` Energy Management** on BUS, with discovery. Currently supported: Energy Management Central Unit (F521) power measures
 - [FIX #29] Added support for command translation (1000# ) for Automation
-- [FIX #27] Device discovery by activation for Lighting and CEN: if a BUS physical device is not found in Inbox during discovery, activate the device to discover it
+- [FIX #27] Device discovery by activation for Lighting and CEN: if a BUS physical device is not found in Inbox during a Scan, activate the device to discover it
 
 **v2.4.0-b8** - 11/11/2018
 
