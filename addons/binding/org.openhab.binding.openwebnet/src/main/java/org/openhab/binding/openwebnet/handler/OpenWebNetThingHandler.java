@@ -89,6 +89,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         }
         if (command instanceof RefreshType) {
             logger.debug("==OWN:ThingHandler== Refreshing channel {}", channel);
+            // TODO move to a refreshChannel() method that subclasses can implement to disable setting the thing offline
             requestChannelState(channel);
             // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT
             scheduler.schedule(() -> {

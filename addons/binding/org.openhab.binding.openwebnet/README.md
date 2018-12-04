@@ -139,7 +139,7 @@ Things discovery is supported using PaperUI by activating the discovery ("+") bu
 - BUS/SCS Dimmers must be ON and dimmed (30-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
 
-If a Ligthing or CEN Scenario item cannot be discovered automatically, while a Scan is still active (spinning arrow in Inbox), activate the physical device (for example push a Scenario button, or dim the dimmer) to have it discovered by the binding (*discovery by activation*).
+If a Ligthing or CEN Scenario item cannot be discovered automatically, start a new Scan, wait 15-20sec and while the Scan is still active (spinning arrow in Inbox), activate the physical device - for example push a Scenario button, or dim the dimmer - to have it discovered by the binding (*discovery by activation*).
  
 If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
 

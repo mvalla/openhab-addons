@@ -9,7 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
-		<label>BUS Temperature Sensor</label>
+		<label>Temperature Sensor</label>
 		<description>A OpenWebNet BUS/SCS temperature sensor. BTicino models: xxx/yyyy/etc.</description>
 		
 		<channels>

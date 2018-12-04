@@ -9,7 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
-		<label>BUS Energy Management Central Unit</label>
+		<label>Energy Management Central Unit</label>
 		<description>A OpenWebNet BUS/SCS Energy Management Central Unit. BTicino models: F521</description>
 		
 		<channels>

@@ -16,9 +16,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openwebnet.message.BaseOpenMessage;
@@ -72,9 +76,9 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
-        logger.debug("==OWN:ScenarioHandler== requestChannelState() thingUID={} channel={}", thing.getUID(),
-                channel.getId());
-        bridgeHandler.gateway.send(CENScenario.requestStatus(toWhere(channel)));
+        // logger.debug("==OWN:ScenarioHandler== requestChannelState() thingUID={} channel={}", thing.getUID(),
+        // channel.getId());
+        // bridgeHandler.gateway.send(CENScenario.requestStatus(toWhere(channel)));
     }
 
     @Override
@@ -94,19 +98,33 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         super.handleMessage(msg);
         logger.debug("==OWN:ScenarioHandler== handleMessage() for thing: {}", thing.getUID());
         if (msg.isCommand()) {
-            updateButton((CENScenario) msg);
+            updateChannel((CENScenario) msg);
         } else {
             logger.debug("==OWN:ScenarioHandler== handleMessage() Ignoring unsupported DIM for thing {}. Frame={}",
                     getThing().getUID(), msg);
         }
     }
 
-    private void updateButton(CENScenario cenMsg) {
-        logger.debug("==OWN:ScenarioHandler== updateButton() for thing: {}", thing.getUID());
+    private void updateChannel(CENScenario cenMsg) {
+        logger.debug("==OWN:ScenarioHandler== updateChannel() for thing: {}", thing.getUID());
         int buttonNumber = cenMsg.getButtonNumber();
-        if (buttonNumber < 1 || buttonNumber > 4) {
-            logger.warn("==OWN:ScenarioHandler== buttons 1-4 are supported for thing {}", thing.getUID());
+        if (buttonNumber < 0 || buttonNumber > 31) {
+            logger.warn("==OWN:ScenarioHandler== invalid CEN button number: {}. Ignoring message {}", buttonNumber,
+                    cenMsg);
             return;
+        }
+        Channel ch = thing.getChannel(CHANNEL_SCENARIO_BUTTON + buttonNumber);
+        if (ch == null) {
+            logger.info("==OWN:ScenarioHandler== ADDING TO THING {} NEW CHANNEL: {}", getThing().getUID(),
+                    CHANNEL_SCENARIO_BUTTON + buttonNumber);
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID("openwebnet", "scenarioButton");
+            ThingBuilder thingBuilder = editThing();
+            Channel channel = ChannelBuilder
+                    .create(new ChannelUID(getThing().getUID(), CHANNEL_SCENARIO_BUTTON + buttonNumber), "String")
+                    .withType(channelTypeUID).withLabel("Button " + buttonNumber).build();
+            thingBuilder.withChannel(channel);
+            // thingBuilder.withLabel(thing.getLabel()); //TODO needed???
+            updateThing(thingBuilder.build());
         }
 
         String channel = CHANNEL_SCENARIO_BUTTON + buttonNumber;

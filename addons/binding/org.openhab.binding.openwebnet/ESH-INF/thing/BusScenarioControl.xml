@@ -4,16 +4,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for BUS Scenario Control 4-buttons (BTicino HC/HD/HS/L/N/NT4680) -->
-	<thing-type id="bus_scenario_control4">
+	<!-- Thing for BUS Scenario Control (BTicino HC/HD/HS/L/N/NT4680) -->
+	<thing-type id="bus_scenario_control">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
-		<label>BUS Scenario Control-4 (4-buttons)</label>
-		<description>A OpenWebNet BUS/SCS Scenario Control-4 (4 buttons). BTicino models: HC/HD/HS/L/N/NT4680</description>
+		<label>Scenario Control</label>
+		<description>A OpenWebNet BUS/SCS Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
 
-		<channels>
-			<channel id="button1" typeId="scenarioButton">
+		<!-- <channels>
+		 <channel id="button1" typeId="scenarioButton">
 				<label>Button 1</label>
 			</channel>
 			<channel id="button2" typeId="scenarioButton">
@@ -24,8 +24,9 @@
 			</channel>
 			<channel id="button4" typeId="scenarioButton">
 				<label>Button 4</label>
-			</channel>
-		</channels>
+			</channel> 
+			 
+		</channels>  -->
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>

@@ -9,7 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
-		<label>BUS Automation</label>
+		<label>Automation</label>
 		<description>A OpenWebNet BUS/SCS automation device to control roller shutters, blinds, etc. BTicino models: xxx/yyyy/etc.</description>
 		<channels>
 			<channel id="shutter" typeId="shutter" />

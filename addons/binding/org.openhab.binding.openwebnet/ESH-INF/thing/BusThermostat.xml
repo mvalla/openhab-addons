@@ -9,7 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
-		<label>BUS Thermostat</label>
+		<label>Thermostat</label>
 		<description>A OpenWebNet BUS/SCS zone thermostat. BTicino models: xxx/yyyy/etc.</description>
 		
 		<channels>

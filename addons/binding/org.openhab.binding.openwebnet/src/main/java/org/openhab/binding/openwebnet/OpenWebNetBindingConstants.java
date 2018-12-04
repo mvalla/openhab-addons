@@ -41,24 +41,26 @@ public class OpenWebNetBindingConstants {
     // other thing types
     // BUS
     public static final ThingTypeUID THING_TYPE_BUS_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "bus_on_off_switch");
-    public static final String THING_LABEL_BUS_ON_OFF_SWITCH = "BUS Switch";
+    public static final String THING_LABEL_BUS_ON_OFF_SWITCH = "Switch";
     public static final ThingTypeUID THING_TYPE_BUS_DIMMER = new ThingTypeUID(BINDING_ID, "bus_dimmer");
-    public static final String THING_LABEL_BUS_DIMMER = "BUS Dimmer";
+    public static final String THING_LABEL_BUS_DIMMER = "Dimmer";
     public static final ThingTypeUID THING_TYPE_BUS_AUTOMATION = new ThingTypeUID(BINDING_ID, "bus_automation");
-    public static final String THING_LABEL_BUS_AUTOMATION = "BUS Automation";
+    public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
     public static final ThingTypeUID THING_TYPE_BUS_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "bus_temp_sensor");
-    public static final String THING_LABEL_BUS_TEMP_SENSOR = "BUS Temperature Sensor";
+    public static final String THING_LABEL_BUS_TEMP_SENSOR = "Temperature Sensor";
     public static final ThingTypeUID THING_TYPE_BUS_THERMOSTAT = new ThingTypeUID(BINDING_ID, "bus_thermostat");
-    public static final String THING_LABEL_BUS_THERMOSTAT = "BUS Thermostat";
+    public static final String THING_LABEL_BUS_THERMOSTAT = "Thermostat";
     public static final ThingTypeUID THING_TYPE_BUS_THERMO_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
             "bus_thermo_central_unit");
-    public static final String THING_LABEL_BUS_THERMO_CENTRAL_UNIT = "BUS Thermo Central Unit";
+    public static final String THING_LABEL_BUS_THERMO_CENTRAL_UNIT = "Thermo Central Unit";
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
             "bus_energy_central_unit");
-    public static final String THING_LABEL_BUS_ENERGY_CENTRAL_UNIT = "BUS Energy Central Unit";
-    public static final ThingTypeUID THING_TYPE_BUS_SCENARIO_CONTROL4 = new ThingTypeUID(BINDING_ID,
-            "bus_scenario_control4");
-    public static final String THING_LABEL_BUS_SCENARIO_CONTROL4 = "BUS Scenario Control-4";
+    public static final String THING_LABEL_BUS_ENERGY_CENTRAL_UNIT = "Energy Central Unit";
+    public static final ThingTypeUID THING_TYPE_BUS_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
+            "bus_scenario_control");
+    public static final String THING_LABEL_BUS_SCENARIO_CONTROL = "Scenario Control";
+    public static final ThingTypeUID THING_TYPE_BUS_DRY_CONTACT_IR = new ThingTypeUID(BINDING_ID, "bus_dry_contact_ir");
+    public static final String THING_LABEL_BUS_DRY_CONTACT_IR = "Dry Contact/IR Sensor";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "on_off_switch");
@@ -69,10 +71,7 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_DIMMER = "ZigBee Dimmer";
     public static final ThingTypeUID THING_TYPE_AUTOMATION = new ThingTypeUID(BINDING_ID, "automation");
     public static final String THING_LABEL_AUTOMATION = "ZigBee Automation";
-    // public static final ThingTypeUID THING_TYPE_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "tempsensor");
-    // public static final String THING_LABEL_TEMP_SENSOR = "Temperature Sensor";
-    // public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
-    // public static final String THING_LABEL_THERMOSTAT = "Thermostat";
+
     // TODO transform these constants in enum+hashmaps
 
     // #SUPPORTED THINGS SETS
@@ -88,9 +87,9 @@ public class OpenWebNetBindingConstants {
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_SUPPORTED_THING_TYPES = Sets
             .newHashSet(THING_TYPE_BUS_ENERGY_CENTRAL_UNIT);
-    // ## CEN Scenario
+    // ## CEN Scenario = Dry Contact/IR
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Sets
-            .newHashSet(THING_TYPE_BUS_SCENARIO_CONTROL4);
+            .newHashSet(THING_TYPE_BUS_SCENARIO_CONTROL, THING_TYPE_BUS_DRY_CONTACT_IR);
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Sets.union(LIGHTING_SUPPORTED_THING_TYPES,
             Sets.union(AUTOMATION_SUPPORTED_THING_TYPES,

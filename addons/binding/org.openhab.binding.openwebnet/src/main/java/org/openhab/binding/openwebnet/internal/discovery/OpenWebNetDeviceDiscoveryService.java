@@ -144,8 +144,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                     break;
                 }
                 case MULTIFUNCTION_SCENARIO_CONTROL: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_SCENARIO_CONTROL4;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO_CONTROL4;
+                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_SCENARIO_CONTROL;
+                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO_CONTROL;
                     break;
                 }
                 default:

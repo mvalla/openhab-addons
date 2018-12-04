@@ -42,6 +42,7 @@ import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.OpenWebNet;
 import org.openwebnet.message.Automation;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.CENPlusScenario;
 import org.openwebnet.message.CENScenario;
 import org.openwebnet.message.EnergyManagement;
 import org.openwebnet.message.GatewayManagement;
@@ -296,17 +297,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
         if (baseMsg instanceof Lighting) {
             Lighting lmsg = ((Lighting) baseMsg);
-            if (baseMsg.isCommand()) { // ignore status/dimension frames for discovery
-                OpenDeviceType type = OpenDeviceType.SCS_ON_OFF_SWITCH;
-                if (lmsg.getWhat() != Lighting.WHAT.OFF && lmsg.getWhat() != Lighting.WHAT.ON) {
-                    type = OpenDeviceType.SCS_DIMMER_SWITCH;
-                }
+            OpenDeviceType type = lmsg.detectDeviceType();
+            if (type != null) {
                 deviceDiscoveryListener.onNewDevice(lmsg.getWhere(), type);
             }
         } else if (baseMsg instanceof CENScenario) {
-            if (baseMsg.isCommand()) { // ignore status/dimension frames for discovery
-                OpenDeviceType type = OpenDeviceType.MULTIFUNCTION_SCENARIO_CONTROL;
-                deviceDiscoveryListener.onNewDevice(baseMsg.getWhere(), type);
+            CENScenario cenmsg = ((CENScenario) baseMsg);
+            OpenDeviceType type = cenmsg.detectDeviceType();
+            if (type != null) {
+                deviceDiscoveryListener.onNewDevice(cenmsg.getWhere(), type);
             }
         }
     }
@@ -357,13 +356,14 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
-                || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario) {
+                || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario
+                || baseMsg instanceof CENPlusScenario) {
             String ownId = ownIdFromWhere(baseMsg.getWhere());
             logger.trace("==OWN==  ownId = {}", ownId);
             ThingUID thingUID = registeredDevices.get(ownId);
             Thing device = getThingByUID(thingUID);
             if (device == null) {
-                if (isBusGateway && !searchingGatewayDevices && scanIsActive && deviceDiscoveryListener != null) {
+                if (isBusGateway && deviceDiscoveryListener != null && !searchingGatewayDevices && scanIsActive) {
                     // try device discovery by activation
                     discoverByActivation(baseMsg);
                 } else {
