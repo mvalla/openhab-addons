@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- Thing for BUS Dry Contact and IR sensors  -->
+	<thing-type id="bus_dry_contact_ir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway" />
+		</supported-bridge-type-refs>
+
+		<label>Dry Contact / IR Sensor</label>
+		<description>A OpenWebNet BUS/SCS Dry Contact interface or IR Sensor. BTicino models: 3477/F428/IR 4610-4611-4640 etc.</description>
+		
+		<channels>
+			<channel id="switch" typeId="switch" />
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-3477/F428/IR 4610-4611-4640 etc.</property>
+			<property name="ownDeviceType">2510</property>
+		</properties>
+				
+		<config-description>
+			<parameter name="where" type="text">
+				<label>OpenWebNet Device Address (WHERE)</label>
+				<description>For automation dry contacts: 3 [1-201], example: WHERE=399. For alarm dry contacts and IR sensors: 3 Z[1-9] N[1-9], example: WHERE=345
+				</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+		
+	</thing-type>
+</thing:thing-descriptions>
