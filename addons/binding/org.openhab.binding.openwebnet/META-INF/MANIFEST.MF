@@ -37,7 +37,7 @@ Export-Package: org.openhab.binding.openwebnet,
  org.openhab.binding.openwebnet.handler
 Service-Component: OSGI-INF/*.xml
 COMMENT-INFO: COMMENT the following line to release, UNCOMMENT for development
-Require-Bundle: openwebnet-lib
+COMMENT: Require-Bundle: openwebnet-lib
 
 
 

@@ -208,4 +208,20 @@
         </state>
     </channel-type>
     
+    <channel-type id="dryContactIR">
+        <item-type>Switch</item-type>
+        <label>Dry Contact/IR Sensor</label>
+        <description>Indicates if a Dry Contact interface is ON or a IR Sensor has detected movement</description>
+        <category></category>
+        
+        <state readOnly="true">
+        <!--    <options>
+                <option value="ON">ON - IR Detection</option>
+                <option value="OFF">OFF- IR No Detection</option>
+            </options>
+        -->
+        </state>
+        
+    </channel-type>
+    
 </thing:thing-descriptions>

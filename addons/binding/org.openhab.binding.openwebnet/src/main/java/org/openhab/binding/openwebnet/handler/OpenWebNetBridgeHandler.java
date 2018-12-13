@@ -295,17 +295,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
-        if (baseMsg instanceof Lighting) {
-            Lighting lmsg = ((Lighting) baseMsg);
-            OpenDeviceType type = lmsg.detectDeviceType();
+        if (baseMsg instanceof Lighting || baseMsg instanceof CENScenario || baseMsg instanceof CENPlusScenario) {
+            OpenDeviceType type = baseMsg.detectDeviceType();
             if (type != null) {
-                deviceDiscoveryListener.onNewDevice(lmsg.getWhere(), type);
-            }
-        } else if (baseMsg instanceof CENScenario) {
-            CENScenario cenmsg = ((CENScenario) baseMsg);
-            OpenDeviceType type = cenmsg.detectDeviceType();
-            if (type != null) {
-                deviceDiscoveryListener.onNewDevice(cenmsg.getWhere(), type);
+                deviceDiscoveryListener.onNewDevice(baseMsg.getWhere(), type);
             }
         }
     }

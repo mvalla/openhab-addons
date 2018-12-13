@@ -148,6 +148,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO_CONTROL;
                     break;
                 }
+                case SCS_DRY_CONTACT_IR: {
+                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DRY_CONTACT_IR;
+                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DRY_CONTACT_IR;
+                    break;
+                }
                 default:
                     logger.warn(
                             "==OWN:DeviceDiscovery== ***** device type {} is not supported, default to generic device (WHERE={})",

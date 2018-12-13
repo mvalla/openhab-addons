@@ -87,7 +87,7 @@ public class OpenWebNetBindingConstants {
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_SUPPORTED_THING_TYPES = Sets
             .newHashSet(THING_TYPE_BUS_ENERGY_CENTRAL_UNIT);
-    // ## CEN Scenario = Dry Contact/IR
+    // ## CEN Scenario & Dry Contact/IR
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Sets
             .newHashSet(THING_TYPE_BUS_SCENARIO_CONTROL, THING_TYPE_BUS_DRY_CONTACT_IR);
     // ## Groups
@@ -102,11 +102,13 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> ALL_SUPPORTED_THING_TYPES = Sets.union(DEVICE_SUPPORTED_THING_TYPES,
             BRIDGE_SUPPORTED_THING_TYPES);
 
-    // List of all Channel ids
+    // LIST OF ALL CHANNEL IDs
+    // lighting
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_01 = "switch_01";
     public static final String CHANNEL_SWITCH_02 = "switch_02";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
+    // automation
     public static final String CHANNEL_SHUTTER = "shutter";
     // thermo
     public static final String CHANNEL_TEMPERATURE = "temperature";
@@ -124,8 +126,9 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_ALL_THERMO_FUNCTION = "allThermoFunction";
     // energy management
     public static final String CHANNEL_POWER = "power";
-    // scenario button
+    // scenario
     public static final String CHANNEL_SCENARIO_BUTTON = "button";
+    public static final String CHANNEL_DRY_CONTACT_IR = "dryContactIR";
 
     // config properties
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";

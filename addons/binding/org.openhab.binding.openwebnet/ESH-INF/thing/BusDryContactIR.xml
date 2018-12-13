@@ -11,11 +11,11 @@
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
 
-		<label>Dry Contact / IR Sensor</label>
-		<description>A OpenWebNet BUS/SCS Dry Contact interface or IR Sensor. BTicino models: 3477/F428/IR 4610-4611-4640 etc.</description>
+		<label>Dry Contact/IR Sensor</label>
+		<description>A OpenWebNet BUS/SCS Dry Contact interface or IR Sensor. BTicino models: 3477/F428, IR 4610-4611-4640 etc.</description>
 		
 		<channels>
-			<channel id="switch" typeId="switch" />
+			<channel id="dryContactIR" typeId="dryContactIR" />
 		</channels>
 
 		<properties>
@@ -27,7 +27,7 @@
 		<config-description>
 			<parameter name="where" type="text">
 				<label>OpenWebNet Device Address (WHERE)</label>
-				<description>For automation dry contacts: 3 [1-201], example: WHERE=399. For alarm dry contacts and IR sensors: 3 Z[1-9] N[1-9], example: WHERE=345
+				<description>For automation dry contacts: 3 [1-201], example: WHERE=360. For alarm dry contacts and IR sensors: 3 Z[1-9] N[1-9], example: WHERE=345 (zone=4, N=5)
 				</description>
 				<required>true</required>
 			</parameter>

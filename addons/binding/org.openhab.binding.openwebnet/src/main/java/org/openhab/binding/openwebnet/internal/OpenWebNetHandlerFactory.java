@@ -75,9 +75,8 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetEnergyHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("==OWN:HandlerFactory== creating NEW ENERGY Handler");
             return new OpenWebNetEnergyHandler(thing);
-
         } else if (OpenWebNetScenarioHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("==OWN:HandlerFactory== creating NEW SCENARIOS Handler");
+            logger.debug("==OWN:HandlerFactory== creating NEW SCENARIO Handler");
             return new OpenWebNetScenarioHandler(thing);
         }
         logger.error("==OWN:HandlerFactory== ThingType: {} is not supported by the binding", thing.getThingTypeUID());
