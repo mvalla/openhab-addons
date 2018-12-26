@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
+// TODO rename to 'DeviceHandler'
 public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetThingHandler.class);
 
     protected OpenWebNetBridgeHandler bridgeHandler;
-    // protected OpenGateway gateway;
     protected String ownId; // OpenWebNet identifier for this device
 
     public OpenWebNetThingHandler(Thing thing) {
@@ -57,7 +57,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
                 // gateway = bridgeHandler.getGateway();
                 ownId = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
-                // FIXME deviceWhere : create a final deviceWhere to be set at initialization and used later
+                // TODO FIXME deviceWhere : create a final deviceWhere to be set at initialization and used later
+                // TODO check range for WHERE
                 bridgeHandler.registerDevice(ownId, getThing().getUID());
                 logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
@@ -71,7 +72,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Handles a command arrived from OH2 to this thing
+     * Handles a command from openHAB to this thing
      *
      */
     @Override
@@ -173,6 +174,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      *
      * @param channel channel
      */
+    // TODO remove this method and create ThingHandler where variable
     protected String toWhere(ChannelUID channel) {
         if (bridgeHandler.isBusGateway()) {
             return ownId.replace('h', '#');

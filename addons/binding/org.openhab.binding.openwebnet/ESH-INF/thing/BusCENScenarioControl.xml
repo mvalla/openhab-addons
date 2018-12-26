@@ -4,34 +4,33 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-
-	<!-- Thing for BUS Dry Contact and IR sensors  -->
-	<thing-type id="bus_dry_contact_ir">
+	<!-- Thing for BUS CEN Scenario Control (BTicino HC/HD/HS/L/N/NT4680) -->
+	<thing-type id="bus_cen_scenario_control">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
-
-		<label>Dry Contact/IR Sensor</label>
-		<description>A OpenWebNet BUS/SCS Dry Contact interface or IR Sensor. BTicino models: 3477/F428, IR 4610-4611-4640 etc.</description>
-		
-		<channels>
-			<channel id="sensor" typeId="dryContactIR" />
-		</channels>
+		<label>CEN Scenario Control</label>
+		<description>A OpenWebNet BUS/SCS CEN Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<property name="model">BTI-3477/F428/IR 4610-4611-4640 etc.</property>
-			<property name="ownDeviceType">2510</property>
+			<property name="model">BTI-HC/HD/HS/L/N/NT4680</property>
+			<property name="ownDeviceType">2</property>
 		</properties>
-				
+
 		<config-description>
+			<parameter name="buttons" type="text">
+				<label>Configured buttons</label>
+				<description>List (comma separated) of buttons numbers [0-31] configured for this scenario device, example: buttons=1,2,4    
+                </description>
+			</parameter>
 			<parameter name="where" type="text">
 				<label>OpenWebNet Device Address (WHERE)</label>
-				<description>For automation Dry Contacts: 3 N[1-201], example N=60 --> WHERE=360. For alarm Dry Contacts and IR sensors: 3 Z[1-9] N[1-9], example Zone=4, N=5 --> WHERE=345
-				</description>
+				<description>Use A/PL address: A=1 PL=3 --> WHERE=13; on local bus: WHERE=13#4#01</description>
 				<required>true</required>
 			</parameter>
 		</config-description>
-		
+
 	</thing-type>
 </thing:thing-descriptions>
+

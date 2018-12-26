@@ -24,6 +24,7 @@ import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
 import org.openwebnet.OpenDeviceType;
 import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.CEN;
 import org.openwebnet.message.OpenMessageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +87,13 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onNewDevice(String where, OpenDeviceType deviceType) {
+        newDiscoveryResult(where, deviceType, null);
+    }
+
+    /*
+     * create and notify to Inbox a new DiscoveryResult based on where, deviceType and BaseOpenMessage (optional)
+     */
+    public void newDiscoveryResult(String where, OpenDeviceType deviceType, BaseOpenMessage baseMsg) {
         logger.info("==OWN:DeviceDiscovery== onNewDevice WHERE={}, deviceType={}", where, deviceType);
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_DEVICE; // generic device
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_DEVICE;
@@ -143,9 +151,14 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ENERGY_CENTRAL_UNIT;
                     break;
                 }
+                case SCENARIO_CONTROL: {
+                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CEN_SCENARIO_CONTROL;
+                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CEN_SCENARIO_CONTROL;
+                    break;
+                }
                 case MULTIFUNCTION_SCENARIO_CONTROL: {
-                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_SCENARIO_CONTROL;
-                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO_CONTROL;
+                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL;
+                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL;
                     break;
                 }
                 case SCS_DRY_CONTACT_IR: {
@@ -164,30 +177,38 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                                                                                             // ThingUID
 
         DiscoveryResult discoveryResult = null;
-        // check if a device with same thingUID has been found already in discovery results
-        if (discoveryServiceCallback != null) {
-            discoveryResult = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
-        }
+        /*
+         * // check if a device with same thingUID has been found already in discovery results
+         *
+         * if (discoveryServiceCallback != null) {
+         * discoveryResult = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
+         * }
+         */
         String whereLabel = where;
         if (BaseOpenMessage.UNIT_02.equals(OpenMessageFactory.getUnit(where))) {
             logger.debug("==OWN:DeviceDiscovery== UNIT=02 found (WHERE={})", where);
-            if (discoveryResult != null) {
-                logger.debug("==OWN:DeviceDiscovery== will remove previous result if exists");
-                thingRemoved(thingUID); // remove previously discovered thing
-                // re-create thingUID with new type
-                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS;
-                thingLabel = OpenWebNetBindingConstants.THING_LABEL_ON_OFF_SWITCH_2UNITS;
-                thingUID = new ThingUID(thingTypeUID, bridgeUID, ownId.replace('#', 'h'));
-                whereLabel = whereLabel.replace("02#", "00#"); // replace unit '02' with all aunit '00'
-                logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
-                        OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH,
-                        OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS);
-            } else {
-                logger.warn("==OWN:DeviceDiscovery== discoveryResult empty after UNIT=02 discovery (WHERE={})", where);
-            }
+            // if (discoveryResult != null) {
+            // logger.debug("==OWN:DeviceDiscovery== will remove previous result if exists");
+            // thingRemoved(thingUID); // remove previously discovered thing
+            // re-create thingUID with new type
+            thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS;
+            thingLabel = OpenWebNetBindingConstants.THING_LABEL_ON_OFF_SWITCH_2UNITS;
+            thingUID = new ThingUID(thingTypeUID, bridgeUID, ownId.replace('#', 'h'));
+            whereLabel = whereLabel.replace("02#", "00#"); // replace unit '02' with all unit '00'
+            // logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
+            // OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH,
+            // OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS);
+            // } else {
+            // logger.warn("==OWN:DeviceDiscovery== discoveryResult empty after UNIT=02 discovery (WHERE={})", where);
+            // }
         }
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, ownId);
+        if ((deviceType == OpenDeviceType.MULTIFUNCTION_SCENARIO_CONTROL
+                || deviceType == OpenDeviceType.SCENARIO_CONTROL) && baseMsg != null) {
+            properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SCENARIO_BUTTONS,
+                    ((CEN) baseMsg).getButtonNumber().toString());
+        }
         discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
                 .withBridge(bridgeUID).withLabel(thingLabel + " (WHERE=" + whereLabel + ")").build();
         thingDiscovered(discoveryResult);

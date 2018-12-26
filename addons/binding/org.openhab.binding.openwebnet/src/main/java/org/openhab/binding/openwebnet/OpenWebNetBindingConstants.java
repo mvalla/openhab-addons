@@ -25,7 +25,7 @@ import com.google.common.collect.Sets;
 @NonNullByDefault
 public class OpenWebNetBindingConstants {
 
-    private static final String BINDING_ID = "openwebnet";
+    public static final String BINDING_ID = "openwebnet";
 
     public static final int THING_STATE_REQ_TIMEOUT = 5; // seconds
 
@@ -56,11 +56,14 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
             "bus_energy_central_unit");
     public static final String THING_LABEL_BUS_ENERGY_CENTRAL_UNIT = "Energy Central Unit";
-    public static final ThingTypeUID THING_TYPE_BUS_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
-            "bus_scenario_control");
-    public static final String THING_LABEL_BUS_SCENARIO_CONTROL = "Scenario Control";
+    public static final ThingTypeUID THING_TYPE_BUS_CEN_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
+            "bus_cen_scenario_control");
+    public static final String THING_LABEL_BUS_CEN_SCENARIO_CONTROL = "CEN Control";
+    public static final ThingTypeUID THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
+            "bus_cenplus_scenario_control");
+    public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
     public static final ThingTypeUID THING_TYPE_BUS_DRY_CONTACT_IR = new ThingTypeUID(BINDING_ID, "bus_dry_contact_ir");
-    public static final String THING_LABEL_BUS_DRY_CONTACT_IR = "Dry Contact/IR Sensor";
+    public static final String THING_LABEL_BUS_DRY_CONTACT_IR = "Dry Contact/IR";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "on_off_switch");
@@ -87,9 +90,10 @@ public class OpenWebNetBindingConstants {
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_SUPPORTED_THING_TYPES = Sets
             .newHashSet(THING_TYPE_BUS_ENERGY_CENTRAL_UNIT);
-    // ## CEN Scenario & Dry Contact/IR
-    public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Sets
-            .newHashSet(THING_TYPE_BUS_SCENARIO_CONTROL, THING_TYPE_BUS_DRY_CONTACT_IR);
+    // ## CEN/CEN+ Scenario & Dry Contact/IR
+    public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Sets.newHashSet(
+            THING_TYPE_BUS_CEN_SCENARIO_CONTROL, THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL,
+            THING_TYPE_BUS_DRY_CONTACT_IR);
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Sets.union(LIGHTING_SUPPORTED_THING_TYPES,
             Sets.union(AUTOMATION_SUPPORTED_THING_TYPES,
@@ -127,11 +131,15 @@ public class OpenWebNetBindingConstants {
     // energy management
     public static final String CHANNEL_POWER = "power";
     // scenario
-    public static final String CHANNEL_SCENARIO_BUTTON = "button";
-    public static final String CHANNEL_DRY_CONTACT_IR = "dryContactIR";
+    public static final String CHANNEL_SCENARIO_BUTTON = "button_";
+    public static final String CHANNEL_TYPE_SCENARIO_BUTTON = "scenarioButton";
+
+    public static final String CHANNEL_DRY_CONTACT_IR = "sensor";
 
     // config properties
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
+
+    public static final String CONFIG_PROPERTY_SCENARIO_BUTTONS = "buttons";
 
     public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
 

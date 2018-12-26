@@ -4,41 +4,29 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for BUS Scenario Control (BTicino HC/HD/HS/L/N/NT4680) -->
-	<thing-type id="bus_scenario_control">
+	<!-- Thing for BUS CEN+ Scenario Control (BTicino HC/HD/HS/L/N/NT4680) -->
+	<thing-type id="bus_cenplus_scenario_control">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
-		<label>Scenario Control</label>
-		<description>A OpenWebNet BUS/SCS Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
+		<label>CEN+ Scenario Control</label>
+		<description>A OpenWebNet BUS/SCS CEN+ Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
 
-		<!--<channels>
-		  <channel id="button1" typeId="scenarioButton">
-				<label>Button 1</label>
-			</channel>
-			<channel id="button2" typeId="scenarioButton">
-				<label>Button 2</label>
-			</channel>
-			<channel id="button3" typeId="scenarioButton">
-				<label>Button 3</label>
-			</channel>
-			<channel id="button4" typeId="scenarioButton">
-				<label>Button 4</label>
-			</channel> 
-			 
-		  
-        </channels>  
-        -->
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">BTI-HC/HD/HS/L/N/NT4680</property>
-			<property name="ownDeviceType">---</property>
+			<property name="ownDeviceType">273</property>
 		</properties>
 
 		<config-description>
+			<parameter name="buttons" type="text">
+				<label>Configured buttons</label>
+				<description>List (comma separated) of buttons numbers [0-31] configured for this scenario device, example: buttons=1,2,4    
+                </description>
+			</parameter>
 			<parameter name="where" type="text">
 				<label>OpenWebNet Device Address (WHERE)</label>
-				<description>Example: A/PL address: A=1 PL=3 --> WHERE=13. On local bus: WHERE=13#4#01</description>
+				<description>Use 2+N[0-2047]; example Control 5 --> WHERE=25</description>
 				<required>true</required>
 			</parameter>
 		</config-description>

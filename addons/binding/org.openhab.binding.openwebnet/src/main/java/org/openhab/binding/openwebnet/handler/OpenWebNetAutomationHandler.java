@@ -74,6 +74,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     public static final int SHUTTER_RUN_UNDEFINED = -1;
 
     private int shutterRun = SHUTTER_RUN_UNDEFINED;
+    private static final String AUTO_CALIBRATION = "AUTO";
 
     private long startedMovingAt = SHUTTER_RUN_UNDEFINED;
     private int internalState = STATE_UNKNOWN;
@@ -111,10 +112,10 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         Object shutterRunConfig = getConfig().get(CONFIG_PROPERTY_SHUTTER_RUN);
         try {
             if (shutterRunConfig == null) {
-                shutterRunConfig = new String("AUTO");
+                shutterRunConfig = AUTO_CALIBRATION;
                 logger.debug("==OWN:AutomationHandler== shutterRun null, default to AUTO");
             } else if (shutterRunConfig instanceof java.lang.String) {
-                if ("AUTO".equals(((String) shutterRunConfig).toUpperCase())) {
+                if (AUTO_CALIBRATION.equals(((String) shutterRunConfig).toUpperCase())) {
                     logger.debug("==OWN:AutomationHandler== shutterRun set to AUTO in configuration");
                     shutterRun = SHUTTER_RUN_UNDEFINED;
                 } else { // try to parse int>=1000

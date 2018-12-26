@@ -42,6 +42,7 @@ import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.OpenWebNet;
 import org.openwebnet.message.Automation;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.CEN;
 import org.openwebnet.message.CENPlusScenario;
 import org.openwebnet.message.CENScenario;
 import org.openwebnet.message.EnergyManagement;
@@ -120,7 +121,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.debug("==OWN== Trying to connect gateway...");
             gateway.connect();
             scheduler.schedule(() -> {
-                // if state is still UNKNOWN after timer ends, set the device as OFFLINE
+                // if status is still UNKNOWN after timer ends, set the device as OFFLINE
                 if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                     logger.info("==OWN== BridgeHandler status still UNKNOWN. Setting device={} to OFFLINE",
                             thing.getUID());
@@ -295,10 +296,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
-        if (baseMsg instanceof Lighting || baseMsg instanceof CENScenario || baseMsg instanceof CENPlusScenario) {
+        if (baseMsg instanceof Lighting || baseMsg instanceof CEN) {
             OpenDeviceType type = baseMsg.detectDeviceType();
             if (type != null) {
-                deviceDiscoveryListener.onNewDevice(baseMsg.getWhere(), type);
+                deviceDiscoveryService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
+                // deviceDiscoveryListener.onNewDevice(baseMsg.getWhere(), type);
             }
         }
     }

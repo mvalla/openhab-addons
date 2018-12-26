@@ -11,7 +11,9 @@ package org.openhab.binding.openwebnet.handler;
 
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
+import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -20,11 +22,13 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openwebnet.message.BaseOpenMessage;
 import org.openwebnet.message.CEN;
@@ -35,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenWebNetScenarioHandler} is responsible for handling commands/messages for CEN/CEN+ Scenarios and Dry
- * Contact / IR.
+ * Contact / IR sensors.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
@@ -62,10 +66,14 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         public String toString() {
             return pressure;
         }
+
     }
 
     private boolean isDryContactIR = false;
-    private final static int shortPressureDelay = 250; // ms
+    private boolean isCENPlus = false;
+
+    private final static int SHORT_PRESSURE_DELAY = 200; // ms
+    private final static int EXT_PRESS_INTERVAL = 500; // ms
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.SCENARIO_SUPPORTED_THING_TYPES;
 
@@ -74,6 +82,9 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         logger.debug("==OWN:ScenarioHandler== constructor");
         if (OpenWebNetBindingConstants.THING_TYPE_BUS_DRY_CONTACT_IR.equals(thing.getThingTypeUID())) {
             isDryContactIR = true;
+        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL.equals(thing.getThingTypeUID())) {
+            isCENPlus = true;
+            logger.debug("==OWN:ScenarioHandler== CEN+ device for thing: {}", getThing().getUID());
         }
     }
 
@@ -81,21 +92,118 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     public void initialize() {
         super.initialize();
         logger.debug("==OWN:ScenarioHandler== initialize() thing={}", thing.getUID());
+        Object buttonsConfig = getConfig().get(CONFIG_PROPERTY_SCENARIO_BUTTONS);
+        if (buttonsConfig != null) {
+            Set<Integer> buttons = csvStringToSetInt((String) buttonsConfig);
+            if (!buttons.isEmpty()) {
+                ThingBuilder thingBuilder = editThing();
+                Channel ch;
+                for (Integer i : buttons) {
+                    ch = thing.getChannel(CHANNEL_SCENARIO_BUTTON + i);
+                    if (ch == null) {
+                        thingBuilder.withChannel(buttonToChannel(i));
+                        logger.debug("==OWN:ScenarioHandler== added channel {} to thing: {}", i, getThing().getUID());
+                    }
+                }
+                updateThing(thingBuilder.build());
+            } else {
+                logger.warn("==OWN:ScenarioHandler== invalid config parameter buttons='{}' for thing {}", buttonsConfig,
+                        thing.getUID());
+            }
+        }
     }
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("==OWN:ScenarioHandler== requestChannelState() thingUID={} channel={}", thing.getUID(),
                 channel.getId());
-        if (isDryContactIR) { // channel state request makes sense only for DryContactIR things
+        if (isDryContactIR) {
             bridgeHandler.gateway.send(CENPlusScenario.requestStatus(toWhere(channel)));
+        } else { // is not possible to request channel state for CEN/CEN+ buttons
+            updateStatus(ThingStatus.ONLINE);
+            updateState(channel, UnDefType.UNDEF);
         }
     }
 
+    // @formatter:off
+    /*
+     * MAPPING FROM channel command to CENScenario/CENPlusScenario OWN messages (N=button number 0-31)
+     *  ch  command     | PRESSURE_TYPE                               | OWN message (CEN/CEN+)
+     *  ------------------------------------------------------------------------------------------------------------
+     *     PRESSED      | CEN:  PRESSURE then RELEASE_SHORT_PRESSURE  | CEN:  *15*N*WHERE## then *15*N#1*WHERE## /
+     *                  | CEN+: SHORT_PRESSURE                        |     CEN+: *25*21#N*WHERE##
+     *     RELEASED     | nothing                                     | --- / ---
+     *     PRESSED_EXT  | EXT_PRESSURE / START_EXT_PRESSURE           | *15*N#3*WHERE## / *25*22#N*WHERE##
+     *     RELEASED_EXT | RELEASE_EXT_PRESSURE / RELEASE_EXT_PRESSURE | *15*N#2*WHERE## / *25*24#N*WHERE##
+     */
+    // @formatter:on
+
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
-        logger.warn("==OWN:ScenarioHandler== Read-only channel, unsupported command {}", command);
+        logger.debug("==OWN:ScenarioHandler== handleChannelCommand() (command={})", command);
+        Integer buttonNumber = channelToButton(channel);
+        if (buttonNumber == null) {
+            logger.warn("==OWN:ScenarioHandler== cannot get button number from channel: {}. Ignoring command {}",
+                    channel, command);
+            return;
+        }
+        if (command instanceof StringType) {
+            PressureState prState;
+            try {
+                prState = PressureState.valueOf(((StringType) command).toString());
+            } catch (IllegalArgumentException e) {
+                logger.warn("==OWN:ScenarioHandler== Cannot handle command {} for thing {} ({})", command,
+                        getThing().getUID(), e.getMessage());
+                return;
+            }
+            switch (prState) {
+                case PRESSED:
+                    if (isCENPlus) {
+                        bridgeHandler.gateway
+                                .send(CENPlusScenario.virtualShortPressure(toWhere(channel), buttonNumber));
+                    } else {
+                        bridgeHandler.gateway.send(CENScenario.virtualStartPressure(toWhere(channel), buttonNumber));
+                        scheduler.schedule(() -> { // let's schedule a CEN virtual release OWN message
+                            logger.debug("==OWN:ScenarioHandler== # " + toWhere(channel)
+                                    + " sending CEN virtual release...");
+                            bridgeHandler.gateway
+                                    .send(CENScenario.virtualReleaseShortPressure(toWhere(channel), buttonNumber));
+                        }, SHORT_PRESSURE_DELAY, TimeUnit.MILLISECONDS);
+                    }
+                    break;
+                case RELEASED:
+                    // do nothing
+                    break;
+                case PRESSED_EXT:
+                    // TODO send more EXT PRESSURE messages every 500ms untile RELEASE_EXT command
+                    if (isCENPlus) {
+                        bridgeHandler.gateway
+                                .send(CENPlusScenario.virtualStartExtendedPressure(toWhere(channel), buttonNumber));
+                    } else {
+                        bridgeHandler.gateway.send(CENScenario.virtualStartPressure(toWhere(channel), buttonNumber));
+                        scheduler.schedule(() -> { // let's schedule a CEN virtual ext pressure OWN message
+                            logger.debug("==OWN:ScenarioHandler== # " + toWhere(channel)
+                                    + " sending CEN virtual ext pressure...");
+                            bridgeHandler.gateway
+                                    .send(CENScenario.virtualExtendedPressure(toWhere(channel), buttonNumber));
+                        }, EXT_PRESS_INTERVAL, TimeUnit.MILLISECONDS);
+                    }
+                    break;
+                case RELEASED_EXT:
+                    if (isCENPlus) {
+                        bridgeHandler.gateway
+                                .send(CENPlusScenario.virtualReleaseExtendedPressure(toWhere(channel), buttonNumber));
+                    } else {
+                        bridgeHandler.gateway
+                                .send(CENScenario.virtualReleaseExtendedPressure(toWhere(channel), buttonNumber));
+                    }
+                    break;
+            }
 
+        } else {
+            logger.warn("==OWN:ScenarioHandler== Unsupported command {} for thing {}", command, getThing().getUID());
+            return;
+        }
         // TODO
         // Note: if communication with thing fails for some reason,
         // indicate that by setting the status with detail information
@@ -134,43 +242,34 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     private void updateButtonState(CEN cenMsg) {
         logger.debug("==OWN:ScenarioHandler== updateButtonState() for thing: {}", thing.getUID());
-        int buttonNumber = cenMsg.getButtonNumber();
-        if (buttonNumber < 0 || buttonNumber > 31) {
-            logger.warn("==OWN:ScenarioHandler== invalid CEN button number: {}. Ignoring message {}", buttonNumber,
+        Integer buttonNumber = cenMsg.getButtonNumber();
+        if (buttonNumber == null || buttonNumber < 0 || buttonNumber > 31) {
+            logger.warn("==OWN:ScenarioHandler== invalid CEN/CEN+ button number: {}. Ignoring message {}", buttonNumber,
                     cenMsg);
             return;
         }
         Channel ch = thing.getChannel(CHANNEL_SCENARIO_BUTTON + buttonNumber);
-        if (ch == null) {
-            logger.info("==OWN:ScenarioHandler== ADDING TO THING {} NEW CHANNEL: {}", getThing().getUID(),
-                    CHANNEL_SCENARIO_BUTTON + buttonNumber);
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID("openwebnet", "scenarioButton"); // TODO use constants
+        if (ch == null) { // we have found a new button for this device, let's add a new channel for the button
             ThingBuilder thingBuilder = editThing();
-            Channel newChannel = ChannelBuilder
-                    .create(new ChannelUID(getThing().getUID(), CHANNEL_SCENARIO_BUTTON + buttonNumber), "String") // TODO
-                                                                                                                   // use
-                                                                                                                   // constants
-                    .withType(channelTypeUID).withLabel("Button " + buttonNumber).build();
-            thingBuilder.withChannel(newChannel);
-            // thingBuilder.withLabel(thing.getLabel()); //TODO needed???
+            ch = buttonToChannel(buttonNumber);
+            thingBuilder.withChannel(ch);
             updateThing(thingBuilder.build());
-            ch = newChannel;
+            logger.info("==OWN:ScenarioHandler== added new channel {} to thing {}", ch.getUID(), getThing().getUID());
         }
         final Channel channel = ch;
         PressureState prState;
         if (cenMsg instanceof CENScenario) {
-            prState = getPressureStateFromCENPressure((CENScenario) cenMsg);
+            prState = cenPressureToPressureState((CENScenario) cenMsg);
         } else {
-            prState = getPressureStateFromCENPlusPressure((CENPlusScenario) cenMsg);
+            prState = cenPlusPressureToPressureState((CENPlusScenario) cenMsg);
         }
         if (prState == PressureState.PRESSED) {
             scheduler.schedule(() -> { // let's schedule state -> RELEASED
                 logger.debug(
                         "==OWN:ScenarioHandler== # " + toWhere(channel.getUID()) + " updating state to 'RELEASED'...");
                 updateState(channel.getUID(), new StringType(PressureState.RELEASED.toString()));
-            }, shortPressureDelay, TimeUnit.MILLISECONDS);
+            }, SHORT_PRESSURE_DELAY, TimeUnit.MILLISECONDS);
         }
-
         if (prState != null) {
             updateState(ch.getUID(), new StringType(prState.toString()));
         }
@@ -201,7 +300,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
      */
     // @formatter:on
 
-    private PressureState getPressureStateFromCENPressure(CENScenario cMsg) {
+    private PressureState cenPressureToPressureState(CENScenario cMsg) {
         CENScenario.CEN_PRESSURE_TYPE pt = cMsg.getButtonPressure();
         if (pt == null) {
             logger.warn("==OWN:ScenarioHandler== invalid CENScenario.PRESSURE_TYPE. Frame: {}", cMsg);
@@ -222,7 +321,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         }
     }
 
-    private PressureState getPressureStateFromCENPlusPressure(CENPlusScenario cMsg) {
+    private PressureState cenPlusPressureToPressureState(CENPlusScenario cMsg) {
         CENPlusScenario.CEN_PLUS_PRESSURE_TYPE pt = cMsg.getButtonPressure();
         if (pt == null) {
             logger.warn("==OWN:ScenarioHandler== invalid CENPlusScenario.PRESSURE_TYPE. Frame: {}", cMsg);
@@ -240,6 +339,47 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
             default:
                 logger.warn("==OWN:ScenarioHandler== unsupported CENPlusScenario.PRESSURE_TYPE. Frame: {}", cMsg);
                 return null;
+        }
+    }
+
+    private Channel buttonToChannel(int buttonNumber) {
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_SCENARIO_BUTTON);
+        return ChannelBuilder
+                .create(new ChannelUID(getThing().getUID(), CHANNEL_SCENARIO_BUTTON + buttonNumber), "String")
+                .withType(channelTypeUID).withLabel("Button " + buttonNumber).build();
+    }
+
+    private Integer channelToButton(ChannelUID channel) {
+        try {
+            return Integer.parseInt(channel.getId().substring(channel.getId().lastIndexOf("_") + 1));
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
+    }
+
+    private static Set<Integer> csvStringToSetInt(String s) {
+        s = s.replaceAll("\\s", "");
+        Scanner sc = new Scanner(s).useDelimiter(",");
+        TreeSet<Integer> intSet = new TreeSet<Integer>();
+        while (sc.hasNextInt()) {
+            intSet.add(sc.nextInt());
+        }
+        return intSet;
+    }
+
+    private static String setIntToCsvString(Set<Integer> set) {
+        if (set.isEmpty()) {
+            return "";
+        } else {
+            final String SEPARATOR = ",";
+            StringBuilder csvBuilder = new StringBuilder();
+            for (Integer i : set) {
+                csvBuilder.append(i);
+                csvBuilder.append(SEPARATOR);
+            }
+            String csv = csvBuilder.toString();
+            csv = csv.substring(0, csv.length() - SEPARATOR.length());
+            return csv;
         }
     }
 
