@@ -30,7 +30,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lightning | `1`   | `bus_on_off_switch`, `bus_dimmer` | Yes                | Yes                | BUS switches and dimmers                                                                 | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation | `2`   | `bus_automation`                | Yes | Yes                  | BUS roller shutters, with position feedback and auto-calibration via a *UP >> DOWN >> Position%* cycle                                                                                       | Successfully tested: LN4672M2  |
 | Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691 via 3488 Central Unit; external probes: L/N/NT4577 + 3455 |
-| CEN & CEN+ Commands | `15` & `25`   | `bus_scenario_control`, `bus_dry_contact_ir`   | Yes (by [activation](#discovery-by-activation)) | Yes | CEN & CEN+ events for scenario control. Dry Contact and IR sensor devices events. | *Testing*: Scenario buttons: HC/HD/HS/L/N/NT4680. Contact interfaces: F428 and 3477. IR sensors: HC/HD/HS/L/N/NT4610 |
+| CEN & CEN+ Commands | `15` & `25`   | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`, `bus_dry_contact_ir`   | Yes (CEN/CEN+ by [activation](#discovery-by-activation) only) | Yes | CEN/CEN+ events and virtual activation for scenario control. Dry Contact and IR sensor devices events. | *Testing*: Scenario buttons: HC/HD/HS/L/N/NT4680. Contact interfaces: F428 and 3477. IR sensors: HC/HD/HS/L/N/NT4610 |
 | Energy Management | `18`   | `bus_energy_central_unit`   | Yes | Yes | Energy Management Central Unit | *Testing*: F521 |
 
 
@@ -77,7 +77,7 @@ After the binding is installed, from Marketplace or manually, some *features dep
 
 - from [Karaf console](https://www.openhab.org/docs/administration/console.html):
     - `feature:install openhab-transport-serial`
-    - if you are using  **openHAB 2.4.0-Mxxx** also type:
+    - if you are using  **openHAB 2.4.0-x** also type:
 	
          `feature:install esh-io-transport-upnp`
 
@@ -137,11 +137,12 @@ Things discovery is supported using PaperUI by pressing the discovery ("+") butt
 - Once the gateway is added manually as a Thing, a second Scan request from Inbox will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
+- CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details.
+After confirming a discovered CEN/CEN+ device from Inbox, activate again its buttons and refresh the PaperUI Control page to see button channels appear.
 
 #### Discovery by Activation
-If a Ligthing, CEN/CEN+ Scenario, or Dry Contact/IR sensor device cannot be discovered automatically, you can try to activate it while a Scan is active: start a new Scan, wait 15-20sec and then while the _Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer, push a CEN/CEN+ Scenario button, activate a Dry Contact/IR sensor) to have it discovered by the binding.
-After accepting the new discovered CEN/CEN+ device from Inbox, activate again one of its buttons and refresh the page to see the device and its button appear in the PaperUI Control view.
- 
+Ligthing and CEN/CEN+ Scenario Control devices can be discovered if activated while a Inbox Scan is active: start a new Scan, wait 15-20sec and then while the _Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer, push a CEN/CEN+ Scenario button) to have it discovered by the binding.
+
 If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
 
 ### Wireless (ZigBee) Discovery
@@ -194,15 +195,16 @@ Devices can be also added manually from PaperUI. For each device it must be conf
   - example for BUS/SCS: Point to Point `A=6 PL=4` on local bus --> `WHERE="64#4#01"`
   - example for BUS/SCS thermo Zones: `Zone=1` --> `WHERE="1"`; external probe `5` --> `WHERE="500"`
   - example for ZigBee/wireless: use decimal format address without the UNIT part and network: ZigBee `WHERE=414122201#9` --> `WHERE="4141222"`
+  - for CEN+ use 2+N[0-2047]; example Scenario Control 5 --> WHERE=25
 
 
 ## Channels
 
 Devices support some of the following channels:
 
-| Channel Type ID        | Item Type     | Description                                                             | Read/Write |
-|------------------------|---------------|-------------------------------------------------------------------------|:----------:|
-| `switch`              | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
+| Channel Type ID (channel ID)        | Item Type     | Description                                                             | Read/Write |
+|--------------------------|---------------|-------------------------------------------------------------------------|:----------:|
+| `switch`                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
 | `brightness`             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
 | `shutter`                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
 | `temperature`            | Number        | The zone currently sensed temperature (°C)                              |     R      |
@@ -215,8 +217,8 @@ Devices support some of the following channels:
 | `localMode`              | String        | The zone current local mode, as set on the physical thermostat in the room: `-3/-2/-1/NORMAL/+1/+2/+3`, `PROTECTION`, or `OFF`  |      R     |
 | `setpointTemperature`    | Number        | The zone setpoint temperature (°C), as set from Central Unit or openHAB |     R/W    |
 | `setMode`                | String        | The zone set mode, as set from Central Unit or openHAB: `AUTO`, `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
-| `scenarioButton`         | String        | Events for a CEN/CEN+ scenario button: `PRESSED`, `RELEASED`, `PRESSED_EXT`, `RELEASED_EXT`  |     R      |
-| `dryContactIR`         | Switch        | Indicates if a Dry Contact interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`) |     R      |
+| `scenarioButton` (`button_X`)         | String        | Events or virtual pressure for CEN/CEN+ scenario buttons: `PRESSED`, `RELEASED`, `PRESSED_EXT`, `RELEASED_EXT`  |     R/W      |
+| `dryContactIR`  (`sensor`)        | Switch        | Indicates if a Dry Contact interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`) |     R      |
 | `power`                  | Number        | The actual active power usage from Energy Management Central Unit       |     R      |
 
 [*] = advanced channel: in PaperUI can be shown from  *Thing config > Channel list > Show More* button. Link to an item by clicking on the channel blue button.
@@ -242,8 +244,13 @@ To ensure the heating actuator is set up correctly for a Thermostat:
 3. in *Actuators section* check if the first actuator listed is numbered "1". This will be the actuator which state will be returned by the binding in the `heating` channel
 4. if it is not numbered "1", find the actuator device corresponding to the same Thermo zone of the Thermostat and set the "Device number" property to "1"
 
-#### `scearioButton`
-After a CEN/CEN+ device is added from Inbox, `scearioButton` channels corresponding to physical buttons are added automatically when they are first activated from the physical device (refresh web page if needed).
+#### `scenarioButton`
+
+- In CEN/CEN+ things channels are named `button_X` where `X` is the button number on the Scenario Control device
+- Button channels appear in PaperUI after the first time the corresponding button is activated from the physical device. Refresh the PaperUI/Control page if needed
+- When using file configuration, use the `buttons` Thing config parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`
+- Sending on channels `button_X` commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from OpenHab. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
+
 
 ## Google Assistant / Amazon Alexa / Apple HomeKit Integration
 
@@ -267,7 +274,7 @@ Names used will be the names of the channels (Brightness, etc.); they cannot be 
 
 See these official docs and other threads in the OH community for more information about Google Assistant/Alexa/HomeKit integration and configuration:
 
-- Google Assitant (Google Home): <https://www.openhab.org/docs/ecosystem/google-assistant/>
+- Google Assistant (Google Home): <https://www.openhab.org/docs/ecosystem/google-assistant/>
     - updated list of supported tags: <https://github.com/openhab/openhab-google-assistant/blob/master/USAGE.md>
 - Amazon Alexa: <https://www.openhab.org/docs/ecosystem/alexa/>
 - Apple HomeKit (Siri): <https://www.openhab.org/addons/integrations/homekit/>
@@ -287,7 +294,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_automation           LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
       bus_thermostat           LR_thermostat    "Living Room Thermostat"  [ where="1"]
       bus_temp_sensor          EXT_tempsensor   "External Temperature"    [ where="500"]
-      bus_scenario_control     LR_scenario      "Living Room Scenario Control" [ where="20" ]
+      bus_cenplus_scenario_control  LR_CENplus_scenario "Living Room CEN+"        [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir       LR_IR_sensor     "Living Room IR Sensor"   [ where="399" ]
       bus_energy_central_unit  CENTRAL_energy   "Energy Management"       [ where="51" ]
 }
@@ -313,8 +320,8 @@ Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLiv
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
 Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
-String         iLR_scenario_btn1 "Scenario Button 1"               <network>                                                      { channel="openwebnet:bus_scenario_control:mybridge:LR_scenario:button1" }
-Switch         iLR_IR_sensor     "Living Room IR sensor"  <motion>            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:dryContactIR" }
+String         iLR_scenario_btn1  "Scenario Button 1"               <network>           { channel="openwebnet:bus_cenplus_scenario_control:mybridge:LR_CENplus_scenario:button_1" }  
+Switch         iLR_IR_sensor     "Living Room IR sensor"  <motion>            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>                                                      { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
 
 /* Thermostat Setup (Google Home/Alexa require thermostat items to be grouped together) */
@@ -342,7 +349,8 @@ Frame label="Living Room"
           Default item=iLR_switch               
           Default item=iLR_dimmer           icon="light" 
           Default item=iLR_dalidimmer       icon="light"
-          Selection item=iLR_scenario_btn1  valuecolor=[PRESSED="blue", RELEASED="gray",PRESSED_EXT="red", RELEASED_EXT="gray"]
+          Switch    item=iLR_scenario_btn1 label="Scenario (btn1)[]" mappings=[PRESSED="Scenario-1 (PRESSED)", PRESSED_EXT="Scenario-2 (PRESSED_EXT)", RELEASED_EXT="Scenario-2 (RELEASED_EXT)"] 
+
           Switch item=iLR_IR_sensor mappings=[ON="Presence", OFF="No Presence"]
 
           Group item=gLR_thermostat label="Thermostat" icon="heating"
@@ -364,11 +372,20 @@ Frame label="Living Room"
 ### openwebnet.rules
 
 ```xtend
-rule "CEN rule"
+// short pressure on CEN+ button will increase dimmer%
+rule "CEN+ dimmer increase"
 when
     Item iLR_scenario_btn1 received update "RELEASED"
 then
-    sendCommand(iLR_dimmer, ON)  
+        sendCommand(iLR_dimmer, INCREASE)  
+end
+
+// long pressure on CEN+ button will switch off dimmer
+rule "CEN+ dimmer off"
+when
+    Item iLR_scenario_btn1 received update "RELEASED_EXT"
+then
+        sendCommand(iLR_dimmer, OFF)  
 end
 ```
 
@@ -386,11 +403,11 @@ end
 
 ## Changelog
 
-**v2.4.0-b9** - 14/12/2018
+**v2.4.0-b9-1** - 27/12/2018
 
-- **[FIX #6] Initial support for `WHO=15/25` CEN/CEN+** for rules activation from Scenario Control devices (for example Scenario Control: HC/HD/HS/L/N/NT4680). Use [discovery by activation](#discovery-by-activation) to discover CEN/CEN+ devices. Buttons are discovered by pressing them after the device has been added from Inbox
+- **[FIX #6] and [FIX #33] Initial support for `WHO=15/25` CEN/CEN+** for receiving events from BUS Scenario Control physical devices/buttons (for example Scenario Control: HC/HD/HS/L/N/NT4680) and sending virtual pressure commands to activate MH202 scenarios on the BUS from openHAB. Use [discovery by activation](#discovery-by-activation) to discover CEN/CEN+ scenario control devices. Further buttons/channels are discovered by pressing the corresponding physical button after the device has been added from Inbox
+- **[FIX #9] Support for `WHO=25` Dry Contact interfaces and IR Sensors** on BUS, with discovery
 - **[FIX #11] Initial support for `WHO=18` Energy Management** on BUS, with discovery. Currently supported: Energy Management Central Unit (F521) power measures
-- **[FIX #9] Support for `WHO=25` Dry Contact interfaces and IR Sensors** on BUS ( [discovery by activation](#discovery-by-activation) )
 - [FIX #29] Added support for command translation (1000# ) for Automation
 - [FIX #27] Device **Discovery by Activation** ( [discovery by activation](#discovery-by-activation) ) for Lighting and CEN/CEN+: if a BUS physical device is not found in Inbox during a Scan, activate the device to discover it
 
