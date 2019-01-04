@@ -172,7 +172,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             }
             String passwdMasked;
             if (passwd.length() >= 4) {
-                passwdMasked = "******" + passwd.substring(passwd.length() - 3, passwd.length() - 1);
+                passwdMasked = "******" + passwd.substring(passwd.length() - 3, passwd.length());
             } else {
                 passwdMasked = "******";
             }
@@ -401,8 +401,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     @Override
-    public void onConnectionError(OpenError error) {
-        // logger.debug("==OWN== onConnectionError()");
+    public void onConnectionError(OpenError error, String errMsg) {
         String cause;
         switch (error) {
             case DISCONNECTED:
@@ -416,19 +415,21 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 cause = "Make sure you have a working Java Runtime Environment installed in 32 bit version";
                 break;
             case IO_EXCEPTION_ERROR:
-                cause = "Connection error (IOException). Check network and gateway thing Configuration Parameters";
+                cause = "Connection error (IOException). Check network and gateway thing Configuration Parameters ("
+                        + errMsg + ")";
+                break;
+            case AUTH_ERROR:
+                cause = "Authentication error. Check gateway password in Thing Configuration Parameters (" + errMsg
+                        + ")";
                 break;
             case OTHER_ERROR:
             default:
                 cause = "==ERROR NOT RECOGNIZED==";
                 break;
         }
-        logger.warn("==OWN==  CONNECTION ERROR: {}", cause);
-        // if (isGatewayConnected) {
+        logger.warn("==OWN==  CONNECTION ERROR: {} - {}", cause, errMsg);
         isGatewayConnected = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, cause);
-        // logger.debug("==OWN== Bridge status set to OFFLINE");
-        // }
     }
 
     @Override
@@ -462,7 +463,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * Transform a WHERE string address into a ownId (id for thing) based on bridge type (BUS/ZigBee)
      *
      * @param where OWN WHERE string address
-     * @return ownId
+     * @return String ownId
      */
     public String ownIdFromWhere(String where) {
         String str = "";

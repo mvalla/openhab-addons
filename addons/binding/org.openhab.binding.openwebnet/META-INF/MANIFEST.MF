@@ -10,16 +10,16 @@ Bundle-SymbolicName: org.openhab.binding.openwebnet;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
- org.eclipse.jdt.annotation;resolution:=optional,
- javax.measure,
- javax.measure.quantity,
- org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  com.google.common.base,
  com.google.common.collect,
+ gnu.io,
+ javax.measure,
+ javax.measure.quantity,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
@@ -29,15 +29,14 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.util,
  org.jupnp.model.meta,
- gnu.io,
+ org.jupnp.model.types,
  org.openhab.binding.openwebnet,
  org.openhab.binding.openwebnet.handler,
+ org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Export-Package: org.openhab.binding.openwebnet,
  org.openhab.binding.openwebnet.handler
 Service-Component: OSGI-INF/*.xml
 COMMENT-INFO: COMMENT the following line to release, UNCOMMENT for development
 Require-Bundle: openwebnet-lib
-
-
-

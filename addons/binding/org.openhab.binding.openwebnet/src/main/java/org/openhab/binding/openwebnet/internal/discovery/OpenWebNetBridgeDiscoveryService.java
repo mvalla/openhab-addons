@@ -17,9 +17,11 @@ import java.util.Set;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openwebnet.AuthException;
 //import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
 import org.openwebnet.OpenError;
 import org.openwebnet.OpenGatewayZigBee;
@@ -28,15 +30,18 @@ import org.openwebnet.OpenWebNet;
 import org.openwebnet.bus.MyHomeSocketFactory;
 import org.openwebnet.message.GatewayManagement;
 import org.openwebnet.message.OpenMessage;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetBridgeDiscoveryService} is responsible for discovering OpenWebNet bridges.
+ * The {@link OpenWebNetBridgeDiscoveryService} is a {@link DiscoveryService} implementation responsible for discovering
+ * OpenWebNet gateways in the network using UPnP and OpwenWebNet devices.
  *
  * @author Massimo Valla - Initial contribution
  */
 
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.openwebent")
 public class OpenWebNetBridgeDiscoveryService extends AbstractDiscoveryService implements OpenListener {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeDiscoveryService.class);
@@ -109,6 +114,9 @@ public class OpenWebNetBridgeDiscoveryService extends AbstractDiscoveryService i
         } catch (IOException e) {
             logger.debug("==OWN:BridgeDiscovery== localhost GW not found");
             return;
+        } catch (AuthException e) {
+            logger.debug("==OWN:BridgeDiscovery== localhost GW auth exception");
+            return;
         }
         ThingUID busgw = new ThingUID(OpenWebNetBindingConstants.THING_TYPE_BUS_GATEWAY, host);
         Map<String, Object> busgwProperties = new HashMap<>(3);
@@ -154,11 +162,11 @@ public class OpenWebNetBridgeDiscoveryService extends AbstractDiscoveryService i
     }
 
     @Override
-    public void onConnectionError(OpenError error) {
+    public void onConnectionError(OpenError error, String errMsg) {
         if (error == OpenError.NO_SERIAL_PORTS_ERROR) {
-            logger.info("==OWN:BridgeDiscovery== no serial ports found");
+            logger.info("==OWN:BridgeDiscovery== No serial ports found");
         } else {
-            logger.warn("==OWN:BridgeDiscovery== onConnectionError() - CONNECTION ERROR: errorCode = {}", error);
+            logger.warn("==OWN:BridgeDiscovery== onConnectionError() - CONNECTION ERROR: {} - {}", error, errMsg);
         }
         stopScan();
         // TODO handle other dongle connection problems
