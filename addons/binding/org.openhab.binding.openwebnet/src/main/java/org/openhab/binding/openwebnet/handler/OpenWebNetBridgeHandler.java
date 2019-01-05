@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
@@ -67,11 +66,12 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private static final int GATEWAY_ONLINE_TIMEOUT = 20; // (sec) Time to wait for the gateway to become connected
     private static final int CONFIG_GATEWAY_DEFAULT_PORT = 20000;
     private static final String CONFIG_GATEWAY_DEFAULT_PASSWD = "12345";
-    // private static final String CONFIG_GATEWAY_DEFAULT_HOST = "127.0.0.1";
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
-    private Map<String, ThingUID> registeredDevices = new ConcurrentHashMap<>();
+    // ConcurrentHashMap of devices registered to this BridgeHandler
+    // Association is: String ownId -> OpenWebNetThingHandler, with ownId = WHO.WHERE
+    private Map<String, OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
 
     @Nullable
     protected OpenGateway gateway;
@@ -267,7 +267,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 try {
                     gateway.discoverDevices(listener);
                 } catch (Exception e) {
-                    logger.error("==OWN== -------- Exception while searching device on gateway {}: {}",
+                    logger.error("==OWN== -------- EXCEPTION while searching devices on gateway '{}': {}",
                             this.getThing().getLabel(), e.getMessage());
                 }
                 searchingGatewayDevices = false;
@@ -306,20 +306,30 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Register a device thing to this bridge handler based on its id
+     * Register a device thing to this BridgHandler associating its ThingHandler
      *
-     * @param ownId    device OpenWebNet id
-     * @param thingUID ThingUID
+     * @param String                 ownId OpenWebNet id for device
+     * @param OpenWebNetThingHandler thingHandler
      */
-    protected void registerDevice(String ownId, ThingUID thingUID) {
+    protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
         logger.debug("==OWN==  BridgeHandler.registerDevice() ");
-        if (thingUID == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null 'ThingUID'.");
+        if (thingHandler == null) {
+            throw new IllegalArgumentException("It's not allowed to pass a null 'thingHandler'.");
         }
         if (ownId == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null 'ownId'.");
         }
-        registeredDevices.put(ownId, thingUID);
+        registeredDevices.put(ownId, thingHandler);
+    }
+
+    /**
+     * Get a ThingHandler for a device associated to this BridgeHandler, based on ownID
+     *
+     * @param String ownId OpenWebNet id for device
+     * @returns OpenWebNetThingHandler handler for the device
+     */
+    private OpenWebNetThingHandler getDevice(String ownId) {
+        return registeredDevices.get(ownId);
     }
 
     /**
@@ -353,24 +363,25 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
                 || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario
                 || baseMsg instanceof CENPlusScenario) {
-            String ownId = ownIdFromWhere(baseMsg.getWhere());
-            logger.trace("==OWN==  ownId = {}", ownId);
-            ThingUID thingUID = registeredDevices.get(ownId);
-            Thing device = getThingByUID(thingUID);
-            if (device == null) {
+            String ownId = ownIdFromMessage(baseMsg);
+            logger.debug("==OWN==  ownId = {}", ownId);
+            OpenWebNetThingHandler deviceHandler = getDevice(ownId);
+            // ThingUID thingUID = registeredDevices.get(ownId);
+            // Thing device = getThingByUID(thingUID);
+            if (deviceHandler == null) {
                 if (isBusGateway && deviceDiscoveryListener != null && !searchingGatewayDevices && scanIsActive) {
                     // try device discovery by activation
                     discoverByActivation(baseMsg);
                 } else {
-                    logger.debug("==OWN==  ownId={} has NO THING associated, ignoring it", ownId);
+                    logger.debug("==OWN==  ownId={} has NO DEVICE associated, ignoring it", ownId);
                 }
             } else {
-                OpenWebNetThingHandler deviceHandler = (OpenWebNetThingHandler) device.getHandler();
-                if (deviceHandler != null) {
-                    deviceHandler.handleMessage(baseMsg);
-                } else {
-                    logger.debug("==OWN==  ownId={} has NO HANDLER associated, ignoring it", ownId);
-                }
+                // OpenWebNetThingHandler deviceHandler = (OpenWebNetThingHandler) device.getHandler();
+                // if (deviceHandler != null) {
+                deviceHandler.handleMessage(baseMsg);
+                // } else {
+                // logger.debug("==OWN== ownId={} has NO HANDLER associated, ignoring it", ownId);
+                // }
             }
         } else {
             logger.debug("==OWN==  BridgeHandler ignoring frame {}. WHO={} is not supported by the binding", baseMsg,
@@ -459,24 +470,45 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Transform a WHERE string address into a ownId (id for thing) based on bridge type (BUS/ZigBee)
+     * Return a ownId string (=WHO.WHERE) from a WHERE String and ThingHandler
      *
-     * @param where OWN WHERE string address
+     * @param BaseOpenMessage baseMsg message
      * @return ownId
      */
-    public String ownIdFromWhere(String where) {
+    protected String ownIdFromWhere(String where, OpenWebNetThingHandler handler) {
+        return handler.ownIdPrefix() + "." + where;
+    }
+
+    /**
+     * Return a ownId string (=WHO.WHERE) from a BaseOpenMessage
+     *
+     * @param BaseOpenMessage baseMsg message
+     * @return ownId
+     */
+    private String ownIdFromMessage(BaseOpenMessage baseMsg) {
+        return baseMsg.getWho().value() + "." + baseMsg.getWhere();
+    }
+
+    /**
+     * Transform a WHERE string address into a Thing id string based on bridge type (BUS/ZigBee).
+     * '#' in where are changed to 'h'
+     *
+     * @param String where OWN WHERE address
+     * @return String thing Id
+     */
+    public String thingIdFromWhere(String where) {
         String str = "";
         if (isBusGateway) {
             if (where.indexOf('#') < 0) { // no hash present
                 str = where;
             } else if (where.indexOf("#4#") > 0) { // local bus: APL#4#bus
-                str = where;
+                str = where.replace('#', 'h'); // '#' cannot be used in ThingUID;
             } else if (where.indexOf('#') == 0) { // thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
                 str = where.substring(1);
             } else if (where.indexOf('#') > 0) { // thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) -- > Z
                 str = where.substring(0, where.indexOf('#'));
             } else {
-                logger.warn("==OWN== ownIdFromWhere() unexpected WHERE: {}", where);
+                logger.warn("==OWN== thingIdFromWhere() unexpected WHERE: {}", where);
                 str = where;
             }
             return str;

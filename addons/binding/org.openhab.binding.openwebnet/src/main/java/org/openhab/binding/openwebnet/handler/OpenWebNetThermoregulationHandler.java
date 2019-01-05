@@ -107,7 +107,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("==OWN:ThermoHandler== requestChannelState() thingUID={} channel={}", thing.getUID(),
                 channel.getId());
-        bridgeHandler.gateway.send(Thermoregulation.requestStatus(toWhere(channel)));
+        bridgeHandler.gateway.send(Thermoregulation.requestStatus(deviceWhere));
     }
 
     @Override
@@ -140,13 +140,11 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             BigDecimal value = quantity.toBigDecimal();
             // TODO check setPoint OWN range (15-35??) and check it's int or x.5 decimal, if not, round to nearest
             // x.0/x.5
-            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(toWhere(""), value.floatValue()));
-            // TODO change to device where variable
+            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(deviceWhere, value.floatValue()));
         } else if (command instanceof DecimalType) {
             BigDecimal value = ((DecimalType) command).toBigDecimal();
             // TODO check setPoint range and decimal (see TODO before)
-            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(toWhere(""), value.floatValue()));
-            // TODO change to device where variable
+            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(deviceWhere, value.floatValue()));
             updateState(CHANNEL_TEMP_SETPOINT, (DecimalType) command);
         } else {
             logger.warn("==OWN:ThermoHandler== Cannot handle command {} for thing {}", command, getThing().getUID());
@@ -168,8 +166,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             }
             logger.debug("==OWN:ThermoHandler== handleModeCommand() modeWhat={}", modeWhat);
             if (modeWhat != null) {
-                bridgeHandler.gateway.send(Thermoregulation.requestSetMode("#" + toWhere(""), modeWhat));
-                // TODO change to device where
+                bridgeHandler.gateway.send(Thermoregulation.requestSetMode("#" + deviceWhere, modeWhat));
             } else {
                 logger.warn("==OWN:ThermoHandler== Cannot handle command {} for thing {}", command,
                         getThing().getUID());
@@ -177,6 +174,11 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         } else {
             logger.warn("==OWN:ThermoHandler== Cannot handle command {} for thing {}", command, getThing().getUID());
         }
+    }
+
+    @Override
+    protected String ownIdPrefix() {
+        return org.openwebnet.message.Who.THERMOREGULATION.value().toString();
     }
 
     @Override

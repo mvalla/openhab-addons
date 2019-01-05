@@ -42,7 +42,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetThingHandler.class);
 
     protected OpenWebNetBridgeHandler bridgeHandler;
-    protected String ownId; // OpenWebNet identifier for this device
+    protected String ownId; // OpenWebNet identifier for this device: WHO.WHERE
+    protected String deviceWhere; // this device WHERE address
 
     public OpenWebNetThingHandler(Thing thing) {
         super(thing);
@@ -50,22 +51,29 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("==OWN:ThingHandler== initialize() thing={}", getThing().getUID());
+        logger.debug("==OWN:ThingHandler== initialize() thing={}", thing.getUID());
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            if (bridge.getHandler() != null) {
-                bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
-                // gateway = bridgeHandler.getGateway();
-                ownId = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
-                // TODO FIXME deviceWhere : create a final deviceWhere to be set at initialization and used later
-                // TODO check range for WHERE
-                bridgeHandler.registerDevice(ownId, getThing().getUID());
-                logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
-                // TODO handleCommand(REFRESH) : is it called automatically ? otherwise do here a:
-                // bridgeHandler.requestDeviceState(getThing().getUID());
+        if (bridge != null && bridge.getHandler() != null) {
+            bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
+            if (getConfig().get(CONFIG_PROPERTY_WHERE) == null) {
+                logger.warn("==OWN:ThingHandler== WHERE parameter in configuration is null or invalid. thing={}",
+                        thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "WHERE parameter in configuration is null or invalid");
+                return;
             }
+            deviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
+            // TODO check range for WHERE
+            ownId = bridgeHandler.ownIdFromWhere(deviceWhere, this);
+            bridgeHandler.registerDevice(ownId, this);
+            logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
+            // TODO handleCommand(REFRESH) : is it called automatically ? otherwise do here a:
+            // bridgeHandler.requestDeviceState(getThing().getUID());
         } else {
+            logger.warn(
+                    "==OWN:ThingHandler== No bridge associated, please assign a bridge in thing configuration. thing={}",
+                    thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No bridge associated, please assign a bridge in thing configuration.");
         }
@@ -157,33 +165,10 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns a WHERE address (string) based on bridge type and unit (optional)
+     * Returns a prefix String for ownId specific for each handler. To be implemented by sub-classes.
      *
-     * @param unit device unit
-     */
-    protected String toWhere(String unit) {
-        if (bridgeHandler.isBusGateway()) {
-            return ownId.replace('h', '#');
-        } else {
-            return ownId + unit;
-        }
-    }
-
-    /**
-     * Returns a WHERE address based on channel
-     *
-     * @param channel channel
-     */
-    // TODO remove this method and create ThingHandler where variable
-    protected String toWhere(ChannelUID channel) {
-        if (bridgeHandler.isBusGateway()) {
-            return ownId.replace('h', '#');
-        } else if (channel.getId().equals(CHANNEL_SWITCH_02)) {
-            return ownId + BaseOpenMessage.UNIT_02;
-        } else { // CHANNEL_SWITCH_01 or other channels
-            return ownId + BaseOpenMessage.UNIT_01;
-        }
-    }
+     **/
+    protected abstract String ownIdPrefix();
 
     protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
         if (command instanceof QuantityType) {
