@@ -364,7 +364,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario
                 || baseMsg instanceof CENPlusScenario) {
             String ownId = ownIdFromMessage(baseMsg);
-            logger.debug("==OWN==  ownId = {}", ownId);
+            logger.debug("==OWN==  ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = getDevice(ownId);
             // ThingUID thingUID = registeredDevices.get(ownId);
             // Thing device = getThingByUID(thingUID);
@@ -476,7 +476,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return ownId
      */
     protected String ownIdFromWhere(String where, OpenWebNetThingHandler handler) {
-        return handler.ownIdPrefix() + "." + where;
+        return handler.ownIdPrefix() + "." + normalizeWhere(where);
     }
 
     /**
@@ -486,23 +486,30 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return ownId
      */
     private String ownIdFromMessage(BaseOpenMessage baseMsg) {
-        return baseMsg.getWho().value() + "." + baseMsg.getWhere();
+        return baseMsg.getWho().value() + "." + normalizeWhere(baseMsg.getWhere());
     }
 
     /**
      * Transform a WHERE string address into a Thing id string based on bridge type (BUS/ZigBee).
      * '#' in where are changed to 'h'
      *
-     * @param String where OWN WHERE address
+     * @param String where WHERE address
      * @return String thing Id
      */
     public String thingIdFromWhere(String where) {
+        return normalizeWhere(where).replace('#', 'h'); // '#' cannot be used in ThingUID;
+    }
+
+    /**
+     * Normalize a WHERE string for Thermo devices
+     */
+    private String normalizeWhere(String where) {
         String str = "";
         if (isBusGateway) {
             if (where.indexOf('#') < 0) { // no hash present
                 str = where;
             } else if (where.indexOf("#4#") > 0) { // local bus: APL#4#bus
-                str = where.replace('#', 'h'); // '#' cannot be used in ThingUID;
+                str = where;
             } else if (where.indexOf('#') == 0) { // thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
                 str = where.substring(1);
             } else if (where.indexOf('#') > 0) { // thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) -- > Z
