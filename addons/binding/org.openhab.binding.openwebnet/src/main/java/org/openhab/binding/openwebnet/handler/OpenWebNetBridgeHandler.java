@@ -306,20 +306,31 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Register a device thing to this BridgHandler associating its ThingHandler
+     * Register a device ThingHandler to this BridgHandler
      *
-     * @param String                 ownId OpenWebNet id for device
-     * @param OpenWebNetThingHandler thingHandler
+     * @param String                 ownId device OpenWebNet id
+     * @param OpenWebNetThingHandler thingHandler to register
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
-        logger.debug("==OWN==  BridgeHandler.registerDevice() ");
-        if (thingHandler == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null 'thingHandler'.");
-        }
-        if (ownId == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null 'ownId'.");
+        if (registeredDevices.containsKey(ownId)) {
+            logger.warn("==OWN:BridgeHandler== registering device with an existing ownId={}", ownId);
         }
         registeredDevices.put(ownId, thingHandler);
+        logger.info("==OWN:BridgeHandler== registered device ownId={}, thing={}", ownId,
+                thingHandler.getThing().getUID());
+    }
+
+    /**
+     * Un-register a device from this bridge handler
+     *
+     * @param ownId device OpenWebNet id
+     */
+    protected void unregisterDevice(String ownId) {
+        if (registeredDevices.remove(ownId) != null) {
+            logger.info("==OWN:BridgeHandler== un-registered device ownId={}", ownId); // TODO move to debug
+        } else {
+            logger.warn("==OWN:BridgeHandler== could not un-register ownId={} (not found)", ownId);
+        }
     }
 
     /**
@@ -330,19 +341,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      */
     private OpenWebNetThingHandler getDevice(String ownId) {
         return registeredDevices.get(ownId);
-    }
-
-    /**
-     * Un-register a device from this bridge handler
-     *
-     * @param ownId device OpenWebNet id
-     */
-    protected void unregisterDevice(String ownId) {
-        logger.debug("==OWN==  BridgeHandler.UNregisterDevice() ");
-        if (ownId == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null 'ownId'.");
-        }
-        registeredDevices.remove(ownId);
     }
 
     @Override

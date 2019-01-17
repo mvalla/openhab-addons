@@ -161,6 +161,9 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("==OWN:ThingHandler== dispose() thing={}", getThing().getUID());
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterDevice(ownId);
+        }
         super.dispose();
     }
 
