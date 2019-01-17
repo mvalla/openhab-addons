@@ -135,16 +135,18 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private void handleSetpointCommand(Command command) {
         logger.debug("==OWN:ThermoHandler== handleSetpointCommand() (command={})", command);
         Unit<Temperature> unit = CELSIUS;
-        if (command instanceof QuantityType) {
-            QuantityType<Temperature> quantity = commandToQuantityType(command, unit);
-            BigDecimal value = quantity.toBigDecimal();
-            // TODO check setPoint OWN range (15-35??) and check it's int or x.5 decimal, if not, round to nearest
-            // x.0/x.5
-            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(deviceWhere, value.floatValue()));
-        } else if (command instanceof DecimalType) {
-            BigDecimal value = ((DecimalType) command).toBigDecimal();
-            // TODO check setPoint range and decimal (see TODO before)
-            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint(deviceWhere, value.floatValue()));
+        if (command instanceof QuantityType || command instanceof DecimalType) {
+            BigDecimal value;
+            if (command instanceof QuantityType) {
+                QuantityType<Temperature> quantity = commandToQuantityType(command, unit);
+                value = quantity.toBigDecimal();
+            } else {
+                value = ((DecimalType) command).toBigDecimal();
+            }
+            // TODO check setPoint is inside OWN range (5-40) and check it's int or x.5 decimal, if not, round to
+            // nearest
+            // x.0/x.5. Or better make it a control at lib level
+            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint("#" + deviceWhere, value.floatValue()));
             updateState(CHANNEL_TEMP_SETPOINT, (DecimalType) command);
         } else {
             logger.warn("==OWN:ThermoHandler== Cannot handle command {} for thing {}", command, getThing().getUID());
@@ -214,15 +216,18 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     }
 
     private void updateMode(Thermoregulation tmsg) {
-        logger.debug("==OWN:ThermoHandler== updateMode() for thing: {}", thing.getUID());
+        logger.debug("==OWN:ThermoHandler== updateMode() for thing: {} msg={}", thing.getUID(), tmsg);
         Thermoregulation.WHAT w = (Thermoregulation.WHAT) tmsg.getWhat();
         Mode newMode = whatToMode(w);
         if (newMode != null) {
             if (tmsg.isFromCentralUnit()) {
                 updateSetMode(newMode);
-            } else {
-                updateActiveMode(newMode);
             }
+            // else {
+            updateActiveMode(newMode);
+            // }
+        } else {
+            logger.debug("==OWN:ThermoHandler== updateMode() mode not processed: msg={}", tmsg);
         }
         updateThermoFunction(w);
         updateHeatingCoolingMode();
