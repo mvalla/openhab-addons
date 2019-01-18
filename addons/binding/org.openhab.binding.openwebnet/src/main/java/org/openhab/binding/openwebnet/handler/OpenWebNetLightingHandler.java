@@ -201,6 +201,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     @Override
+    protected String ownIdPrefix() {
+        return org.openwebnet.message.Who.LIGHTING.value().toString();
+    }
+
+    @Override
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
         updateLightState((Lighting) msg);
@@ -346,6 +351,36 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             return (int) Math.floor(percent / 10.0);
         }
 
+    }
+
+    /**
+     * Returns a WHERE address (string) based on bridge type and unit (optional)
+     *
+     * @param unit device unit
+     **/
+    protected String toWhere(String unit) {
+        logger.debug("==OWN:LightingHandler== toWhere(unit) ownId={}", ownId);
+        if (bridgeHandler.isBusGateway()) {
+            return deviceWhere;
+        } else {
+            return deviceWhere + unit;
+        }
+    }
+
+    /**
+     * Returns a WHERE address based on channel
+     *
+     * @param channel channel
+     **/
+    protected String toWhere(ChannelUID channel) {
+        logger.debug("==OWN:LightingHandler== toWhere(ChannelUID) ownId={}", ownId);
+        if (bridgeHandler.isBusGateway()) {
+            return deviceWhere;
+        } else if (channel.getId().equals(CHANNEL_SWITCH_02)) {
+            return deviceWhere + BaseOpenMessage.UNIT_02;
+        } else { // CHANNEL_SWITCH_01 or other channels
+            return deviceWhere + BaseOpenMessage.UNIT_01;
+        }
     }
 
 } // class

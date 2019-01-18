@@ -77,11 +77,13 @@ After the binding is installed, from Marketplace or manually, some *features dep
 
 - from [Karaf console](https://www.openhab.org/docs/administration/console.html):
     - `feature:install openhab-transport-serial`
-    - if you are using  **openHAB 2.4.0-x** also type:
-	
-         `feature:install esh-io-transport-upnp`
+    - `feature:install esh-io-transport-upnp`
 
 The binding should now be installed: check in *PaperUI > Configuration > Bindings*.
+
+After upgrading the binding to a new version, there is no need to activate dependencies again.
+
+**However dependencies must be activated again if you upgrade openHAB to a new version or clean its cache.**
 
 ### Upgrade from previous binding release version
 
@@ -103,11 +105,7 @@ Since openHAB uses some cache mechanisms to load bindings, it is not enough to r
 1. reload the page in the browser to make sure latest version is selected
 1. search again `openweb` > INSTALL
 
-
-The **new version** of the binding should now be installed, check the version number in *PaperUI > Configuration > Bindings*.
-
-While upgrading, there is no need to activate dependencies again.
-
+The new version of the binding should now be installed, check the version number in *PaperUI > Configuration > Bindings*.
 
 ## Debugging and Log Files
 
@@ -288,15 +286,16 @@ You will need to associate tags manually for items created using PaperUI when Si
 
 ```xtend
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde" ] {
-      bus_on_off_switch        LR_switch        "Living Room Light"       [ where="11" ]
+      bus_on_off_switch        LR_switch        "Living Room Light"       [ where="51" ]
       bus_dimmer               LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
       bus_dimmer               LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
       bus_automation           LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
       bus_thermostat           LR_thermostat    "Living Room Thermostat"  [ where="1"]
       bus_temp_sensor          EXT_tempsensor   "External Temperature"    [ where="500"]
+      bus_energy_central_unit  CENTRAL_energy   "Energy Management"       [ where="51" ]
+      bus_cen_scenario_control LR_CEN_scenario  "Living Room CEN" [ where="51", buttons="4,3,8"]
       bus_cenplus_scenario_control  LR_CENplus_scenario "Living Room CEN+"        [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir       LR_IR_sensor     "Living Room IR Sensor"   [ where="399" ]
-      bus_energy_central_unit  CENTRAL_energy   "Energy Management"       [ where="51" ]
 }
 ``` 
 
@@ -311,7 +310,7 @@ Bridge openwebnet:dongle:mydongle2  [serialPort="kkkkkkk"] {
 
 ### openwebnet.items:
 
-Items in the example (Light, Dimmer, Thermostat, etc.) will be discovered by Google Assistant/Alexa/HomeKit if tags are configured like in the example.
+Items in the example (Light, Dimmer, Thermostat, etc.) will be discovered by Google Assistant/Alexa/HomeKit if their tags are configured like in the example.
 
 ```xtend
 Switch         iLR_switch        "Switch"                 <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
@@ -320,11 +319,12 @@ Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLiv
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
 Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
-String         iLR_scenario_btn1  "Scenario Button 1"               <network>           { channel="openwebnet:bus_cenplus_scenario_control:mybridge:LR_CENplus_scenario:button_1" }  
-Switch         iLR_IR_sensor     "Living Room IR sensor"  <motion>            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
-Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>                                                      { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
+Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>            { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
+String         iLR_scenario_btn4  "Scenario Button 4"     <network>           { channel="openwebnet:bus_cen_scenario_control:mybridge:LR_CEN_scenario:button_4" }  
+String         iLR_scenario_btn1  "Scenario Button 1"     <network>           { channel="openwebnet:bus_cenplus_scenario_control:mybridge:LR_CENplus_scenario:button_1" }  
+Switch         iLR_IR_sensor      "Living Room IR sensor" <motion>            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 
-/* Thermostat Setup (Google Home/Alexa require thermostat items to be grouped together) */
+/* Thermostat Setup (Google Assitant/Alexa require thermostat items to be grouped together) */
 Group   gLR_thermostat               "Living Room Thermostat"                                     [ "Thermostat" ]
 Number:Temperature  iLR_temp         "Temperature [%.1f °C]"  <temperature>  (gLR_Thermostat)     [ "CurrentTemperature" ]          { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:temperature" }
 String              iLR_offset       "Offset"                                (gLR_Thermostat)                                       { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:localMode" }
@@ -345,11 +345,13 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 
 Frame label="Living Room"
     {
-          Default item=iLR_light            icon="light" 
-          Default item=iLR_switch               
+          Default item=iLR_switch           icon="light"    
           Default item=iLR_dimmer           icon="light" 
           Default item=iLR_dalidimmer       icon="light"
-          Switch    item=iLR_scenario_btn1 label="Scenario (btn1)[]" mappings=[PRESSED="Scenario-1 (PRESSED)", PRESSED_EXT="Scenario-2 (PRESSED_EXT)", RELEASED_EXT="Scenario-2 (RELEASED_EXT)"] 
+          Default item=iLR_shutter
+          Default item=iEXT_tempsensor      icon="temperature"
+          Switch    item=iLR_scenario_btn4 label="CEN Scenario (btn4)[]"  mappings=[PRESSED="Scenario-A (PRESSED)", PRESSED_EXT="Scenario-B (PRESSED_EXT)", RELEASED_EXT="Scenario-B-end (RELEASED_EXT)"] 
+          Switch    item=iLR_scenario_btn1 label="CEN+ Scenario (btn1)[]" mappings=[PRESSED="Scenario-C (PRESSED)", PRESSED_EXT="Scenario-C (PRESSED_EXT)", RELEASED_EXT="Scenario-C-end (RELEASED_EXT)"] 
 
           Switch item=iLR_IR_sensor mappings=[ON="Presence", OFF="No Presence"]
 
@@ -372,7 +374,7 @@ Frame label="Living Room"
 ### openwebnet.rules
 
 ```xtend
-// short pressure on CEN+ button will increase dimmer%
+// SCENARIO-A: short pressure on CEN+ button 1 will increase dimmer%
 rule "CEN+ dimmer increase"
 when
     Item iLR_scenario_btn1 received update "RELEASED"
@@ -380,7 +382,7 @@ then
         sendCommand(iLR_dimmer, INCREASE)  
 end
 
-// long pressure on CEN+ button will switch off dimmer
+// SCENARIO-B: long pressure on CEN+ button 1 will switch off dimmer
 rule "CEN+ dimmer off"
 when
     Item iLR_scenario_btn1 received update "RELEASED_EXT"
@@ -402,6 +404,14 @@ end
   The lib also uses few modified classes from the openHAB 1.x BTicino binding for socket handling and priority queues.
 
 ## Changelog
+
+**v2.4.0-b9-2** - 18/01/2019
+
+- [FIX #37] CEN commands WHAT (buttons) 0-9 are now 00-09
+- [FIX] CEN/CEN+ scenarioButton channel is now able to receive commands
+- [FIX #45] Thermoregulation setpoint command refused
+- [FIX #42 & #43] Devices with same WHERE receive wrong messages from BUS
+- [FIX] improved device registration to BridgeHandler
 
 **v2.4.0-b9-1** - 27/12/2018
 
@@ -463,5 +473,14 @@ For a list of current open issues / features requests see [GitHub repo](https://
 
 ## Special thanks
 
-Special thanks for helping on testing this binding go to: [@m4rk](https://community.openhab.org/u/m4rk/), [@enrico.mcc](https://community.openhab.org/u/enrico.mcc), [@bastler](https://community.openhab.org/u/bastler), [@k0nti](https://community.openhab.org/u/k0nti/), [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/), [@gozilla01](https://community.openhab.org/u/gozilla01), [llegovich](https://community.openhab.org/u/llegovich) and many others at the fantastic openHAB community!
+Special thanks for helping on testing this binding go to:
+[@m4rk](https://community.openhab.org/u/m4rk/),
+[@enrico.mcc](https://community.openhab.org/u/enrico.mcc),
+[@bastler](https://community.openhab.org/u/bastler),
+[@k0nti](https://community.openhab.org/u/k0nti/),
+[@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/),
+[@gozilla01](https://community.openhab.org/u/gozilla01),
+[llegovich](https://community.openhab.org/u/llegovich),
+[@gabriele.daltoe](https://community.openhab.org/u/gabriele.daltoe)
+and many others at the fantastic openHAB community!
 

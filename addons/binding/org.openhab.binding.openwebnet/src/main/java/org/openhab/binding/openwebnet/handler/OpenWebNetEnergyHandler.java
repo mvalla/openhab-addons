@@ -55,7 +55,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("==OWN:EnergyHandler== requestChannelState() thingUID={} channel={}", thing.getUID(),
                 channel.getId());
-        bridgeHandler.gateway.send(EnergyManagement.requestActivePower(toWhere(channel)));
+        bridgeHandler.gateway.send(EnergyManagement.requestActivePower(deviceWhere));
     }
 
     @Override
@@ -68,6 +68,11 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         // indicate that by setting the status with detail information
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
         // "Could not control device at IP address x.x.x.x");
+    }
+
+    @Override
+    protected String ownIdPrefix() {
+        return org.openwebnet.message.Who.ENERGY_MANAGEMENT.value().toString();
     }
 
     @Override
