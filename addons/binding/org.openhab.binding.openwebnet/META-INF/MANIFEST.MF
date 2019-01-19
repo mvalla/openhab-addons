@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.openwebnet
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- lib/openwebnet-lib-0.9.17.jar
+ lib/openwebnet-lib-0.9.18.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenWebNet Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -40,3 +40,4 @@ Export-Package: org.openhab.binding.openwebnet,
 Service-Component: OSGI-INF/*.xml
 COMMENT-INFO: COMMENT the following line to release, UNCOMMENT for development
 Require-Bundle: openwebnet-lib
+

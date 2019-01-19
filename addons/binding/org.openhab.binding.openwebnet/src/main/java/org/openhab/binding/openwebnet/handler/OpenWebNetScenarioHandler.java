@@ -118,7 +118,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         logger.debug("==OWN:ScenarioHandler== requestChannelState() thingUID={} channel={}", thing.getUID(),
                 channel.getId());
         if (isDryContactIR) {
-            bridgeHandler.gateway.send(CENPlusScenario.requestStatus(toWhere(channel)));
+            bridgeHandler.gateway.send(CENPlusScenario.requestStatus(deviceWhere));
         } else { // is not possible to request channel state for CEN/CEN+ buttons
             updateStatus(ThingStatus.ONLINE);
             updateState(channel, UnDefType.UNDEF);
@@ -159,15 +159,14 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
             switch (prState) {
                 case PRESSED:
                     if (isCENPlus) {
-                        bridgeHandler.gateway
-                                .send(CENPlusScenario.virtualShortPressure(toWhere(channel), buttonNumber));
+                        bridgeHandler.gateway.send(CENPlusScenario.virtualShortPressure(deviceWhere, buttonNumber));
                     } else {
-                        bridgeHandler.gateway.send(CENScenario.virtualStartPressure(toWhere(channel), buttonNumber));
+                        bridgeHandler.gateway.send(CENScenario.virtualStartPressure(deviceWhere, buttonNumber));
                         scheduler.schedule(() -> { // let's schedule a CEN virtual release OWN message
-                            logger.debug("==OWN:ScenarioHandler== # " + toWhere(channel)
-                                    + " sending CEN virtual release...");
+                            logger.debug(
+                                    "==OWN:ScenarioHandler== # " + deviceWhere + " sending CEN virtual release...");
                             bridgeHandler.gateway
-                                    .send(CENScenario.virtualReleaseShortPressure(toWhere(channel), buttonNumber));
+                                    .send(CENScenario.virtualReleaseShortPressure(deviceWhere, buttonNumber));
                         }, SHORT_PRESSURE_DELAY, TimeUnit.MILLISECONDS);
                     }
                     break;
@@ -178,24 +177,23 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                     // TODO send more EXT PRESSURE messages every 500ms untile RELEASE_EXT command
                     if (isCENPlus) {
                         bridgeHandler.gateway
-                                .send(CENPlusScenario.virtualStartExtendedPressure(toWhere(channel), buttonNumber));
+                                .send(CENPlusScenario.virtualStartExtendedPressure(deviceWhere, buttonNumber));
                     } else {
-                        bridgeHandler.gateway.send(CENScenario.virtualStartPressure(toWhere(channel), buttonNumber));
+                        bridgeHandler.gateway.send(CENScenario.virtualStartPressure(deviceWhere, buttonNumber));
                         scheduler.schedule(() -> { // let's schedule a CEN virtual ext pressure OWN message
-                            logger.debug("==OWN:ScenarioHandler== # " + toWhere(channel)
+                            logger.debug("==OWN:ScenarioHandler== # " + deviceWhere
                                     + " sending CEN virtual ext pressure...");
-                            bridgeHandler.gateway
-                                    .send(CENScenario.virtualExtendedPressure(toWhere(channel), buttonNumber));
+                            bridgeHandler.gateway.send(CENScenario.virtualExtendedPressure(deviceWhere, buttonNumber));
                         }, EXT_PRESS_INTERVAL, TimeUnit.MILLISECONDS);
                     }
                     break;
                 case RELEASED_EXT:
                     if (isCENPlus) {
                         bridgeHandler.gateway
-                                .send(CENPlusScenario.virtualReleaseExtendedPressure(toWhere(channel), buttonNumber));
+                                .send(CENPlusScenario.virtualReleaseExtendedPressure(deviceWhere, buttonNumber));
                     } else {
                         bridgeHandler.gateway
-                                .send(CENScenario.virtualReleaseExtendedPressure(toWhere(channel), buttonNumber));
+                                .send(CENScenario.virtualReleaseExtendedPressure(deviceWhere, buttonNumber));
                     }
                     break;
             }
@@ -209,6 +207,15 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         // indicate that by setting the status with detail information
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
         // "Could not control device at IP address x.x.x.x");
+    }
+
+    @Override
+    protected String ownIdPrefix() {
+        if (isDryContactIR || isCENPlus) {
+            return org.openwebnet.message.Who.CEN_PLUS_SCENARIO_SCHEDULER.value().toString();
+        } else {
+            return org.openwebnet.message.Who.CEN_SCENARIO_SCHEDULER.value().toString();
+        }
     }
 
     @Override
@@ -265,8 +272,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         }
         if (prState == PressureState.PRESSED) {
             scheduler.schedule(() -> { // let's schedule state -> RELEASED
-                logger.debug(
-                        "==OWN:ScenarioHandler== # " + toWhere(channel.getUID()) + " updating state to 'RELEASED'...");
+                logger.debug("==OWN:ScenarioHandler== # " + deviceWhere + " updating state to 'RELEASED'...");
                 updateState(channel.getUID(), new StringType(PressureState.RELEASED.toString()));
             }, SHORT_PRESSURE_DELAY, TimeUnit.MILLISECONDS);
         }
