@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.solaredge.internal.command;
 
-import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -18,8 +22,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
+import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi;
 import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
 import org.openhab.binding.solaredge.internal.model.DataResponse;
@@ -97,9 +101,7 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
             if (json != null) {
                 logger.debug("JSON String: {}", json);
                 DataResponse jsonObject = gson.fromJson(json, AggregateDataResponsePublicApi.class);
-                if (jsonObject != null) {
-                    handler.updateChannelStatus(jsonObject.getValues());
-                }
+                handler.updateChannelStatus(jsonObject.getValues());
             }
         }
     }

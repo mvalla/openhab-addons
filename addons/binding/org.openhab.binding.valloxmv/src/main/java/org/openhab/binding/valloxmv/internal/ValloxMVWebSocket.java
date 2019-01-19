@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.valloxmv.internal;
 
@@ -47,46 +51,40 @@ import org.slf4j.LoggerFactory;
  * @author Björn Brings - Initial contribution
  */
 public class ValloxMVWebSocket {
-    private final String ip;
     private final ValloxMVHandler voHandler;
-    private WebSocketClient client;
+    private final WebSocketClient client;
+    private final URI destUri;
     private ValloxMVWebSocketListener socket;
 
     private final Logger logger = LoggerFactory.getLogger(ValloxMVWebSocket.class);
 
-    public ValloxMVWebSocket(ValloxMVHandler voHandler, String ip) {
+    public ValloxMVWebSocket(WebSocketClient webSocketClient, ValloxMVHandler voHandler, String ip) {
         this.voHandler = voHandler;
-        this.ip = ip;
-        client = new WebSocketClient();
+        this.client = webSocketClient;
+        URI tempUri;
+        try {
+            tempUri = new URI("ws://" + ip + ":80");
+        } catch (URISyntaxException e) {
+            tempUri = null;
+            connectionError(e);
+        }
+        destUri = tempUri;
     }
 
     public void request(ChannelUID channelUID, String updateState) {
         try {
             socket = new ValloxMVWebSocketListener(channelUID, updateState);
-            client.start();
-
-            URI destUri = new URI("ws://" + ip + ":80");
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             logger.debug("Connecting to: {}", destUri);
             client.connect(socket, destUri, request);
             socket.awaitClose(2, TimeUnit.SECONDS);
-        } catch (URISyntaxException | InterruptedException | IOException e) {
+        } catch (InterruptedException | IOException e) {
             connectionError(e);
         } catch (Exception e) {
             logger.debug("Unexpected error");
             connectionError(e);
         }
-    }
-
-    public void close() {
-        try {
-            client.stop();
-        } catch (Exception e) {
-            logger.debug("Error while closing connection: {}", e);
-        }
-        client.destroy();
-        client = null;
     }
 
     public void connectionError(Exception e) {

@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dsmr.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,20 +42,17 @@ public final class TelegramReaderUtil {
      * @return The raw bytes of a telegram
      */
     public static byte[] readRawTelegram(String telegramName) {
-        byte[] telegram = null;
-
         try (InputStream is = TelegramReaderUtil.class.getResourceAsStream(telegramName + TELEGRAM_EXT)) {
-            telegram = IOUtils.toByteArray(is);
+            return IOUtils.toByteArray(is);
         } catch (IOException e) {
-            fail("IOException reading telegram data:" + e);
+            throw new AssertionError("IOException reading telegram data: ", e);
         }
-        return telegram;
     }
 
     /**
      * Reads a telegram given the file relative to this package and returns the objects.
      *
-     * @param telegramName          name of the telegram file to read
+     * @param telegramName name of the telegram file to read
      * @param expectedTelegramState expected state of the telegram read
      * @return a P1Telegram object
      */

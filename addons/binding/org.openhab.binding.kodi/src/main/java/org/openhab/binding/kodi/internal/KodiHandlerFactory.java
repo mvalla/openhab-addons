@@ -1,20 +1,25 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.kodi.internal;
 
-import static org.openhab.binding.kodi.KodiBindingConstants.*;
+import static org.openhab.binding.kodi.internal.KodiBindingConstants.*;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -24,7 +29,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.kodi.handler.KodiHandler;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
+import org.openhab.binding.kodi.internal.handler.KodiHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -46,6 +52,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
     private AudioHTTPServer audioHTTPServer;
     private NetworkAddressService networkAddressService;
+    private WebSocketClient webSocketClient;
 
     // url (scheme+server+port) to use for playing notification sounds
     private String callbackUrl = null;
@@ -71,7 +78,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_KODI)) {
-            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider);
+            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider, webSocketClient);
 
             // register the Kodi as an audio sink
             KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, createCallbackUrl());
@@ -114,6 +121,15 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         if (reg != null) {
             reg.unregister();
         }
+    }
+
+    @Reference
+    protected void setHttpClientFactory(WebSocketFactory webSocketFactory) {
+        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
+    }
+
+    protected void unsetHttpClientFactory(WebSocketFactory webSocketFactory) {
+        this.webSocketClient = null;
     }
 
     @Reference

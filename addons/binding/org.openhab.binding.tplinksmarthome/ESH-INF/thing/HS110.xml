@@ -10,7 +10,7 @@
 		<category>PowerOutlet</category>
 
 		<channels>
-			<channel id="switch" typeId="switch" />
+			<channel id="switch" typeId="system.power" />
 			<channel id="led" typeId="led" />
 			<channel id="rssi" typeId="rssi" />
 			<channel id="power" typeId="power" />
@@ -18,6 +18,8 @@
 			<channel id="current" typeId="current" />
 			<channel id="voltage" typeId="voltage" />
 		</channels>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:device:plug" />
 	</thing-type>

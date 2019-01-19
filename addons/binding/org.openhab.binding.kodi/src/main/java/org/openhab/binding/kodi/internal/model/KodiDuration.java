@@ -1,38 +1,45 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.kodi.internal.model;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * Class representing a Kodi duration
+ * Class representing a Kodi duration (https://kodi.wiki/view/JSON-RPC_API/v9#Global.Time)
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class KodiDuration {
     /**
      * The hours of the duration
      */
-    private long hours = 0;
+    private long hours;
     /**
      * The minutes of the duration
      */
-    private long minutes = 0;
+    private long minutes;
     /**
      * The seconds of the duration
      */
-    private long seconds = 0;
+    private long seconds;
     /**
      * The milliseconds of the duration
      */
-    private long milliseconds = 0;
+    private long milliseconds;
 
     public long getHours() {
         return hours;

@@ -1,30 +1,38 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.solaredge.internal.connector;
 
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Queue;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
-import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
+import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
+import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
+import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,23 +41,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - initial contribution
  */
-public class WebInterface {
+@NonNullByDefault
+public class WebInterface implements AtomicReferenceTrait {
 
-    private static final long PUBLIC_API_DAY_LIMIT = 300;
-    private static final long MINUTES_PER_DAY = 1440;
-    private static final long REQUEST_INITIAL_DELAY = 30000;
-    private static final long REQUEST_INTERVAL = 5000;
+    private final static int API_KEY_THRESHOLD = 40;
+    private final static int TOKEN_THRESHOLD = 80;
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
     /**
-     * Configuration of the bridge from
-     * {@link org.openhab.BoxHandler.fritzaha.handler.FritzAhaBridgeHandler}
+     * Configuration
      */
-    private final SolarEdgeConfiguration config;
+    private SolarEdgeConfiguration config;
 
     /**
-     * Bridge thing handler for updating thing status
+     * handler for updating thing status
      */
     private final SolarEdgeHandler handler;
 
@@ -77,7 +83,7 @@ public class WebInterface {
     /**
      * periodic request executor job
      */
-    private ScheduledFuture<?> requestExecutorJob;
+    private final AtomicReference<@Nullable Future<?>> requestExecutorJobReference;
 
     /**
      * this class is responsible for executing periodic web requests. This ensures that only one request is executed at
@@ -85,7 +91,6 @@ public class WebInterface {
      *
      * @author afriese - initial contribution
      */
-    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
@@ -97,7 +102,7 @@ public class WebInterface {
          * constructor
          */
         WebRequestExecutor() {
-            this.commandQueue = new BlockingArrayQueue<>(20);
+            this.commandQueue = new BlockingArrayQueue<>(WEB_REQUEST_QUEUE_MAX_SIZE);
         }
 
         /**
@@ -106,7 +111,16 @@ public class WebInterface {
          * @param command
          */
         void enqueue(SolarEdgeCommand command) {
-            commandQueue.add(command);
+            try {
+                commandQueue.add(command);
+            } catch (IllegalStateException ex) {
+                if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
+                    logger.debug(
+                            "Could not add command to command queue because queue is already full. Maybe SolarEdge is down?");
+                } else {
+                    logger.warn("Could not add command to queue - IllegalStateException");
+                }
+            }
         }
 
         /**
@@ -122,16 +136,21 @@ public class WebInterface {
                 StatusUpdateListener statusUpdater = new StatusUpdateListener() {
                     @Override
                     public void update(CommunicationStatus status) {
-                        if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
-                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                        } else if (!status.getHttpCode().equals(Code.OK)) {
-                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                        }
+                        switch (status.getHttpCode()) {
+                            case SERVICE_UNAVAILABLE:
+                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                        status.getMessage());
+                                setAuthenticated(false);
+                                break;
+                            case OK:
+                                // no action needed as the thing is already online.
+                                break;
+                            default:
+                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        status.getMessage());
+                                setAuthenticated(false);
 
+                        }
                     }
                 };
 
@@ -148,23 +167,19 @@ public class WebInterface {
      *
      * @param config Bridge configuration
      */
-    public WebInterface(SolarEdgeConfiguration config, ScheduledExecutorService scheduler, SolarEdgeHandler handler,
-            HttpClient httpClient) {
-        this.config = config;
+    public WebInterface(ScheduledExecutorService scheduler, SolarEdgeHandler handler, HttpClient httpClient) {
+        this.config = handler.getConfiguration();
         this.handler = handler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
         this.requestExecutor = new WebRequestExecutor();
+        this.requestExecutorJobReference = new AtomicReference<@Nullable Future<?>>(null);
     }
 
-    public synchronized void start() {
-        if (requestExecutorJob == null || requestExecutorJob.isCancelled()) {
-            logger.debug("start request executor job at intervall {} ms", REQUEST_INTERVAL);
-            requestExecutorJob = scheduler.scheduleWithFixedDelay(requestExecutor, REQUEST_INITIAL_DELAY,
-                    REQUEST_INTERVAL, TimeUnit.MILLISECONDS);
-        } else {
-            logger.debug("request executor job already active");
-        }
+    public void start() {
+        this.config = handler.getConfiguration();
+        updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
+                WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -193,27 +208,41 @@ public class WebInterface {
                 @Override
                 public void update(CommunicationStatus status) {
 
-                    if (status.getHttpCode().equals(Code.OK)) {
-                        handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
-                        setAuthenticated(true);
-                    } else if (status.getHttpCode().equals(Code.FOUND)) {
-                        handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "invalid token");
-                        setAuthenticated(false);
-                    } else if (status.getHttpCode().equals(Code.FORBIDDEN)) {
-                        handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "invalid api key or solarId is not valid for this api key");
-                        setAuthenticated(false);
-                    } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                status.getMessage());
-                        setAuthenticated(false);
+                    String errorMessageCodeFound;
+                    String errorMessgaeCodeForbidden;
+                    if (config.isUsePrivateApi()) {
+                        errorMessageCodeFound = "login error with private API: invalid token";
+                        errorMessgaeCodeForbidden = "login error with private API: invalid solarId";
                     } else {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                status.getMessage());
-                        setAuthenticated(false);
+                        errorMessageCodeFound = "login error with public API: unknown error";
+                        errorMessgaeCodeForbidden = "login error with public API: invalid api key or solarId is not valid for this api key";
                     }
 
+                    switch (status.getHttpCode()) {
+                        case OK:
+                            handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
+                            setAuthenticated(true);
+                            break;
+                        case FOUND:
+                            handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    errorMessageCodeFound);
+                            setAuthenticated(false);
+                            break;
+                        case FORBIDDEN:
+                            handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    errorMessgaeCodeForbidden);
+                            setAuthenticated(false);
+                            break;
+                        case SERVICE_UNAVAILABLE:
+                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                            break;
+                        default:
+                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                    }
                 }
             };
 
@@ -229,18 +258,25 @@ public class WebInterface {
     /**
      * performs some pre cheks on configuration before attempting to login
      *
-     * @return error message or SUCCESS
+     * @return true on success, false otherwise
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        if (this.config.getTokenOrApiKey() == null) {
+        String localTokenOrApiKey = config.getTokenOrApiKey();
+        String localSolarId = config.getSolarId();
+
+        if (localTokenOrApiKey == null || localTokenOrApiKey.isEmpty()) {
             preCheckStatusMessage = "please configure token/api_key first";
-        } else if (this.config.getSolarId() == null || this.config.getSolarId().isEmpty()) {
+        } else if (localSolarId == null || localSolarId.isEmpty()) {
             preCheckStatusMessage = "please configure solarId first";
-        } else if (this.config.isUsePrivateApi() == false && calcRequestsPerDay() > PUBLIC_API_DAY_LIMIT) {
-            preCheckStatusMessage = "daily request limit (" + PUBLIC_API_DAY_LIMIT + ") exceeded: "
+        } else if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
+            preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
+        } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
+            preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
+        } else if (config.isUsePrivateApi() == false && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
+            preCheckStatusMessage = "daily request limit (" + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + ") exceeded: "
                     + calcRequestsPerDay();
-        } else if (this.config.isUsePrivateApi() && !this.config.isMeterInstalled()) {
+        } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
             preCheckStatusMessage = "a meter must be present in order to use the private API";
         } else {
             return true;
@@ -266,11 +302,7 @@ public class WebInterface {
      */
     public void dispose() {
         logger.debug("Webinterface disposed.");
-        if (requestExecutorJob != null && !requestExecutorJob.isCancelled()) {
-            logger.debug("stop request executor job");
-            requestExecutorJob.cancel(true);
-            requestExecutorJob = null;
-        }
+        cancelJobReference(requestExecutorJobReference);
     }
 
     /**
@@ -278,11 +310,11 @@ public class WebInterface {
      *
      * @return
      */
-    private synchronized boolean isAuthenticated() {
+    private boolean isAuthenticated() {
         return authenticated;
     }
 
-    private synchronized void setAuthenticated(boolean authenticated) {
+    private void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
 

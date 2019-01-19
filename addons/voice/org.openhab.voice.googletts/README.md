@@ -1,27 +1,22 @@
 # Google Cloud Text-to-Speech
 
-Google Cloud TTS Service uses Google's Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
+Google Cloud TTS Service uses the none-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
 (SSML) input into audio data of natural human speech. 
 It provides 30 voices, available in multiple languages and variants and applies DeepMind’s groundbreaking research in 
 WaveNet and Google’s powerful neural networks. 
 The implementation caches the converted texts to reduce the load on the API and make the conversion faster.
+Be aware, that using this service may incur cost on your Google Cloud account.
+You can find pricing information on the [documentation page](https://cloud.google.com/text-to-speech/#pricing-summary).
 
 ## Table of Contents
 
 <!-- MarkdownTOC -->
 
-- [Prerequisites](#prerequisites)
 - [Obtaining Credentials](#obtaining-credentials)
 - [Service Configuration](#service-configuration)
 - [Voice Configuration](#voice-configuration)
 
 <!-- /MarkdownTOC -->
-
-## Prerequisites
-
-Please make sure your installation runs on x86_64 Linux/Windows/Mac. 
-Dependencies of Google Cloud Java support only these platforms. 
-For details please visit [Google Cloud Java](https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/README.md)/Supported platforms.
 
 ## Obtaining Credentials
 
@@ -46,6 +41,7 @@ Using your favourite configuration UI (e.g. PaperUI) edit **Services/Voice/Googl
 * **Pitch** - The pitch of selected voice, up to 20 semitones
 * **Volume Gain** - The volume of the output between 16dB and -96dB
 * **Speaking Rate** - The speaking rate can be 4x faster or slower than the normal rate 
+* **Purge Cache** - Purges the cache e.g. after testing different voice configuration parameters. When enabled the cache is purged once. Make sure to disable this setting again so the cache is maintained after restarts.
 
 ## Voice Configuration
 

@@ -1,17 +1,23 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.kodi.internal;
 
 import java.util.EventListener;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.RawType;
+import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 
 /**
@@ -65,15 +71,21 @@ public interface KodiEventListener extends EventListener {
 
     void updateGenreList(List<String> genreList);
 
-    void updatePVRChannel(final String channel);
+    void updatePVRChannel(String channel);
 
-    void updateThumbnail(RawType thumbnail);
+    void updateThumbnail(@Nullable RawType thumbnail);
 
-    void updateFanart(RawType fanart);
+    void updateFanart(@Nullable RawType fanart);
+
+    void updateAudioCodec(String codec);
+
+    void updateVideoCodec(String codec);
 
     void updateCurrentTime(long currentTime);
 
     void updateCurrentTimePercentage(double currentTimePercentage);
 
     void updateDuration(long duration);
+
+    void updateSystemProperties(@Nullable KodiSystemProperties systemProperties);
 }

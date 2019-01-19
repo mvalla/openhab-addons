@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.network.internal.dhcp;
 
@@ -17,6 +21,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.dhcp.DHCPPacket.BadPacketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +34,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class DHCPPacketListenerServer extends Thread {
     private byte[] buffer = new byte[1024];
-    DatagramSocket dsocket;
+    protected @Nullable DatagramSocket dsocket;
     private DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
     boolean willbeclosed = false;
     Logger logger = LoggerFactory.getLogger(DHCPPacketListenerServer.class);
@@ -48,13 +55,14 @@ public class DHCPPacketListenerServer extends Thread {
     }
 
     protected void bindSocketTo(int port) throws SocketException {
-        dsocket = new DatagramSocket(null);
+        DatagramSocket dsocket = new DatagramSocket(null);
         dsocket.setReuseAddress(true);
         dsocket.setBroadcast(true);
         dsocket.bind(new InetSocketAddress(port));
+        this.dsocket = dsocket;
     }
 
-    protected void receivePacket(DHCPPacket request, InetAddress udpRemote)
+    protected void receivePacket(DHCPPacket request, @Nullable InetAddress udpRemote)
             throws BadPacketException, UnknownHostException, IOException {
         if (request.getOp() != DHCPPacket.BOOTREQUEST) {
             return; // skipping non BOOTREQUEST message types
@@ -85,7 +93,11 @@ public class DHCPPacketListenerServer extends Thread {
             logger.info("DHCP request packet listener online");
             while (!willbeclosed) {
                 packet.setLength(buffer.length);
-                dsocket.receive(packet);
+                DatagramSocket socket = dsocket;
+                if (socket == null) {
+                    return;
+                }
+                socket.receive(packet);
                 receivePacket(new DHCPPacket(packet), packet.getAddress());
             }
         } catch (IOException e) {
@@ -96,7 +108,7 @@ public class DHCPPacketListenerServer extends Thread {
         }
     }
 
-    public DatagramSocket getSocket() {
+    public @Nullable DatagramSocket getSocket() {
         return dsocket;
     }
 
@@ -113,8 +125,9 @@ public class DHCPPacketListenerServer extends Thread {
     public void close() {
         if (isAlive()) {
             willbeclosed = true;
-            if (dsocket != null) {
-                dsocket.close();
+            DatagramSocket socket = dsocket;
+            if (socket != null) {
+                socket.close();
             }
             try {
                 join(1000);

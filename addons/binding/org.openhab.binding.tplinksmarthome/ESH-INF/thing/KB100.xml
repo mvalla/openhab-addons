@@ -10,9 +10,11 @@
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
+			<channel id="brightness" typeId="system.brightness" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:device:bulb" />
 	</thing-type>
