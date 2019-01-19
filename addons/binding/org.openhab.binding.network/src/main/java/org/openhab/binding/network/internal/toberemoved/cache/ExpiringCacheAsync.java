@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.network.internal.toberemoved.cache;
 
@@ -12,6 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Complementary class to {@link org.eclipse.smarthome.core.cache.ExpiringCache}, implementing an async variant
@@ -22,6 +29,7 @@ import java.util.function.Consumer;
  *
  * @param <V> the type of the cached value
  */
+@NonNullByDefault
 public class ExpiringCacheAsync<V> {
     final long expiry;
     ExpiringCacheUpdate cacheUpdater;
@@ -45,15 +53,15 @@ public class ExpiringCacheAsync<V> {
      * @param cacheUpdater The cache will use this callback if a new value is needed. Must not be null.
      * @throws IllegalArgumentException For an expire value <=0 or a null cacheUpdater.
      */
-    public ExpiringCacheAsync(long expiry, ExpiringCacheUpdate cacheUpdater) throws IllegalArgumentException {
-        this.expiry = TimeUnit.MILLISECONDS.toNanos(expiry);
-        this.cacheUpdater = cacheUpdater;
+    public ExpiringCacheAsync(long expiry, @Nullable ExpiringCacheUpdate cacheUpdater) throws IllegalArgumentException {
         if (expiry <= 0) {
             throw new IllegalArgumentException("Cache expire time must be greater than 0");
         }
         if (cacheUpdater == null) {
             throw new IllegalArgumentException("A cache updater is necessary");
         }
+        this.expiry = TimeUnit.MILLISECONDS.toNanos(expiry);
+        this.cacheUpdater = cacheUpdater;
     }
 
     /**

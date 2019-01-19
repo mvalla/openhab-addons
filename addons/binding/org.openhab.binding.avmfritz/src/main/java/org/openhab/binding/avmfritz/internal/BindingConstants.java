@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal;
 
@@ -43,6 +47,8 @@ public class BindingConstants {
     public static final String DEVICE_PL546E = "FRITZ_Powerline_546E";
     public static final String DEVICE_PL546E_STANDALONE = "FRITZ_Powerline_546E_Solo";
     public static final String DEVICE_COMETDECT = "Comet_DECT";
+    public static final String DEVICE_HAN_FUN_CONTACT = "HAN_FUN_CONTACT";
+    public static final String DEVICE_HAN_FUN_SWITCH = "HAN_FUN_SWITCH";
 
     // List of main group types
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
@@ -59,6 +65,8 @@ public class BindingConstants {
     public static final ThingTypeUID PL546E_STANDALONE_THING_TYPE = new ThingTypeUID(BINDING_ID,
             DEVICE_PL546E_STANDALONE);
     public static final ThingTypeUID COMETDECT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_COMETDECT);
+    public static final ThingTypeUID HAN_FUN_CONTACT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_CONTACT);
+    public static final ThingTypeUID HAN_FUN_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SWITCH);
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
 
@@ -79,6 +87,7 @@ public class BindingConstants {
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_DEVICE_LOCKED = "device_locked";
+    public static final String CHANNEL_APPLY_TEMPLATE = "apply_template";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";
@@ -89,10 +98,13 @@ public class BindingConstants {
     public static final String CHANNEL_ECOTEMP = "eco_temp";
     public static final String CHANNEL_COMFORTTEMP = "comfort_temp";
     public static final String CHANNEL_RADIATOR_MODE = "radiator_mode";
-    public static final String CHANNEL_NEXTCHANGE = "next_change";
+    public static final String CHANNEL_NEXT_CHANGE = "next_change";
     public static final String CHANNEL_NEXTTEMP = "next_temp";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
     public static final String CHANNEL_BATTERY = "battery_level";
+    public static final String CHANNEL_CONTACT_STATE = "contact_state";
+    public static final String CHANNEL_PRESS = "press";
+    public static final String CHANNEL_LAST_CHANGE = "last_change";
 
     // List of all Channel config ids
     public static final String CONFIG_CHANNEL_TEMP_OFFSET = "offset";
@@ -119,9 +131,10 @@ public class BindingConstants {
     public static final String MODE_WINDOW_OPEN = "WINDOW_OPEN";
     public static final String MODE_UNKNOWN = "UNKNOWN";
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE,
-                    DECT301_THING_TYPE, PL546E_THING_TYPE, COMETDECT_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE, DECT301_THING_TYPE,
+                    PL546E_THING_TYPE, COMETDECT_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE)
+            .collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE).collect(Collectors.toSet()));

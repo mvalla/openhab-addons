@@ -1,12 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.atlona.internal.discovery;
+
+import static org.openhab.binding.atlona.internal.AtlonaBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -21,6 +27,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -28,13 +36,10 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.atlona.AtlonaBindingConstants;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Config;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Discovery class for the Atlona PRO3 line. The PRO3 line uses SDDP (simple device discovery protocol) for discovery
@@ -82,8 +87,10 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
      * Constructs the discovery class using the thing IDs that we can discover.
      */
     public AtlonaDiscovery() {
-        super(ImmutableSet.of(AtlonaBindingConstants.THING_TYPE_PRO3_44M, AtlonaBindingConstants.THING_TYPE_PRO3_66M,
-                AtlonaBindingConstants.THING_TYPE_PRO3_88M, AtlonaBindingConstants.THING_TYPE_PRO3_1616M), 30, false);
+        super(Collections.unmodifiableSet(
+                Stream.of(THING_TYPE_PRO3_44M, THING_TYPE_PRO3_66M, THING_TYPE_PRO3_88M, THING_TYPE_PRO3_1616M)
+                        .collect(Collectors.toSet())),
+                30, false);
     }
 
     /**
@@ -218,13 +225,13 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
         if (host != null && model != null && from != null) {
             ThingTypeUID typeId = null;
             if (model.equalsIgnoreCase("AT-UHD-PRO3-44M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_44M;
+                typeId = THING_TYPE_PRO3_44M;
             } else if (model.equalsIgnoreCase("AT-UHD-PRO3-66M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_66M;
+                typeId = THING_TYPE_PRO3_66M;
             } else if (model.equalsIgnoreCase("AT-UHD-PRO3-88M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_88M;
+                typeId = THING_TYPE_PRO3_88M;
             } else if (model.equalsIgnoreCase("AT-UHD-PRO3-1616M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_1616M;
+                typeId = THING_TYPE_PRO3_1616M;
             } else {
                 logger.warn("Unknown model #: {}");
             }

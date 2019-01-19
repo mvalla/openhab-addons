@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nest.internal.rest;
 
-import static org.openhab.binding.nest.NestBindingConstants.KEEP_ALIVE_MILLIS;
+import static org.openhab.binding.nest.internal.NestBindingConstants.KEEP_ALIVE_MILLIS;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -26,11 +30,11 @@ import org.glassfish.jersey.SslConfigurator;
 import org.glassfish.jersey.media.sse.EventSource;
 import org.glassfish.jersey.media.sse.InboundEvent;
 import org.glassfish.jersey.media.sse.SseFeature;
-import org.openhab.binding.nest.handler.NestRedirectUrlSupplier;
 import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.data.TopLevelStreamingData;
 import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
+import org.openhab.binding.nest.internal.handler.NestRedirectUrlSupplier;
 import org.openhab.binding.nest.internal.listener.NestStreamingDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

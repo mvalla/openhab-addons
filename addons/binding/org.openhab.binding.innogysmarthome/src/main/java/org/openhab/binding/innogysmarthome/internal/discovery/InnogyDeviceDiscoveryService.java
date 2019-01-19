@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.innogysmarthome.internal.discovery;
 
-import static org.openhab.binding.innogysmarthome.InnogyBindingConstants.*;
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Date;
@@ -22,9 +26,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
-import org.openhab.binding.innogysmarthome.handler.InnogyBridgeHandler;
-import org.openhab.binding.innogysmarthome.handler.InnogyDeviceHandler;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
+import org.openhab.binding.innogysmarthome.internal.handler.InnogyBridgeHandler;
+import org.openhab.binding.innogysmarthome.internal.handler.InnogyDeviceHandler;
 import org.openhab.binding.innogysmarthome.internal.listener.DeviceStatusListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

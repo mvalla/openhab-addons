@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.knx.internal.client;
 
@@ -248,7 +252,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         GroupAddress destination = event.getDestination();
         IndividualAddress source = event.getSourceAddr();
         byte[] asdu = event.getASDU();
-        logger.trace("Received a {} telegram from '{}' to '{}'", task, source, destination);
+        logger.trace("Received a {} telegram from '{}' to '{}' with value '{}'", task, source, destination, asdu);
         for (GroupAddressListener listener : groupAddressListeners) {
             if (listener.listensTo(destination)) {
                 knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
@@ -406,6 +410,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         GroupAddress groupAddress = commandSpec.getGroupAddress();
+
+        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
+
         if (groupAddress != null) {
             sendToKNX(processCommunicator, link, groupAddress, commandSpec.getDPT(), commandSpec.getType());
         }
@@ -422,6 +429,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         GroupAddress groupAddress = responseSpec.getGroupAddress();
+
+        logger.trace("respondToKNX groupAddress '{}', responseSpec '{}'", groupAddress, responseSpec);
+
         if (groupAddress != null) {
             sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getType());
         }
@@ -435,6 +445,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0, dpt);
         String mappedValue = toDPTValue(type, dpt);
+
+        logger.trace("sendToKNX mappedValue: '{}' groupAddress: '{}'", mappedValue, groupAddress);
+
         if (mappedValue == null) {
             logger.debug("Value '{}' cannot be mapped to datapoint '{}'", type, datapoint);
             return;

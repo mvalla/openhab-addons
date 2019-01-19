@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.minecraft.internal.discovery;
 
@@ -17,10 +21,10 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.handler.MinecraftServerHandler;
+import org.openhab.binding.minecraft.internal.MinecraftBindingConstants;
 import org.openhab.binding.minecraft.internal.MinecraftHandlerFactory;
 import org.openhab.binding.minecraft.internal.config.ServerConfig;
+import org.openhab.binding.minecraft.internal.handler.MinecraftServerHandler;
 import org.openhab.binding.minecraft.internal.message.data.PlayerData;
 import org.openhab.binding.minecraft.internal.message.data.SignData;
 import org.openhab.binding.minecraft.internal.server.ServerConnection;

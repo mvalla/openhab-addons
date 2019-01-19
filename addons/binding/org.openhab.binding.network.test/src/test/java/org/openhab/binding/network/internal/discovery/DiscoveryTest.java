@@ -1,15 +1,19 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.network.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -22,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.network.NetworkBindingConstants;
+import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 
 /**
@@ -59,7 +63,7 @@ public class DiscoveryTest {
         when(value.isPingReachable()).thenReturn(true);
         when(value.isTCPServiceReachable()).thenReturn(false);
         d.partialDetectionResult(value);
-        verify(listener).thingDiscovered(anyObject(), result.capture());
+        verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         Assert.assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createPingUID(ip)));
         Assert.assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));
@@ -77,7 +81,7 @@ public class DiscoveryTest {
         when(value.isTCPServiceReachable()).thenReturn(true);
         when(value.getReachableTCPports()).thenReturn(Collections.singletonList(1010));
         d.partialDetectionResult(value);
-        verify(listener).thingDiscovered(anyObject(), result.capture());
+        verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         Assert.assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createServiceUID(ip, 1010)));
         Assert.assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));

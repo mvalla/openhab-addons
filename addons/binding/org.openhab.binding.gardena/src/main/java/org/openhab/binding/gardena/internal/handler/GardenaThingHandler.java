@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.gardena.internal.handler;
 
@@ -104,13 +108,21 @@ public class GardenaThingHandler extends BaseThingHandler {
     protected void updateProperties(Device device) throws GardenaException {
         Map<String, String> properties = editProperties();
         Ability deviceInfo = device.getAbility(ABILITY_DEVICE_INFO);
-        properties.put(PROPERTY_MANUFACTURER, deviceInfo.getProperty(PROPERTY_MANUFACTURER).getValueAsString());
-        properties.put(PROPERTY_PRODUCT, deviceInfo.getProperty(PROPERTY_PRODUCT).getValueAsString());
-        properties.put(PROPERTY_SERIALNUMBER, deviceInfo.getProperty(PROPERTY_SERIALNUMBER).getValueAsString());
-        properties.put(PROPERTY_SGTIN, deviceInfo.getProperty(PROPERTY_SGTIN).getValueAsString());
-        properties.put(PROPERTY_VERSION, deviceInfo.getProperty(PROPERTY_VERSION).getValueAsString());
-        properties.put(PROPERTY_CATEGORY, deviceInfo.getProperty(PROPERTY_CATEGORY).getValueAsString());
+        setProperty(properties, deviceInfo, PROPERTY_MANUFACTURER);
+        setProperty(properties, deviceInfo, PROPERTY_PRODUCT);
+        setProperty(properties, deviceInfo, PROPERTY_SERIALNUMBER);
+        setProperty(properties, deviceInfo, PROPERTY_SGTIN);
+        setProperty(properties, deviceInfo, PROPERTY_VERSION);
+        setProperty(properties, deviceInfo, PROPERTY_CATEGORY);
         updateProperties(properties);
+    }
+
+    private void setProperty(Map<String, String> properties, Ability deviceInfo, String propertyName) {
+        try {
+            properties.put(propertyName, deviceInfo.getProperty(propertyName).getValueAsString());
+        } catch (GardenaException ex) {
+            logger.debug("Ignoring missing device property {}", propertyName);
+        }
     }
 
     @Override

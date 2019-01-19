@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dsmr.internal.handler;
 
@@ -48,9 +52,9 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterHandler.class);
 
     /**
-     * The DSMRMeter instance
+     * The DSMRMeter instance.
      */
-    private @Nullable DSMRMeter meter;
+    private @NonNullByDefault({}) DSMRMeter meter;
 
     /**
      * Last received cosem objects.
@@ -58,12 +62,12 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private List<CosemObject> lastReceivedValues = Collections.emptyList();
 
     /**
-     * Reference to the meter watchdog
+     * Reference to the meter watchdog.
      */
-    private @Nullable ScheduledFuture<?> meterWatchdog;
+    private @NonNullByDefault({}) ScheduledFuture<?> meterWatchdog;
 
     /**
-     * Creates a new MeterHandler for the given Thing
+     * Creates a new MeterHandler for the given Thing.
      *
      * @param thing {@link Thing} to create the MeterHandler for
      */
@@ -95,18 +99,17 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
             meterType = DSMRMeterType.valueOf(getThing().getThingTypeUID().getId().toUpperCase());
         } catch (IllegalArgumentException iae) {
             logger.warn(
-                    "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
-                    getThing(), getThing().getThingTypeUID().getId().toUpperCase());
+                "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
+                getThing(), getThing().getThingTypeUID().getId().toUpperCase());
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.configuration.invalidmetertype");
+                "@text/error.configuration.invalidmetertype");
             return;
         }
         DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
         DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, meterConfig.channel);
         meter = new DSMRMeter(meterDescriptor);
-
         meterWatchdog = scheduler.scheduleWithFixedDelay(this::updateState, meterConfig.refresh, meterConfig.refresh,
-                TimeUnit.SECONDS);
+            TimeUnit.SECONDS);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -119,15 +122,13 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     }
 
     /**
-     * Updates the state of all channels from the last received Cosem values from the meter.
+     * Updates the state of all channels from the last received Cosem values from the meter. The lastReceivedValues are
+     * cleared after processing here so when it does contain values the next time this method is called and it contains
+     * values those are new values.
      */
     private synchronized void updateState() {
         logger.trace("Update state for device: {}", getThing().getThingTypeUID().getId());
-        if (lastReceivedValues.isEmpty()) {
-            if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.thing.nodata");
-            }
-        } else {
+        if (!lastReceivedValues.isEmpty()) {
             for (CosemObject cosemObject : lastReceivedValues) {
                 String channel = cosemObject.getType().name().toLowerCase();
 
@@ -149,7 +150,8 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     }
 
     /**
-     * Callback for received meter values
+     * Callback for received meter values. When this method is called but the telegram has no values for this meter this
+     * meter is set to offline because something is wrong, possible the meter has been removed.
      *
      * @param telegram The received telegram
      */
@@ -163,7 +165,11 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
         }
         List<CosemObject> filteredValues = localMeter.filterMeterValues(telegram.getCosemObjects());
 
-        if (!filteredValues.isEmpty()) {
+        if (filteredValues.isEmpty()) {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.thing.nodata");
+            }
+        } else {
             if (logger.isTraceEnabled()) {
                 logger.trace("Received {} objects for {}", filteredValues.size(), getThing().getThingTypeUID().getId());
             }
@@ -177,12 +183,19 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     @Override
     public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+            && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             // Set status to offline --> Thing will become online after receiving meter values
             setDeviceOffline(ThingStatusDetail.NONE, null);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             setDeviceOffline(ThingStatusDetail.BRIDGE_OFFLINE, null);
         }
+    }
+
+    /**
+     * @return Returns the {@link DSMRMeterDescriptor} this object is configured with
+     */
+    public @Nullable DSMRMeterDescriptor getMeterDescriptor() {
+        return meter == null ? null : meter.getMeterDescriptor();
     }
 
     /**
