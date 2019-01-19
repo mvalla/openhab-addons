@@ -2,7 +2,7 @@
 
 This integration will allow openHAB things/items to be exposed to the NEEO Brain and allow the NEEO smart remote to control them.
 NEEO is a smart home solution that includes an IP based remote.
-More information can be found at [NEEO](neeo.com) or in the forums at [NEEO Planet](planet.neeo.com).
+More information can be found at [NEEO](https://neeo.com) or in the forums at [NEEO Planet](https://planet.neeo.com).
 **This integration was not developed by NEEO** - so please don't ask questions on the NEEO forums.
 
 The openHAB NEEO integration allows mapping of openHAB things/item to a NEEO device/capabilities (see Mappings below).
@@ -168,8 +168,9 @@ The properties page (accessible via the gear icon) will present properties speci
 
 ##### Advanced Properties
 
-1. The 'Specific name' can be used to override the thing name presented to the NEEO Brain.
-2. The 'Custom Icon' can be used to assign a custom icon to the device (if left blank, the icon is assigned by the NEEO Brain according to the NEEO Type).
+1. The driver version can be used to override the driver version sent to the brain.  Please note that this number is automatically incremented by one whenever you save the device definition.
+2. The 'Specific name' can be used to override the thing name presented to the NEEO Brain.
+3. The 'Custom Icon' can be used to assign a custom icon to the device (if left blank, the icon is assigned by the NEEO Brain according to the NEEO Type).
 The only 'officially' supported custom icon is "sonos" however you can assign any variety of icons available on the brain.
 A list of some of the icons that can be assigned: ![Configuration](doc/icons.png)
 
@@ -342,6 +343,13 @@ As definitions are saved, this file will be updated.
 
 The following are notes on some of the NEEO Firmwares:
 
+
+### 52.10
+
+The following changes have occurred:
+
+1. Added support for driver version
+2. Added support for UI actions on lists
 
 ### 51.1
 

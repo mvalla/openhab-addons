@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.denonmarantz.internal.discovery;
 
-import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.THING_TYPE_AVR;
+import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +29,6 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(DenonMarantzDiscoveryParticipant.class);
@@ -106,7 +109,7 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
 
             logger.debug("IP Address: {}", host);
 
-            properties.put(DenonMarantzBindingConstants.PARAMETER_HOST, host);
+            properties.put(PARAMETER_HOST, host);
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);
             properties.put(Thing.PROPERTY_VENDOR, vendor);
             properties.put(Thing.PROPERTY_MODEL_ID, model);

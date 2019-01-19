@@ -7,12 +7,10 @@ Bundle-Name: Kodi Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.kodi;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.kodi,
- org.openhab.binding.kodi.handler
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
+ com.google.gson.annotations,
  javax.measure,
  javax.measure.quantity,
  org.apache.commons.lang,
@@ -38,8 +36,6 @@ Import-Package:
  org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.kodi,
- org.openhab.binding.kodi.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

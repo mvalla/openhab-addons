@@ -1,7 +1,7 @@
 # Nibe Heatpump Binding
 
 The Nibe Heatpump binding is used to get live data from from Nibe heat pumps without using expensive MODBUS40 adapter.
-This binding should be compatible at least the F750, F1145 and F1245 heat pump models.
+This binding should be compatible at least the F750, F1145, F1245 and F470 heat pump models.
 
 The binding support data telegrams (contains max 20 registers) from the heat pump, but binding can also read other registers from the pump.
 It's recommend to add most changed variables to telegram, binding will then read all other registers automatically from the pump when channels are linked to item.
@@ -22,6 +22,9 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 | f750-serial     | Serial port connected F750 Heat Pumps            |
 | f750-udp        | UDP connected Nibe F750 Heat Pumps               |
 | f750-simulator  | Simulator for Nibe F750 Heat Pumps               |
+| f470-serial     | Serial port connected F470 Heat Pumps            |
+| f470-udp        | UDP connected Nibe F470 Heat Pumps               |
+| f470-simulator  | Simulator for Nibe F470 Heat Pumps               |
 
 ## Discovery
 
@@ -126,7 +129,7 @@ All supported configuration parameters for UDP connection:
 | enableReadCommands              | Boolean | false   | No       | Enable read commands to read additional variable from Nibe heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk! |
 | enableWriteCommands             | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is experimental feature, use it at your own risk! |
 | enableRegistersForWriteCommands | String  |         | No       | Comma separated list of registers, which are allowed to write to Nibe heat pump. E.g. 44266, 47004 |
-
+| throttleTime                    | Integer | 0       | No       | Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds. |
 
 ### Serial port connection
 
@@ -149,6 +152,7 @@ All supported configuration parameters for serial port connection:
 | sendAckToMODBUS40               | Boolean | true    | No       | Binding emulates MODBUS40 device and send protocol acknowledges to heat pump |
 | sendAckToRMU40                  | Boolean | false   | No       | Binding emulates RMU40 device and send protocol acknowledges to heat pump |
 | sendAckToSMS40                  | Boolean | false   | No       | Binding emulates SMS40 device and send protocol acknowledges to heat pump |
+| throttleTime                    | Integer | 0       | No       | Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds. |
 
 
 ## Channels

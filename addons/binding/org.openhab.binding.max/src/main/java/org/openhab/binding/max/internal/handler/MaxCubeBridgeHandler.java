@@ -1,20 +1,26 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.max.internal.handler;
 
-import static org.openhab.binding.max.MaxBindingConstants.*;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -34,9 +40,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -47,7 +56,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.max.MaxBindingConstants;
+import org.openhab.binding.max.internal.MaxBindingConstants;
 import org.openhab.binding.max.internal.command.ACommand;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.CubeCommand;
@@ -85,10 +94,9 @@ import org.slf4j.LoggerFactory;
  * to the framework. All {@link MaxDevicesHandler}s use the
  * {@link MaxCubeBridgeHandler} to execute the actual commands.
  *
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - Initial contribution OH2 version
- * @author Andreas Heil (info@aheil.de) - OH1 version
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
- *
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
@@ -101,10 +109,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private final Set<String> lastActiveDevices = new HashSet<>();
 
     /** MAX! Thermostat default off temperature */
-    private static final DecimalType DEFAULT_OFF_TEMPERATURE = new DecimalType(4.5);
+    private static final double DEFAULT_OFF_TEMPERATURE = 4.5;
 
     /** MAX! Thermostat default on temperature */
-    private static final DecimalType DEFAULT_ON_TEMPERATURE = new DecimalType(30.5);
+    private static final double DEFAULT_ON_TEMPERATURE = 30.5;
 
     private final List<DeviceConfiguration> configurations = new ArrayList<>();
 
@@ -405,51 +413,42 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
         // send command to MAX! Cube LAN Gateway
         HeatingThermostat device = (HeatingThermostat) getDevice(serialNumber, devices);
-
         if (device == null) {
-            logger.debug("Cannot send command to device with serial number {}, device not listed.", serialNumber);
+            logger.debug("Cannot send command to device with serial number '{}', device not listed.", serialNumber);
             return null;
         }
 
-        String rfAddress = device.getRFAddress();
-        SCommand cmd = null;
-
         // Temperature setting
         if (channelUID.getId().equals(CHANNEL_SETTEMP)) {
-            if (command instanceof DecimalType || command instanceof OnOffType) {
-                DecimalType decimalType = DEFAULT_OFF_TEMPERATURE;
-                if (command instanceof DecimalType) {
-                    decimalType = (DecimalType) command;
+            if (command instanceof QuantityType || command instanceof OnOffType) {
+                double setTemp = DEFAULT_OFF_TEMPERATURE;
+                if (command instanceof QuantityType) {
+                    setTemp = ((QuantityType<Temperature>) command).toUnit(CELSIUS).toBigDecimal()
+                            .setScale(1, RoundingMode.HALF_UP).doubleValue();
                 } else if (command instanceof OnOffType) {
-                    decimalType = OnOffType.ON.equals(command) ? DEFAULT_ON_TEMPERATURE : DEFAULT_OFF_TEMPERATURE;
+                    setTemp = OnOffType.ON.equals(command) ? DEFAULT_ON_TEMPERATURE : DEFAULT_OFF_TEMPERATURE;
                 }
-
-                cmd = new SCommand(rfAddress, device.getRoomId(), device.getMode(), decimalType.doubleValue());
+                return new SCommand(device.getRFAddress(), device.getRoomId(), device.getMode(), setTemp);
             }
             // Mode setting
         } else if (channelUID.getId().equals(CHANNEL_MODE)) {
             if (command instanceof StringType) {
                 String commandContent = command.toString().trim().toUpperCase();
-                ThermostatModeType commandThermoType = null;
                 double setTemp = device.getTemperatureSetpoint();
                 if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
-                    commandThermoType = ThermostatModeType.AUTOMATIC;
-                    cmd = new SCommand(rfAddress, device.getRoomId(), commandThermoType, 0D);
+                    return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.AUTOMATIC, 0D);
                 } else if (commandContent.contentEquals(ThermostatModeType.BOOST.toString())) {
-                    commandThermoType = ThermostatModeType.BOOST;
-                    cmd = new SCommand(rfAddress, device.getRoomId(), commandThermoType, setTemp);
+                    return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.BOOST, setTemp);
                 } else if (commandContent.contentEquals(ThermostatModeType.MANUAL.toString())) {
-                    commandThermoType = ThermostatModeType.MANUAL;
-                    cmd = new SCommand(rfAddress, device.getRoomId(), commandThermoType, setTemp);
                     logger.debug("updates to MANUAL mode with temperature '{}'", setTemp);
+                    return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.MANUAL, setTemp);
                 } else {
-                    logger.debug("Only updates to AUTOMATIC & BOOST & MANUAL supported, received value :'{}'",
+                    logger.debug("Only updates to AUTOMATIC & BOOST & MANUAL supported, received value: '{}'",
                             commandContent);
-                    return null;
                 }
             }
         }
-        return cmd;
+        return null;
     }
 
     /**
@@ -516,11 +515,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {

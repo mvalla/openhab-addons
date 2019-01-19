@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.gardena.internal.model.deser;
 
@@ -32,6 +36,8 @@ public class PropertyValueDeserializer implements JsonDeserializer<PropertyValue
 
     private static final String PROPERTY_DURATION = "duration";
     private static final String PROPERTY_TYPE = "type";
+    private static final String PROPERTY_MAC = "mac";
+    private static final String PROPERTY_ISCONNECTED = "isconnected";
 
     @Override
     public PropertyValue deserialize(JsonElement element, Type type, JsonDeserializationContext ctx)
@@ -46,6 +52,9 @@ public class PropertyValueDeserializer implements JsonDeserializer<PropertyValue
                 return new PropertyValue(String.valueOf(duration));
             } else if (jsonObj.has(PROPERTY_TYPE)) {
                 return new PropertyValue(jsonObj.get(PROPERTY_TYPE).getAsString());
+            } else if (jsonObj.has(PROPERTY_MAC) && jsonObj.has(PROPERTY_ISCONNECTED)) {
+                // ignore known gateway properties
+                return new PropertyValue();
             } else {
                 logger.warn("Unsupported json value object, returning empty value");
                 return new PropertyValue();

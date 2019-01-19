@@ -1,15 +1,19 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nest.internal;
 
 import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -27,12 +31,12 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.nest.handler.NestBridgeHandler;
-import org.openhab.binding.nest.handler.NestCameraHandler;
-import org.openhab.binding.nest.handler.NestSmokeDetectorHandler;
-import org.openhab.binding.nest.handler.NestStructureHandler;
-import org.openhab.binding.nest.handler.NestThermostatHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
+import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.handler.NestCameraHandler;
+import org.openhab.binding.nest.internal.handler.NestSmokeDetectorHandler;
+import org.openhab.binding.nest.internal.handler.NestStructureHandler;
+import org.openhab.binding.nest.internal.handler.NestThermostatHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 

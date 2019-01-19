@@ -10,10 +10,12 @@
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="color" typeId="color" />
-			<channel id="colorTemperature" typeId="colorTemperature" />
+			<channel id="color" typeId="system.color" />
+			<channel id="colorTemperature" typeId="system.color-temperature" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:device:bulb" />
 	</thing-type>

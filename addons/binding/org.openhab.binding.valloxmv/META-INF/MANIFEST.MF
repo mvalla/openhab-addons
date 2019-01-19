@@ -7,7 +7,7 @@ Bundle-Name: ValloxMV Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.valloxmv;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  javax.measure,
  javax.measure.quantity,
@@ -29,6 +29,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.osgi.framework,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j

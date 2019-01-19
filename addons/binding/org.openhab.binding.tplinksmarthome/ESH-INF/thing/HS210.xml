@@ -10,9 +10,11 @@
 		<category>WallSwitch</category>
 
 		<channels>
-			<channel id="switch" typeId="switch" />
+			<channel id="switch" typeId="system.power" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
+
+		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:device:switch" />
 	</thing-type>

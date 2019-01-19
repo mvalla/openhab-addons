@@ -1,19 +1,26 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pulseaudio.internal;
 
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -24,17 +31,14 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
-import org.openhab.binding.pulseaudio.handler.PulseaudioBridgeHandler;
-import org.openhab.binding.pulseaudio.handler.PulseaudioHandler;
 import org.openhab.binding.pulseaudio.internal.discovery.PulseaudioDeviceDiscoveryService;
+import org.openhab.binding.pulseaudio.internal.handler.PulseaudioBridgeHandler;
+import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link PulseaudioHandlerFactory} is responsible for creating things and thing
@@ -44,12 +48,13 @@ import com.google.common.collect.Sets;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.pulseaudio")
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS, PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.concat(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
+                    PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
 
-    private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
+    private final Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -72,8 +77,8 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(PulseaudioBridgeHandler paBridgeHandler) {
         PulseaudioDeviceDiscoveryService discoveryService = new PulseaudioDeviceDiscoveryService(paBridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceReg.put(paBridgeHandler, bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceReg.put(paBridgeHandler,
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
