@@ -490,7 +490,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     /**
      * Transform a WHERE string address into a Thing id string based on bridge type (BUS/ZigBee).
-     * '#' in where are changed to 'h'
+     * '#' in WHERE are changed to 'h'
      *
      * @param String where WHERE address
      * @return String thing Id
@@ -499,10 +499,36 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         return normalizeWhere(where).replace('#', 'h'); // '#' cannot be used in ThingUID;
     }
 
+    // @formatter:off
     /**
-     * Normalize a WHERE string for Thermo devices
+     *
+     *                              deviceWhere
+     *                              DevAddrParam
+     * TYPE         WHERE           normalized  ownId       ThingID
+     * ---------------------------------------------------------------
+     * Zigbee       789309801#9     7893098     1.7893098   7893098   (*)
+     * Switch       51              51          1.51        51
+     * Dimmer       25#4#01         25#4#01     1.25#4#01   25h4h01   (*)
+     * Autom        93              93          2.93        93
+     * Thermo       #1 or 1         1           4.1         1         (*)
+     * TempSen      500             500         4.500       500
+     * Energy       51              51          18.51       51
+     * CEN          51              51          15.51       51
+     * CEN+         212             212         25.212      212
+     * DryContact   399             399         25.399      399
+     *
+     *      - public        normalizeWhere()    called locally and from OpenWebNetDeviceDiscoveryService
+     *      - protected     ownIdFromWhere()    called from ThingHandler.initialize
+     *      - private       ownIdFromMessage()  called from onMessage()
+     *      - public        thingIdFromWhere()  called from OpenWebNetDeviceDiscoveryService
+     *
      */
-    private String normalizeWhere(String where) {
+    // @formatter:on
+
+    /**
+     * Normalize a WHERE string for Thermo and Zigbee devices
+     */
+    public String normalizeWhere(String where) {
         String str = "";
         if (isBusGateway) {
             if (where.indexOf('#') < 0) { // no hash present
@@ -514,7 +540,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             } else if (where.indexOf('#') > 0) { // thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) -- > Z
                 str = where.substring(0, where.indexOf('#'));
             } else {
-                logger.warn("==OWN== thingIdFromWhere() unexpected WHERE: {}", where);
+                logger.warn("==OWN== normalizeWhere() unexpected WHERE: {}", where);
                 str = where;
             }
             return str;

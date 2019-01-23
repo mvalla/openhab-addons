@@ -151,7 +151,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     @Override
     public void handleRemoval() {
-        logger.debug("==OWN:ThingHandler== handleRemoval() thing={}", getThing().getUID());
+        logger.debug("==OWN:ThingHandler== handleRemoval() for {}", getThing().getUID());
         if (bridgeHandler != null) {
             bridgeHandler.unregisterDevice(ownId);
         }
@@ -160,7 +160,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("==OWN:ThingHandler== dispose() thing={}", getThing().getUID());
+        logger.debug("==OWN:ThingHandler== dispose() for {}", getThing().getUID());
+        // TODO if handleRemoval() is called before dispose(), avoid making this call
         if (bridgeHandler != null) {
             bridgeHandler.unregisterDevice(ownId);
         }
