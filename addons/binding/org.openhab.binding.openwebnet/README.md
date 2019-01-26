@@ -408,7 +408,8 @@ end
 **v2.5.0-M1** - 26/01/2019
 
 - **[FIX #28] automatic discovery of bus gateway is now supported**
-- model, firmwareVersion and serialNumber are now read from UPnP
+- FIX #39 set update interval for Energy Meter
+- model, firmwareVersion and serialNumber are now read from UPnP discovery
 - updated to openHAB 2.5.0 dev branch
 
 **v2.4.0-b9-2** - 18/01/2019

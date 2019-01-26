@@ -48,7 +48,15 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     public void initialize() {
         super.initialize();
         logger.debug("==OWN:EnergyHandler== initialize() thing={}", thing.getUID());
+        // set active power update interval to 1min
+        bridgeHandler.gateway.send(EnergyManagement.setActivePowerInterval(deviceWhere, 1));
+    }
 
+    @Override
+    public void handleRemoval() {
+        // switch off active power updates
+        bridgeHandler.gateway.send(EnergyManagement.setActivePowerInterval(deviceWhere, 0));
+        super.handleRemoval();
     }
 
     @Override
