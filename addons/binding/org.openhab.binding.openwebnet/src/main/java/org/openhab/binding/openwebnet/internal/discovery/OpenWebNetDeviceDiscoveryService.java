@@ -15,8 +15,6 @@ import java.util.Set;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
@@ -35,14 +33,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
-public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
-        implements ExtendedDiscoveryService, OpenNewDeviceListener {
+public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService implements OpenNewDeviceListener {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.DEVICE_SUPPORTED_THING_TYPES;
 
     private final static int SEARCH_TIME = 60;
 
-    private DiscoveryServiceCallback discoveryServiceCallback;
+    // private DiscoveryServiceCallback discoveryServiceCallback;
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetDeviceDiscoveryService.class);
     private final OpenWebNetBridgeHandler bridgeHandler;
@@ -55,11 +52,12 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
         logger.debug("==OWN:DeviceDiscovery== constructor for bridge: {}", bridgeUID);
     }
 
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
-    }
-
+    /*
+     * @Override
+     * public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
+     * this.discoveryServiceCallback = discoveryServiceCallback;
+     * }
+     */
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         logger.debug("==OWN:DeviceDiscovery== getSupportedThingTypes()");
