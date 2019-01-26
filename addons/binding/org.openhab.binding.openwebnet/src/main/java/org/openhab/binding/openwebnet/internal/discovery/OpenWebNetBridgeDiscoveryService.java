@@ -142,7 +142,7 @@ public class OpenWebNetBridgeDiscoveryService extends AbstractDiscoveryService i
         dongleUID = new ThingUID(OpenWebNetBindingConstants.THING_TYPE_DONGLE, Integer.toString(dongleAddr));
         Map<String, Object> dongleProperties = new HashMap<>(2);
         dongleProperties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SERIAL_PORT, zbgateway.getConnectedPort());
-        dongleProperties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_FIRMWARE, zbgateway.getDongleFirmwareVersion());
+        dongleProperties.put(OpenWebNetBindingConstants.PROPERTY_FIRMWARE, zbgateway.getDongleFirmwareVersion());
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(dongleUID).withProperties(dongleProperties)
                 .withLabel(OpenWebNetBindingConstants.THING_LABEL_DONGLE + " (ID=" + dongleAddr + ", "

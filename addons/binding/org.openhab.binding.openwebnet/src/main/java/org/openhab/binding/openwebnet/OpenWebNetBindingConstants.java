@@ -138,17 +138,15 @@ public class OpenWebNetBindingConstants {
 
     // config properties
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
-
     public static final String CONFIG_PROPERTY_SCENARIO_BUTTONS = "buttons";
-
     public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
-
     public static final String CONFIG_PROPERTY_WHERE = "where";
     public static final String CONFIG_PROPERTY_HOST = "host";
     public static final String CONFIG_PROPERTY_PORT = "port";
     public static final String CONFIG_PROPERTY_PASSWD = "passwd";
 
-    public static final String CONFIG_PROPERTY_FIRMWARE = "firmwareVersion";
-    public static final String CONFIG_PROPERTY_MODEL = "model";
-
+    // properties
+    public static final String PROPERTY_FIRMWARE = "firmwareVersion";
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_SERIAL_NO = "serialNumber";
 }

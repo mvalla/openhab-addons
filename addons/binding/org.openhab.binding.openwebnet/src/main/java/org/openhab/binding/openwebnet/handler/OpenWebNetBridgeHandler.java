@@ -181,7 +181,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             gateway = OpenWebNet.gatewayBus(host, port, passwd);
         } else {
             logger.warn(
-                    "==OWN== BridgeHandler Cannot connect to gateway. No IP/host has been provided in Bridge configuration.");
+                    "==OWN== BridgeHandler Cannot connect to gateway. No host/IP has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
         }
@@ -300,7 +300,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             OpenDeviceType type = baseMsg.detectDeviceType();
             if (type != null) {
                 deviceDiscoveryService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
-                // deviceDiscoveryListener.onNewDevice(baseMsg.getWhere(), type);
             }
         }
     }
@@ -337,9 +336,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * Get a ThingHandler for a device associated to this BridgeHandler, based on ownID
      *
      * @param String ownId OpenWebNet id for device
-     * @returns OpenWebNetThingHandler handler for the device
+     * @returns OpenWebNetThingHandler handler for the device, or null if the device is not associated with this
+     *          BridgeHanldler
      */
-    private OpenWebNetThingHandler getDevice(String ownId) {
+    private @Nullable OpenWebNetThingHandler getDevice(String ownId) {
         return registeredDevices.get(ownId);
     }
 
@@ -364,8 +364,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("==OWN==  ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = getDevice(ownId);
-            // ThingUID thingUID = registeredDevices.get(ownId);
-            // Thing device = getThingByUID(thingUID);
             if (deviceHandler == null) {
                 if (isBusGateway && deviceDiscoveryListener != null && !searchingGatewayDevices && scanIsActive) {
                     // try device discovery by activation
@@ -398,12 +396,14 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.info("==OWN== ------------------- CONNECTED to BUS gateway - {}:{}",
                     ((OpenGatewayBus) gateway).getHost(), ((OpenGatewayBus) gateway).getPort());
             // update gw model
-            updateProperty(CONFIG_PROPERTY_MODEL, ((OpenGatewayBus) gateway).getModelName());
-            /*
-             * Map<String, String> properties = editProperties();
-             * properties.put(CONFIG_PROPERTY_MODEL, ((OpenGatewayBus) gateway).getModelName());
-             * updateProperties(properties);
-             */
+            String currentGwModel = (editProperties().get(PROPERTY_MODEL));
+            // String currentGwModel = (String) (getConfig().get(PROPERTY_MODEL));
+            if (currentGwModel == null || currentGwModel.equals("Unknown")) {
+                updateProperty(PROPERTY_MODEL, ((OpenGatewayBus) gateway).getModelName());
+                logger.debug("==OWN== updated gw model: {}", ((OpenGatewayBus) gateway).getModelName());
+
+            }
+
         }
         updateStatus(ThingStatus.ONLINE);
 

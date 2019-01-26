@@ -405,19 +405,26 @@ end
 
 ## Changelog
 
+**v2.5.0-M1** - 26/01/2019
+
+- **[FIX #28] automatic discovery of bus gateway is now supported**
+- model, firmwareVersion and serialNumber are now read from UPnP
+- updated to openHAB 2.5.0 dev branch
+
 **v2.4.0-b9-2** - 18/01/2019
 
 - [FIX #37] CEN commands WHAT (buttons) 0-9 are now 00-09
 - [FIX] CEN/CEN+ scenarioButton channel is now able to receive commands
 - [FIX #45] Thermoregulation setpoint command refused
+- [FIX #46] Thermo: activeMode displays only the state “Off" and "anti freeze”
 - [FIX #42 & #43] Devices with same WHERE receive wrong messages from BUS
 - [FIX] improved device registration to BridgeHandler
 
 **v2.4.0-b9-1** - 27/12/2018
 
-- **[FIX #6] and [FIX #33] Initial support for `WHO=15/25` CEN/CEN+** for receiving events from BUS Scenario Control physical devices/buttons (for example Scenario Control: HC/HD/HS/L/N/NT4680) and sending virtual pressure commands to activate MH202 scenarios on the BUS from openHAB. Use [discovery by activation](#discovery-by-activation) to discover CEN/CEN+ scenario control devices. Further buttons/channels are discovered by pressing the corresponding physical button after the device has been added from Inbox
-- **[FIX #9] Support for `WHO=25` Dry Contact interfaces and IR Sensors** on BUS, with discovery
-- **[FIX #11] Initial support for `WHO=18` Energy Management** on BUS, with discovery. Currently supported: Energy Management Central Unit (F521) power measures
+- [FIX #6] and [FIX #33] Initial support for `WHO=15/25` CEN/CEN+ for receiving events from BUS Scenario Control physical devices/buttons (for example Scenario Control: HC/HD/HS/L/N/NT4680) and sending virtual pressure commands to activate MH202 scenarios on the BUS from openHAB. Use [discovery by activation](#discovery-by-activation) to discover CEN/CEN+ scenario control devices. Further buttons/channels are discovered by pressing the corresponding physical button after the device has been added from Inbox
+- [FIX #9] Support for `WHO=25` Dry Contact interfaces and IR Sensors on BUS, with discovery
+- [FIX #11] Initial support for `WHO=18` Energy Management on BUS, with discovery. Currently supported: Energy Management Central Unit (F521) power measures
 - [FIX #29] Added support for command translation (1000# ) for Automation
 - [FIX #27] Device **Discovery by Activation** ( [discovery by activation](#discovery-by-activation) ) for Lighting and CEN/CEN+: if a BUS physical device is not found in Inbox during a Scan, activate the device to discover it
 
@@ -446,7 +453,7 @@ end
 
 **v2.4.0-b6** - 02/07/2018
 
-- updated to openHAB 2.4.0 dev branch.
+- updated to openHAB 2.4.0 dev branch
 - [FIX #7] added support for inverted UP/DOWN automation commands for older USB ZigBee dongles
 - [BUG] some switches were wrongly discovered as dimmers (now use only commands for device discovery)
 - [FIX] added support for SCS/ZIGBEE_SHUTTER_SWITCH (515/513) device types

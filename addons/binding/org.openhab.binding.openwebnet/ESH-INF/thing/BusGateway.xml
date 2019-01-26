@@ -12,7 +12,8 @@
 		<properties>
 			<property name="vendor">BTicino</property>
 			<property name="model">Unknown</property> 
-			<property name="firmwareVersion"></property>
+			<property name="firmwareVersion">Unknown</property>
+			<property name="serialNumber">Unknown</property>
 		</properties>
 				
 		<config-description>
