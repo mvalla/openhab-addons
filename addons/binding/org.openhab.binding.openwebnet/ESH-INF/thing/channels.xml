@@ -217,7 +217,7 @@
         <state readOnly="true">
         <!--    <options>
                 <option value="ON">ON - IR Detection</option>
-                <option value="OFF">OFF- IR No Detection</option>
+                <option value="OFF">OFF - IR No Detection</option>
             </options>
         -->
         </state>

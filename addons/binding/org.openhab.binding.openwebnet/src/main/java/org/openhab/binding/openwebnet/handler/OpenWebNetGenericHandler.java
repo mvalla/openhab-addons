@@ -1,0 +1,72 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.openhab.binding.openwebnet.handler;
+
+import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openwebnet.message.BaseOpenMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link OpenWebNetGenericHandler} is responsible for handling Generic OpenWebNet
+ * devices. Basically is does not do anything, but is needed to avoid handler errors.
+ * It extends the abstract {@link OpenWebNetThingHandler}.
+ *
+ * @author Massimo Valla - Initial contribution
+ */
+public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(OpenWebNetGenericHandler.class);
+
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.GENERIC_SUPPORTED_THING_TYPES;
+
+    public OpenWebNetGenericHandler(@NonNull Thing thing) {
+        super(thing);
+        logger.debug("==OWN:GenericHandler== constructor");
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        logger.debug("==OWN:GenericHandler== initialize() thing={}", thing.getUID());
+    }
+
+    @Override
+    protected void requestChannelState(ChannelUID channel) {
+        logger.warn("==OWN:GenericHandler== There are no channels here!");
+        // do nothing
+    }
+
+    @Override
+    protected void handleChannelCommand(ChannelUID channel, Command command) {
+        logger.warn("==OWN:GenericHandler== There are no channels here!");
+        // do nothing
+    }
+
+    @Override
+    protected String ownIdPrefix() {
+        return "G";
+    }
+
+    @Override
+    protected void handleMessage(BaseOpenMessage msg) {
+        super.handleMessage(msg);
+        logger.warn("==OWN:GenericHandler== Nothing to do!");
+        // do nothing
+    }
+
+} // class

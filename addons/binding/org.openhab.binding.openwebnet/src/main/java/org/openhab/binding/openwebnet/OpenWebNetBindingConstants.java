@@ -78,6 +78,8 @@ public class OpenWebNetBindingConstants {
     // TODO transform these constants in enum+hashmaps
 
     // #SUPPORTED THINGS SETS
+    // ## Generic
+    public static final Set<ThingTypeUID> GENERIC_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DEVICE);
     // ## Lighting
     public static final Set<ThingTypeUID> LIGHTING_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_ON_OFF_SWITCH,
             THING_TYPE_ON_OFF_SWITCH_2UNITS, THING_TYPE_DIMMER, THING_TYPE_BUS_ON_OFF_SWITCH, THING_TYPE_BUS_DIMMER);
@@ -98,7 +100,7 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Sets.union(LIGHTING_SUPPORTED_THING_TYPES,
             Sets.union(AUTOMATION_SUPPORTED_THING_TYPES,
                     Sets.union(THERMOREGULATION_SUPPORTED_THING_TYPES, Sets.union(ENERGY_SUPPORTED_THING_TYPES,
-                            Sets.union(SCENARIO_SUPPORTED_THING_TYPES, Sets.newHashSet(THING_TYPE_DEVICE))))));
+                            Sets.union(SCENARIO_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)))));
 
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DONGLE,
             THING_TYPE_BUS_GATEWAY);

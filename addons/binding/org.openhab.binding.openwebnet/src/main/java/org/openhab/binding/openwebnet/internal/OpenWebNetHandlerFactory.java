@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.openwebnet.handler.OpenWebNetAutomationHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetEnergyHandler;
+import org.openhab.binding.openwebnet.handler.OpenWebNetGenericHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetLightingHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetScenarioHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetThermoregulationHandler;
@@ -63,6 +64,9 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
             OpenWebNetBridgeHandler handler = new OpenWebNetBridgeHandler((Bridge) thing);
             registerDiscoveryService(handler);
             return handler;
+        } else if (OpenWebNetGenericHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("==OWN:HandlerFactory== creating NEW GENERIC Handler");
+            return new OpenWebNetGenericHandler(thing);
         } else if (OpenWebNetLightingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("==OWN:HandlerFactory== creating NEW LIGHTING Handler");
             return new OpenWebNetLightingHandler(thing);
