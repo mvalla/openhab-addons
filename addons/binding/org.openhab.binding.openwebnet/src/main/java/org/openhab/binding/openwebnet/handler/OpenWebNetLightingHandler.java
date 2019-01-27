@@ -238,9 +238,9 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 channelID = CHANNEL_SWITCH_01;
             }
         }
-        if (msg.isOn()) {
+        if (msg.isOn() || msg.isMovement()) {
             updateState(channelID, OnOffType.ON);
-        } else if (msg.isOff()) {
+        } else if (msg.isOff() || msg.isEndMovement()) {
             updateState(channelID, OnOffType.OFF);
         } else {
             logger.info(

@@ -405,11 +405,12 @@ end
 
 ## Changelog
 
-**v2.5.0-M1** - 26/01/2019
+**v2.5.0-M1** - 27/01/2019
 
-- **[FIX #28] automatic discovery of bus gateway is now supported**
-- FIX #39 set update interval for Energy Meter
-- model, firmwareVersion and serialNumber are now read from UPnP discovery
+- **[FIX #28] automatic discovery of BUS gateways is now supported**
+- gateway model, firmwareVersion and serialNumber are now read from UPnP discovery
+- FIX #39 set update interval 1min for Energy Meter
+- [FIX #4] added support for BTicino movement sensors (like AM5658 Green Switch) 
 - updated to openHAB 2.5.0 dev branch
 
 **v2.4.0-b9-2** - 18/01/2019
@@ -483,12 +484,12 @@ For a list of current open issues / features requests see [GitHub repo](https://
 
 Special thanks for helping on testing this binding go to:
 [@m4rk](https://community.openhab.org/u/m4rk/),
+[@gozilla01](https://community.openhab.org/u/gozilla01),
 [@enrico.mcc](https://community.openhab.org/u/enrico.mcc),
 [@bastler](https://community.openhab.org/u/bastler),
 [@k0nti](https://community.openhab.org/u/k0nti/),
 [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/),
-[@gozilla01](https://community.openhab.org/u/gozilla01),
-[llegovich](https://community.openhab.org/u/llegovich),
+[@llegovich](https://community.openhab.org/u/llegovich),
 [@gabriele.daltoe](https://community.openhab.org/u/gabriele.daltoe)
 and many others at the fantastic openHAB community!
 
