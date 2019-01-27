@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
+
 public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService implements OpenNewDeviceListener {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.DEVICE_SUPPORTED_THING_TYPES;
@@ -84,9 +85,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
     }
 
     @Override
-    public void onNewDevice(String where, OpenDeviceType deviceType) {
+    public void onNewDevice(String where, OpenDeviceType deviceType, BaseOpenMessage msg) {
         try {
-            newDiscoveryResult(where, deviceType, null);
+            newDiscoveryResult(where, deviceType, msg);
         } catch (Exception e) {
             logger.error("==OWN:DeviceDiscovery== Exception {} while discovering new device:  WHERE={}, deviceType={}",
                     e.getMessage(), where, deviceType);
@@ -95,6 +96,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
 
     /**
      * Create and notify to Inbox a new DiscoveryResult based on where, deviceType and BaseOpenMessage (optional)
+     *
+     * @param where      the discovered device's address (WHERE)
+     * @param deviceType device type of the discovered device
+     * @param message    the OWN message received that identified the device
      */
     public void newDiscoveryResult(String where, OpenDeviceType deviceType, BaseOpenMessage baseMsg) {
         logger.info("==OWN:DeviceDiscovery== newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
@@ -171,7 +176,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
                 }
                 default:
                     logger.warn(
-                            "==OWN:DeviceDiscovery== ***** device type {} is not supported, default to generic device (WHERE={})",
+                            "==OWN:DeviceDiscovery== ***** device type {} is not supported, default to generic device (WHERE={}) *****",
                             deviceType, where);
             }
         }
@@ -211,8 +216,13 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
             properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SCENARIO_BUTTONS,
                     ((CEN) baseMsg).getButtonNumber().toString());
         }
+        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) {
+            thingLabel = thingLabel + " (WHO=" + baseMsg.getWho() + ", WHERE=" + whereLabel + ")";
+        } else {
+            thingLabel = thingLabel + " (WHERE=" + whereLabel + ")";
+        }
         discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
-                .withBridge(bridgeUID).withLabel(thingLabel + " (WHERE=" + whereLabel + ")").build();
+                .withBridge(bridgeUID).withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);
     }
 

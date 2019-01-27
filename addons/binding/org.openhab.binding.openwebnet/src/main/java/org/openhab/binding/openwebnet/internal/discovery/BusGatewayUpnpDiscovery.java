@@ -85,25 +85,25 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         private boolean isBTicino = false;
 
         private DeviceInfo(RemoteDevice device) {
-            logger.info("= UPNP =========================================");
+            logger.info("+=== UPNP =========================================");
             RemoteDeviceIdentity identity = device.getIdentity();
             if (identity != null) {
                 this.udn = identity.getUdn();
-                logger.info("= ID.UDN       : {}", udn);
+                logger.info("| ID.UDN       : {}", udn);
                 if (identity.getDescriptorURL() != null) {
-                    logger.info("= ID.DESC URL  : {}", identity.getDescriptorURL());
+                    logger.info("| ID.DESC URL  : {}", identity.getDescriptorURL());
                     this.host = identity.getDescriptorURL().getHost();
                 }
                 // logger.info("= ID.MAX AGE : {}", identity.getMaxAgeSeconds());
                 // logger.info("= ID.LOC_ADDR : {}", identity.getDiscoveredOnLocalAddress());
             }
-            logger.info("------------------------------------------------");
+            logger.info("| --------------");
             DeviceDetails details = device.getDetails();
             if (details != null) {
                 ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
                 if (manufacturerDetails != null) {
                     this.manufacturer = manufacturerDetails.getManufacturer();
-                    logger.info("= MANUFACTURER : {} ({})", manufacturer, manufacturerDetails.getManufacturerURI());
+                    logger.info("| MANUFACTURER : {} ({})", manufacturer, manufacturerDetails.getManufacturerURI());
                     if (manufacturer != null && manufacturer.toUpperCase().contains("BTICINO")) {
                         this.isBTicino = true;
                     }
@@ -114,19 +114,20 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     this.modelName = modelDetails.getModelName();
                     this.modelDescription = modelDetails.getModelDescription();
                     this.modelNumber = modelDetails.getModelNumber();
-                    logger.info("= MODEL        : {} | {} | {} ({})", modelName, modelDescription, modelNumber,
+                    logger.info("| MODEL        : {} | {} | {} ({})", modelName, modelDescription, modelNumber,
                             modelDetails.getModelURI());
                 }
                 if (isBTicino) {
                     this.friendlyName = details.getFriendlyName();
-                    logger.info("= FRIENDLY NAME: {}", friendlyName);
+                    logger.info("| FRIENDLY NAME: {}", friendlyName);
                     this.serialNumber = details.getSerialNumber();
-                    logger.info("= SERIAL #     : {}", serialNumber);
-                    logger.info("= BASE URL     : {}", details.getBaseURL());
-                    logger.info("= UPC          : {}", details.getUpc());
-                    logger.info("= PRES. URI    : {}", details.getPresentationURI());
+                    logger.info("| SERIAL #     : {}", serialNumber);
+                    logger.info("| BASE URL     : {}", details.getBaseURL());
+                    logger.info("| UPC          : {}", details.getUpc());
+                    logger.info("| PRES. URI    : {}", details.getPresentationURI());
                 }
             }
+            logger.info("+==================================================");
         }
 
         private String getModelString() {

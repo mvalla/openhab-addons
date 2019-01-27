@@ -236,18 +236,19 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 #### `heating` and `cooling`
 
 `heating` and `cooling` channels assume that your BTicino heating/cooling actuators are configured as #1 and #2 respectively.
-To ensure the heating actuator is set up correctly for a Thermostat:
-1. open MyHome_Suite
+To ensure the heating/cooling actuators are set up correctly for a Thermostat:
+1. open *MyHome_Suite*
 2. go to Thermostat configuration panel > *Plant settings* 
-3. in *Actuators section* check if the first actuator listed is numbered "1". This will be the actuator which state will be returned by the binding in the `heating` channel
+3. in *Actuators section* check if the first actuator listed is numbered "1". This will be the actuator which state will be returned by the binding in the `heating` channel.
 4. if it is not numbered "1", find the actuator device corresponding to the same Thermo zone of the Thermostat and set the "Device number" property to "1"
+5. repeat steps 3. and 4. for `cooling` using actuator number "2"
 
 #### `scenarioButton`
 
-- In CEN/CEN+ things channels are named `button_X` where `X` is the button number on the Scenario Control device
+- In CEN/CEN+ channels are named `button_X` where `X` is the button number on the Scenario Control device
 - Button channels appear in PaperUI after the first time the corresponding button is activated from the physical device. Refresh the PaperUI/Control page if needed
-- When using file configuration, use the `buttons` Thing config parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`
-- Sending on channels `button_X` commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from OpenHab. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
+- When using file configuration, in the Thing configuration use the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`. See [openwebnet.things](#openwebnet-things) for an example
+- Sending on channels `button_X` the commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from OpenHab. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
 
 
 ## Google Assistant / Amazon Alexa / Apple HomeKit Integration
