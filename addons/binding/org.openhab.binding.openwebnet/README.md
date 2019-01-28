@@ -406,7 +406,7 @@ end
 
 ## Changelog
 
-**v2.5.0-M1** - 27/01/2019
+**v2.5.0-M1** - 28/01/2019
 
 - **[FIX #28] automatic discovery of BUS gateways is now supported**
 - gateway model, firmwareVersion and serialNumber are now read from UPnP discovery
