@@ -367,11 +367,15 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     private static Set<Integer> csvStringToSetInt(String s) {
-        s = s.replaceAll("\\s", "");
-        Scanner sc = new Scanner(s).useDelimiter(",");
         TreeSet<Integer> intSet = new TreeSet<Integer>();
-        while (sc.hasNextInt()) {
-            intSet.add(sc.nextInt());
+        if (s != null) {
+            String sNorm = s.replaceAll("\\s", "");
+            Scanner sc = new Scanner(sNorm);
+            sc.useDelimiter(",");
+            while (sc.hasNextInt()) {
+                intSet.add(sc.nextInt());
+            }
+            sc.close();
         }
         return intSet;
     }

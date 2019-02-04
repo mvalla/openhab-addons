@@ -15,6 +15,8 @@ package org.openhab.binding.openwebnet.handler;
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_POWER;
 
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -42,6 +44,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.ENERGY_SUPPORTED_THING_TYPES;
 
+    private ScheduledFuture<?> notificationSchedule = null;
+
     public OpenWebNetEnergyHandler(@NonNull Thing thing) {
         super(thing);
         logger.debug("==OWN:EnergyHandler== constructor");
@@ -51,15 +55,40 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     public void initialize() {
         super.initialize();
         logger.debug("==OWN:EnergyHandler== initialize() thing={}", thing.getUID());
-        // set active power update interval to 1min
-        bridgeHandler.gateway.send(EnergyManagement.setActivePowerInterval(deviceWhere, 1));
+        int period = 4;
+        notificationSchedule = scheduler.scheduleAtFixedRate(() -> {
+            logger.debug(
+                    "==OWN:EnergyHandler== For WHERE={} subscribing to active power changes notification for the next {}min",
+                    deviceWhere, period);
+            try {
+                bridgeHandler.gateway.send(EnergyManagement.setActivePowerNotificationsTime(deviceWhere, period));
+            } catch (Exception e) {
+                logger.warn(
+                        "==OWN:EnergyHandler== For WHERE={} could not subscribe to active power changes notifications. Exception={}",
+                        deviceWhere, e.getMessage());
+            }
+        }, 0, period - 1, TimeUnit.MINUTES);
+
     }
 
     @Override
     public void handleRemoval() {
-        // switch off active power updates
-        bridgeHandler.gateway.send(EnergyManagement.setActivePowerInterval(deviceWhere, 0));
+        if (notificationSchedule != null) {
+            notificationSchedule.cancel(false);
+        }
         super.handleRemoval();
+        scheduler.schedule(() -> {
+            try {
+                // switch off active power updates
+                bridgeHandler.gateway.send(EnergyManagement.setActivePowerNotificationsTime(deviceWhere, 0));
+            } catch (Exception e) {
+                logger.debug(
+                        "==OWN:EnergyHandler== For WHERE={} could not UN-subscribe from active power changes notifications. Exception={}",
+                        deviceWhere, e.getMessage());
+                e.printStackTrace();
+            }
+        }, 1000, TimeUnit.MILLISECONDS);
+
     }
 
     @Override
