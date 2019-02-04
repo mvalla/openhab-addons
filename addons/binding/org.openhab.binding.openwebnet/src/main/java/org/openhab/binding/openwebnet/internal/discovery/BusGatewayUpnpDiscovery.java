@@ -55,7 +55,8 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         MH202("scheduler", "MH202"),
         F454("webserver", "F454"),
         MY_HOME_SERVER1("myhomeserver1", "MYHOMESERVER1"),
-        TOUCH_SCREEN_10("ts10", "TOUCHSCREEN10");
+        TOUCH_SCREEN_10("ts10", "TOUCHSCREEN10"),
+        MH200N("lightingcontrolunit", "MH200N");
 
         private final String value, thingId;
 
