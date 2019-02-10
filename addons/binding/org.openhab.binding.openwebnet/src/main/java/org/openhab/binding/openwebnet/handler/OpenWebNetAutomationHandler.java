@@ -289,6 +289,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
      * Updates automation device state based on an Automation message received from OWN network
      */
     private void updateAutomationState(Automation msg) {
+        logger.debug("==OWN:AutomationHandler== updateAutomationState() - msg={} what={}", msg, msg.getWhat());
         if (msg.isUp()) {
             updateStateInt(STATE_MOVING_UP);
             if (calibrating == CALIBRATION_ACTIVATED) {

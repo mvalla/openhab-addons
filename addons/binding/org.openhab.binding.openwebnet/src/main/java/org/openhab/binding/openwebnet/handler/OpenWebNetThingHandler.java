@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
-// TODO rename to 'DeviceHandler'
+
 public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetThingHandler.class);
@@ -140,7 +140,9 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         // logger.debug("==OWN:ThingHandler== handleMessage() for thing: {}", getThing().getUID());
         // update status to ONLINE if not already online
-        if (ThingStatus.ONLINE != getThing().getStatus()) {
+        ThingStatus ts = getThing().getStatus();
+        // logger.debug("(((((((((((((((((((((((((((((((((((((((((((((( ThingStatus = {}", ts);
+        if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -153,19 +155,20 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      */
     protected abstract void requestChannelState(ChannelUID channel);
 
-    @Override
-    public void handleRemoval() {
-        logger.debug("==OWN:ThingHandler== handleRemoval() for {}", getThing().getUID());
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterDevice(ownId);
-        }
-        super.handleRemoval();
-    }
+    /*
+     * @Override
+     * public void handleRemoval() {
+     * logger.debug("==OWN:ThingHandler== handleRemoval() for {}", getThing().getUID());
+     * if (bridgeHandler != null) {
+     * bridgeHandler.unregisterDevice(ownId);
+     * }
+     * super.handleRemoval();
+     * }
+     */
 
     @Override
     public void dispose() {
         logger.debug("==OWN:ThingHandler== dispose() for {}", getThing().getUID());
-        // FIXME TODO if handleRemoval() is always called before dispose(), avoid making this call
         if (bridgeHandler != null) {
             bridgeHandler.unregisterDevice(ownId);
         }
