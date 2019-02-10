@@ -55,7 +55,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     public void initialize() {
         super.initialize();
         logger.debug("==OWN:EnergyHandler== initialize() thing={}", thing.getUID());
-        int period = 4;
+        int period = 10;
         notificationSchedule = scheduler.scheduleAtFixedRate(() -> {
             logger.debug(
                     "==OWN:EnergyHandler== For WHERE={} subscribing to active power changes notification for the next {}min",
@@ -72,11 +72,11 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    public void handleRemoval() {
+    public void dispose() {
         if (notificationSchedule != null) {
             notificationSchedule.cancel(false);
         }
-        super.handleRemoval();
+        super.dispose();
         scheduler.schedule(() -> {
             try {
                 // switch off active power updates
@@ -87,7 +87,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
                         deviceWhere, e.getMessage());
                 e.printStackTrace();
             }
-        }, 1000, TimeUnit.MILLISECONDS);
+        }, 1, TimeUnit.MINUTES);
 
     }
 
