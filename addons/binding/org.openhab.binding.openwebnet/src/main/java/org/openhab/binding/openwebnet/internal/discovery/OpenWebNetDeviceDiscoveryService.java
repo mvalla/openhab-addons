@@ -57,12 +57,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
         logger.debug("==OWN:DeviceDiscovery== constructor for bridge: {}", bridgeUID);
     }
 
-    /*
-     * @Override
-     * public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-     * this.discoveryServiceCallback = discoveryServiceCallback;
-     * }
-     */
+    // @Override
+    // public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
+    // this.discoveryServiceCallback = discoveryServiceCallback;
+    // }
+
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         logger.debug("==OWN:DeviceDiscovery== getSupportedThingTypes()");
@@ -99,10 +98,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
     }
 
     /**
-     * Create and notify to Inbox a new DiscoveryResult based on where, deviceType and BaseOpenMessage (optional)
+     * Create and notify to Inbox a new DiscoveryResult based on where, OpenDeviceType and BaseOpenMessage (optional)
      *
      * @param where      the discovered device's address (WHERE)
-     * @param deviceType device type of the discovered device
+     * @param deviceType {@link OpenDeviceType} of the discovered device
      * @param message    the OWN message received that identified the device
      */
     public void newDiscoveryResult(String where, OpenDeviceType deviceType, BaseOpenMessage baseMsg) {
@@ -188,27 +187,25 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
 
         DiscoveryResult discoveryResult = null;
-        /*
-         * // check if a device with same thingUID has been found already in discovery results
-         *
-         * if (discoveryServiceCallback != null) {
-         * discoveryResult = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
-         * }
-         */
+        // check if a device with same thingUID has been found already in discovery results
+        // if (discoveryServiceCallback != null) {
+        // discoveryResult = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
+        // }
+
         String whereLabel = where;
         if (BaseOpenMessage.UNIT_02.equals(OpenMessageFactory.getUnit(where))) {
             logger.debug("==OWN:DeviceDiscovery== UNIT=02 found (WHERE={})", where);
             // if (discoveryResult != null) {
-            // logger.debug("==OWN:DeviceDiscovery== will remove previous result if exists");
-            // thingRemoved(thingUID); // remove previously discovered thing
+            logger.debug("==OWN:DeviceDiscovery== will remove previous result if exists");
+            thingRemoved(thingUID); // remove previously discovered thing
             // re-create thingUID with new type
             thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS;
             thingLabel = OpenWebNetBindingConstants.THING_LABEL_ON_OFF_SWITCH_2UNITS;
             thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
             whereLabel = whereLabel.replace("02#", "00#"); // replace unit '02' with all unit '00'
-            // logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
-            // OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH,
-            // OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS);
+            logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
+                    OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH,
+                    OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS);
             // } else {
             // logger.warn("==OWN:DeviceDiscovery== discoveryResult empty after UNIT=02 discovery (WHERE={})", where);
             // }

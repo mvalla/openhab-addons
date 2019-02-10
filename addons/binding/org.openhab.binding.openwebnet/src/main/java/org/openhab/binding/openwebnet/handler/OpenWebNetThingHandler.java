@@ -68,7 +68,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
             }
             deviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
             // TODO check range for WHERE
-            ownId = bridgeHandler.ownIdFromWhere(deviceWhere, this);
+            ownId = bridgeHandler.ownIdFromDeviceWhere(deviceWhere, this);
             bridgeHandler.registerDevice(ownId, this);
             logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
