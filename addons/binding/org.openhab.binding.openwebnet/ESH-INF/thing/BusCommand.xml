@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- Thing for BUS Command (BTicino xxx/xxx/...) -->
+	<thing-type id="bus_command">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway" />
+		</supported-bridge-type-refs>
+
+		<label>Command</label>
+		<description>A OpenWebNet BUS/SCS Command. BTicino models: xxx/yyyy/etc.</description>
+		
+		<channels>
+			<channel id="what" typeId="what" />
+			<channel id="switch" typeId="switch" />
+			<channel id="contact" typeId="contact" />
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-xxxx/yyyy/etc.</property>
+			<property name="ownDeviceType">---</property>
+		</properties>
+				
+		<config-description>
+		    <parameter name="who" type="text">
+                <label>OpenWebNet Device Address (WHO)</label>
+                <description>Example: Lighting Who = 1 , Automation Who = 2</description>
+                <required>true</required>                
+            </parameter>
+            <parameter name="what" type="text">
+                <label>OpenWebNet Device Address (WHAT)</label>
+                <description>Sent to the bus with ON command</description>
+                <required>true</required>                
+            </parameter>
+			<parameter name="where" type="text">
+                <label>OpenWebNet Device Address (WHERE)</label>
+                <description>Example: A/PL address: A=1 PL=3 --> WHERE=13. On local bus: WHERE=13#4#01</description>
+                <required>true</required>                
+            </parameter>
+            <parameter name="whatOff" type="text">
+                <label>OpenWebNet Device Address (WHATOFF)</label>
+                <description>Sent to the bus with OFF command. If null, no command is sent to the bus</description>
+                <required>false</required>                
+            </parameter>
+            <parameter name="compare" type="text">
+                <label>OpenWebNet Frame OWN</label>
+                <description>OWN code compared to the bus receipt. If null, no comparison is performed with the bus</description>
+                <required>false</required>                
+            </parameter>
+		</config-description>
+		
+	</thing-type>
+</thing:thing-descriptions>

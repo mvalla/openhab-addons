@@ -212,16 +212,29 @@
         <item-type>Switch</item-type>
         <label>Sensor</label>
         <description>Indicates if a Dry Contact interface is ON or a IR Sensor has detected movement</description>
-        <category></category>
-        
+        <category></category>       
         <state readOnly="true">
         <!--    <options>
                 <option value="ON">ON - IR Detection</option>
                 <option value="OFF">OFF - IR No Detection</option>
             </options>
         -->
-        </state>
-        
+        </state>      
     </channel-type>
+    
+    <!-- Command Channel -->
+    <channel-type id="what">
+        <item-type>String</item-type>
+        <label>What</label>
+        <description>String What</description>
+        <category>Command</category>
+    </channel-type>
+    <channel-type id="contact">
+        <item-type>Switch</item-type>
+        <label>Contact</label>
+        <description>Switch the power OPEN and Closed</description>
+        <category>Command</category>
+    </channel-type>
+    
     
 </thing:thing-descriptions>

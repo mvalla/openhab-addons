@@ -29,7 +29,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.openwebnet.handler.OpenWebNetAutomationHandler;
+import org.openhab.binding.openwebnet.handler.OpenWebNetAuxHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
+import org.openhab.binding.openwebnet.handler.OpenWebNetCommandHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetEnergyHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetGenericHandler;
 import org.openhab.binding.openwebnet.handler.OpenWebNetLightingHandler;
@@ -86,6 +88,12 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetScenarioHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("==OWN:HandlerFactory== creating NEW SCENARIO Handler");
             return new OpenWebNetScenarioHandler(thing);
+        } else if (OpenWebNetAuxHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("==OWN:HandlerFactory== creating NEW AUX Handler");
+            return new OpenWebNetAuxHandler(thing);
+        } else if (OpenWebNetCommandHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("==OWN:HandlerFactory== creating NEW Command Handler");
+            return new OpenWebNetCommandHandler(thing);
         }
         logger.error("==OWN:HandlerFactory== ThingType: {} is not supported by the binding", thing.getThingTypeUID());
         return null;

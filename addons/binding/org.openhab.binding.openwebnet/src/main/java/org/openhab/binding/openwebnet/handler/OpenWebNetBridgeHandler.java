@@ -44,6 +44,7 @@ import org.openwebnet.OpenListener;
 import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.OpenWebNet;
 import org.openwebnet.message.Automation;
+import org.openwebnet.message.Auxiliary;
 import org.openwebnet.message.BaseOpenMessage;
 import org.openwebnet.message.CEN;
 import org.openwebnet.message.CENPlusScenario;
@@ -364,7 +365,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
                 || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario
-                || baseMsg instanceof CENPlusScenario) {
+                || baseMsg instanceof CENPlusScenario || baseMsg instanceof Auxiliary) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("==OWN==  ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = getDevice(ownId);
@@ -382,6 +383,21 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 // } else {
                 // logger.debug("==OWN== ownId={} has NO HANDLER associated, ignoring it", ownId);
                 // }
+            }
+            /*
+             * Aggiunto per gestire temporanea per il bus_command
+             * ownId = C.WHO.WHERE
+             * Implementare:
+             * Inviare a tutti i handler di tutti i bus_command
+             */
+            OpenWebNetThingHandler deviceHandlerC = getDevice("C.1.22");
+            if (deviceHandlerC == null) {
+                if (isBusGateway && deviceDiscoveryListener != null && !searchingGatewayDevices && scanIsActive) {
+                    // try device discovery by activation
+                    discoverByActivation(baseMsg);
+                }
+            } else {
+                deviceHandlerC.handleMessage(baseMsg);
             }
         } else {
             logger.debug("==OWN==  BridgeHandler ignoring frame {}. WHO={} is not supported by the binding", baseMsg,
@@ -506,25 +522,29 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     // @formatter:off
     /**
      *
-     *                              deviceWhere
-     *                              DevAddrParam
-     * TYPE         WHERE           normalized  ownId       ThingID
-     * ---------------------------------------------------------------
-     * Zigbee       789309801#9     7893098     1.7893098   7893098   (*)
-     * Switch       51              51          1.51        51
-     * Dimmer       25#4#01         25#4#01     1.25#4#01   25h4h01   (*)
-     * Autom        93              93          2.93        93
-     * Thermo       #1 or 1         1           4.1         1         (*)
-     * TempSen      500             500         4.500       500
-     * Energy       51              51          18.51       51
-     * CEN          51              51          15.51       51
-     * CEN+         212             212         25.212      212
-     * DryContact   399             399         25.399      399
+     *                                  deviceWhere
+     *                                  DevAddrParam
+     * TYPE             WHERE           normalized  ownId       ThingID
+     * ------------------------------------------------------------------------
+     * Zigbee           789309801#9     7893098     1.7893098   7893098   (*)
+     * Switch           51              51          1.51        51
+     * Dimmer           25#4#01         25#4#01     1.25#4#01   25h4h01   (*)
+     * Autom            93              93          2.93        93
+     * Thermo           #1 or 1         1           4.1         1         (*)
+     * TempSen          500             500         4.500       500
+     * Energy           51              51          18.51       51
+     * CEN              51              51          15.51       51
+     * CEN+             212             212         25.212      212
+     * DryContact       399             399         25.399      399
+     *
      *
      *      - public        normalizeWhere()    called locally and from OpenWebNetDeviceDiscoveryService
      *      - protected     ownIdFromWhere()    called from ThingHandler.initialize
      *      - private       ownIdFromMessage()  called from onMessage()
      *      - public        thingIdFromWhere()  called from OpenWebNetDeviceDiscoveryService
+     *
+     *
+     *
      *
      */
     // @formatter:on
