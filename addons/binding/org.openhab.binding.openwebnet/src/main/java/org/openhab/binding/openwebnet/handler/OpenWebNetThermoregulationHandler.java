@@ -32,7 +32,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openwebnet.OpenSession;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.OpenMessage;
 import org.openwebnet.message.Thermoregulation;
 import org.openwebnet.message.Thermoregulation.LOCAL_OFFSET;
 import org.slf4j.Logger;
@@ -147,10 +149,16 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 value = ((DecimalType) command).toBigDecimal();
             }
             // TODO check setPoint is inside OWN range (5-40) and check it's int or x.5 decimal, if not, round to
-            // nearest
-            // x.0/x.5. Or better make it a control at lib level
-            bridgeHandler.gateway.send(Thermoregulation.requestWriteSetpoint("#" + deviceWhere, value.floatValue()));
-            updateState(CHANNEL_TEMP_SETPOINT, (DecimalType) command);
+            // nearest x.0/x.5. Or better make it a control at lib level
+            OpenSession ses = bridgeHandler.gateway
+                    .send(Thermoregulation.requestWriteSetpoint(deviceWhere, value.floatValue()));
+            if (ses.getFinalResponse().getValue().equals(OpenMessage.NACK)) {
+                logger.debug("=OWN:ThermoHandler== Failed sending Setpoint command with WHERE=N");
+                // using WHERE=N fails, let'use zone by central unit WHERE=#N
+                bridgeHandler.gateway
+                        .send(Thermoregulation.requestWriteSetpoint("#" + deviceWhere, value.floatValue()));
+            }
+            // NOT NEEDED ----- updateState(CHANNEL_TEMP_SETPOINT, (DecimalType) command);
         } else {
             logger.warn("==OWN:ThermoHandler== Cannot handle command {} for thing {}", command, getThing().getUID());
             return;
