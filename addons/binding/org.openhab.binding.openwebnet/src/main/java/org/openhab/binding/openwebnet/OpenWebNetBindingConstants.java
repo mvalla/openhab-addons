@@ -68,8 +68,6 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
     public static final ThingTypeUID THING_TYPE_BUS_DRY_CONTACT_IR = new ThingTypeUID(BINDING_ID, "bus_dry_contact_ir");
     public static final String THING_LABEL_BUS_DRY_CONTACT_IR = "Dry Contact/IR";
-    public static final ThingTypeUID THING_TYPE_BUS_AUX_TOGGLE = new ThingTypeUID(BINDING_ID, "bus_on_off_aux");
-    public static final String THING_LABEL_BUS_AUX_TOGGLE = "Auxiliary";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "on_off_switch");
@@ -80,8 +78,6 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_DIMMER = "ZigBee Dimmer";
     public static final ThingTypeUID THING_TYPE_AUTOMATION = new ThingTypeUID(BINDING_ID, "automation");
     public static final String THING_LABEL_AUTOMATION = "ZigBee Automation";
-    public static final ThingTypeUID THING_TYPE_AUX_SWITCH = new ThingTypeUID(BINDING_ID, "aux_switch");
-    public static final String THING_LABEL_AUX_SWITCH = "ZigBee Aux";
 
     // TODO transform these constants in enum+hashmaps
 
@@ -104,14 +100,11 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Sets.newHashSet(
             THING_TYPE_BUS_CEN_SCENARIO_CONTROL, THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL,
             THING_TYPE_BUS_DRY_CONTACT_IR);
-    // ## AUX
-    public static final Set<ThingTypeUID> AUX_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_BUS_AUX_TOGGLE);
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Sets.union(LIGHTING_SUPPORTED_THING_TYPES,
             Sets.union(AUTOMATION_SUPPORTED_THING_TYPES,
-                    Sets.union(THERMOREGULATION_SUPPORTED_THING_TYPES,
-                            Sets.union(ENERGY_SUPPORTED_THING_TYPES, Sets.union(SCENARIO_SUPPORTED_THING_TYPES,
-                                    Sets.union(GENERIC_SUPPORTED_THING_TYPES, AUX_SUPPORTED_THING_TYPES))))));
+                    Sets.union(THERMOREGULATION_SUPPORTED_THING_TYPES, Sets.union(ENERGY_SUPPORTED_THING_TYPES,
+                            Sets.union(SCENARIO_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)))));
 
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DONGLE,
             THING_TYPE_BUS_GATEWAY);
@@ -148,8 +141,6 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_TYPE_SCENARIO_BUTTON = "scenarioButton";
 
     public static final String CHANNEL_DRY_CONTACT_IR = "sensor";
-    // auxiliary
-    public static final String CHANNEL_AUX = "switch";
 
     // config properties
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
