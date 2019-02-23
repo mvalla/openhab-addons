@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" immediate="true" name="org.openhab.binding.openwebnet.internal.discovery.OpenWebNetBridgeDiscoveryService" configuration-pid="discovery.openwebent">
-    <service servicefactory="false">
-        <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
-    </service>
-    <implementation class="org.openhab.binding.openwebnet.internal.discovery.OpenWebNetBridgeDiscoveryService"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="discovery.openwebent" immediate="true" name="org.openhab.binding.openwebnet.internal.discovery.OpenWebNetBridgeDiscoveryService">
+   <service>
+      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+   </service>
+   <implementation class="org.openhab.binding.openwebnet.internal.discovery.OpenWebNetBridgeDiscoveryService"/>
 </scr:component>
