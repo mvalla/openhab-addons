@@ -2,7 +2,7 @@
 
 This new binding integrates BTicino / Legrand MyHOME(r) BUS & ZigBee wireless (MyHOME_Play) devices using the **[OpenWebNet](https://en.wikipedia.org/wiki/OpenWebNet) protocol**.
 It is the first known binding for openHAB 2 that **supports *both* wired BUS/SCS** as well as **wireless setups**, all in the same biding. The two networks can be configured simultaneously.
-It's also the first OpenWebNet binding with initial support for discovery of BUS/SCS devices.
+It's also the first OpenWebNet binding with support for discovery of BUS/SCS gatways and devices.
 Commands from openHAB and feedback (events) from BUS/SCS and wireless network are supported.
 Support for both numeric (`12345`) and alpha-numeric (`abcde` - HMAC authentication) gateway passwords is included.
 
@@ -12,9 +12,11 @@ In order for this biding to work, a **BTicino/Legrand OpenWebNet gateway** is ne
 Currently these gateways are supported by the binding:
 
 - **IP gateways** or scenario programmers, such as BTicino 
-[F454](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=006), [MyHOMEServer1](http://www.bticino.com/products-catalogue/myhome_up-simple-home-automation-system/), 
-[MyHOME_Screen 10](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=001), 
-[MH202](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=059), [F455](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=051),
+[F454](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=006), 
+[MyHOMEServer1](http://www.bticino.com/products-catalogue/myhome_up-simple-home-automation-system/), 
+[MyHOME_Screen10](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=001), 
+[MH202](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=059), 
+[F455](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=051),
 [MH200N](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=016), 
 [F453](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=027),  etc.
 - **Wireless (ZigBee) USB gateways**, such as [BTicino 3578](http://www.catalogo.bticino.it/BTI-3578-EN) and [Legrand 088328](https://www.legrand.fr/pro/catalogue/35115-interface-openradio/interface-open-webnet-et-radio-pour-pilotage-dune-installation-myhome-play)
@@ -26,12 +28,12 @@ The following Things and OpenWebNet `WHOs` are supported:
 
 | Category   | WHO   | Thing Type IDs                    | Discovery?          | Feedback from BUS?          | Description                                                 | Status           |
 | ---------- | :---: | :-------------------------------: | :----------------: | :----------------: | ----------------------------------------------------------- | ---------------- |
-| Gateway Management   | `13`  | `bus_gateway`                     | *work in progress*                | n/a  | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N,...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F453AV, MH202. Some connection stability issues/gateway resets reported with MH202  |
+| Gateway Management   | `13`  | `bus_gateway`                     | Yes *Testing*                | n/a  | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N,...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F453AV, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202  |
 | Lightning | `1`   | `bus_on_off_switch`, `bus_dimmer` | Yes                | Yes                | BUS switches and dimmers                                                                 | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
-| Automation | `2`   | `bus_automation`                | Yes | Yes                  | BUS roller shutters, with position feedback and auto-calibration via a *UP >> DOWN >> Position%* cycle                                                                                       | Successfully tested: LN4672M2  |
-| Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691 via 3488 Central Unit; external probes: L/N/NT4577 + 3455 |
+| Automation | `2`   | `bus_automation`                | Yes | Yes                  | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
+| Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691; external probes: L/N/NT4577 + 3455 |
 | CEN & CEN+ Commands | `15` & `25`   | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`, `bus_dry_contact_ir`   | Yes (CEN/CEN+ by [activation](#discovery-by-activation) only) | Yes | CEN/CEN+ events and virtual activation for scenario control. Dry Contact and IR sensor devices events. | *Testing*: Scenario buttons: HC/HD/HS/L/N/NT4680. Contact interfaces: F428 and 3477. IR sensors: HC/HD/HS/L/N/NT4610 |
-| Energy Management | `18`   | `bus_energy_central_unit`   | Yes | Yes | Energy Management Central Unit | *Testing*: F521 |
+| Energy Management | `18`   | `bus_energy_central_unit`   | Yes | Yes | Energy Management Central Unit | Successfully tested: F520, F521 |
 
 
 ### ZigBee (Radio)
@@ -42,14 +44,14 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lightning| `1`   | `dimmer`, `on_off_switch`, `on_off_switch2u` | Yes                | Yes        | ZigBee dimmers, switches and 2-unit switches                | Tested: BTI-4591, BTI-3584, BTI-4585 |
 | Automation | `2`   | `automation`                           | Yes | Yes          | ZigBee roller shutters, with position feedback and auto-calibration via a *UP >> DOWN >> Position%* cycle                                                           | *To be tested*    |
 
+## Requirements
+
+This binding requires **openHAB 2.3** or later.
+
 ## Installation
 
 The binding it's still *under development* and not part of the official openHAB distribution.
-You must follow carefully the following instructions in order to have the binding properly installed and working.
-
-### 0. Requirements
-
-This binding requires **openHAB 2.3** or later.
+You must **follow carefully the following instruction steps 1a/1b and 2** in order to have the binding properly installed and working.
 
 ### 1a. Install from Marketplace
 
@@ -59,7 +61,7 @@ Make sure that the [marketplace plugin is activated](https://www.openhab.org/doc
 
 If you cannot find the binding in the search, probably you have an issue with certificates in your Java environment, that must be updated. Follow [this solution](https://community.openhab.org/t/solved-failed-downloading-marketplace-entries-received-fatal-alert-handshake-failure/52045) to add the required certificates to access all bindings on the Marketplace.
 
-Be aware that you might have to re-install the binding after an openHAB upgrade. This is a limitation of the Eclipse Marketplace plugin and will be changed in future versions of openHAB.
+You will have to re-install the binding after an openHAB upgrade. This is a limitation of the Eclipse Marketplace plugin and will be changed in future versions of openHAB.
 
 ### 1b. Install Manually
 
@@ -85,11 +87,17 @@ After upgrading the binding to a new version, there is no need to activate depen
 
 **However dependencies must be activated again if you upgrade openHAB to a new version or clean its cache.**
 
-### Upgrade from previous binding release version
+## Upgrade of the binding
 
-It's suggested also to remove OpenWebNet Things before uninstalling the old binding, and discover/configure them again after binding has been updated.
+When upgrading the binding to a new version it's suggested also to remove OpenWebNet Things before uninstalling the old binding, and discover/configure them again after binding has been updated.
 
-#### Upgrade - Manual installation
+### Upgrade - Marketplace installation
+
+1. Goto PaperUI > Add-ons > Bindings > search `openweb` > UNINSTALL
+1. reload the page in the browser to make sure latest version is selected
+1. search again `openweb` > INSTALL
+
+### Upgrade - Manual installation
 
 Since openHAB uses some cache mechanisms to load bindings, it is not enough to remove and update the binding JAR file from `addons` folder:
 
@@ -98,12 +106,6 @@ Since openHAB uses some cache mechanisms to load bindings, it is not enough to r
     - `bundle:uninstall <ID>` to remove previous version of the binding
 1. remove the previous version of the binding JAR file from `addons/` folder
 1. copy the new version of the binding JAR file to `addons/` folder
-
-#### Upgrade - Marketplace installation
-
-1. Goto PaperUI > Add-ons > Bindings > search `openweb` > UNINSTALL
-1. reload the page in the browser to make sure latest version is selected
-1. search again `openweb` > INSTALL
 
 The new version of the binding should now be installed, check the version number in *PaperUI > Configuration > Bindings*.
 
@@ -125,21 +127,21 @@ The interesting file to provide for feedback is `openhab.log` (`events.log` is n
 
 ## Discovery
 
-Things discovery is supported using PaperUI by pressing the discovery ("+") button form Inbox.
+Gateway and Things discovery is supported using PaperUI by pressing the discovery ("+") button form Inbox.
 
 ### BUS/SCS Discovery
 
-- Gateway discovery using UPnP is *under development* and will be available only for IP gateways supporting UPnP
-- For the moment the OpenWebNet IP gateway should be added manually from PaperUI or in the .things file (see [Configuring BUS/SCS Gateway](#configuring-bus-scs-gateway) below)
-- IP and password (if needed) must be configured
-- Once the gateway is added manually as a Thing, a second Scan request from Inbox will discover BUS devices
+- BUS Gateway automatic discovery will work only for newer gateways supporting UPnP: F454, MyHOMEServer1, MH202, MH200N, MyHOME_Screen 10.
+For other gateways you can add them manually, see [Thing Configuration](#thing-configuration) below.
+- After gateway is discovered and added, a password (if needed) must be set in the gateway Thing configuration otherwise the gateway will not become online. Default password is `12345`
+- Once the gateway is added and online, a second Scan request from Inbox will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
 - CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details.
-After confirming a discovered CEN/CEN+ device from Inbox, activate again its buttons and refresh the PaperUI Control page to see button channels appear.
+After confirming a discovered CEN/CEN+ device from Inbox, activate again its scenario buttons and refresh the PaperUI Control page to see button channels appear.
 
 #### Discovery by Activation
-Ligthing and CEN/CEN+ Scenario Control devices can be discovered if activated while a Inbox Scan is active: start a new Scan, wait 15-20sec and then while the _Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer, push a CEN/CEN+ Scenario button) to have it discovered by the binding.
+Ligthing and CEN/CEN+ Scenario Control devices can be discovered if activated while a Inbox Scan is active: start a new Scan, wait 15-20 seconds and then while the _Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer, push a CEN/CEN+ Scenario button) to have it discovered by the binding.
 
 If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
 
@@ -162,20 +164,20 @@ If a device cannot be discovered automatically it's always possible to add them 
 
 ### Configuring BUS/SCS Gateway
 
-To configure the gateway using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `OpenWebNet BUS Gateway` device, with this configuration:
+To add a gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `OpenWebNet BUS Gateway` device.
+
+Parameters for configuration:
 
 - `host` : IP address / hostname of the BUS/SCS gateway (*mandatory*)
    - Example: `192.168.1.35`
 - `port` : port (*optional*, default: `20000`)
-- `passwd` : gateway password (*optional*)
-   - Example: `abcde`
+- `passwd` : gateway password (*required* for gateways that have a passwrod set. Default: `12345`)
+   - Example: `abcde` or `12345`
    - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
+   - in all other cases, a passwrod must be set. This includes  gateways that have been discovered and added from Inbox that without a password settings will not become ONLINE
+- `discoveryByActivation` : **=EXPERIMENTAL=** discover BUS devices when they are activated also when a device scan is not active (*optional*, default: `false`)
 
 Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
-
-**HELP NEEDED!!!**
-Start a gateway discovery, and then send your (DEBUG-level) log file to the openHAB Community OpenWebNet thread to see if UPnP discovery is supported by your BTicino IP gateway.
-
 
 ### Configuring Wireless (ZigBee) USB Dongle
 
@@ -251,35 +253,36 @@ To ensure the heating/cooling actuators are set up correctly for a Thermostat:
 - Sending on channels `button_X` the commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from OpenHab. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
 
 
-## Google Assistant / Amazon Alexa / Apple HomeKit Integration
+## Integration with assistants
 
-Items created automatically with PaperUI (Simple Mode item linking: `Configuration > System > Item Linking > Simple mode > SAVE`) will integrate with Google Assitant/Amazon Alexa/Apple HomeKit (Siri) seamlessly as they will get automatically the proper tags. In particular items associated with these channels will have the following tags:
+To be visible to assistants like Google Assistant/Amazon Alexa/Apple HomeKit (Siri) an item must have the correct tag.
+Items created automatically with PaperUI (Simple Mode item linking: `Configuration > System > Item Linking > Simple mode > SAVE`) will get automatically the correct tag from the binding: in particular items associated with these channels will have the following tags:
 
-- `switch` / `brightness` channels will have the `"Lighting"` tag
-- `shutter` channel will have the `"Blinds"` tag
-- `temperature` channel will have the `"CurrentTemperature"` tag
-- `setpointTemperature` channel will have the `"TargetTemperature"` tag
-- `heatingCoolingMode` channel will have the `"homekit:HeatingCoolingMode"` tag
-
-These are the tags supported so far by the OpenWebNet binding, but you have to check which tags are supported by the openHAB add-on (Google Assistant/Alexa/HomeKit)
-
-You will obtain the most flexible configuration is obtained using `.items` file: see the examples below.
+- `switch` / `brightness` channels will have the `Lighting` tag
+- `shutter` channel will have the `Blinds` and `Switchable` tag
+- `temperature` channel will have the `CurrentTemperature` tag
+- `setpointTemperature` channel will have the `TargetTemperature` tag
+- `heatingCoolingMode` channel will have the `homekit:HeatingCoolingMode` tag
 
 After configuration, you can double-check which tags are set looking at the `tags` attribute in the REST API: http://openhabianpi.local:8080/rest/items.
 
-After tags are set, it will be enough to link openHAB with [myopenhab](https://www.openhab.org/addons/integrations/openhabcloud/) and with Google Assistant/Alexa/HomeKit add-on and you will be able to discover/control BTicino items.
+**NOTE For items created automatically with PaperUI tags are added automatically by the OpenWebNet binding, but you have to check which tags are actually supported by each openHAB add-on (Google Assistant/Alexa/HomeKit). 
+For example the Google Assitant add-on for openHAB does not support the 'Blinds' tag yet.**
 
-Names used will be the names of the channels (Brightness, etc.); they cannot be changed in PaperUI, you can change names in the assistants.
+After items and their tags are set, it will be enough to link openHAB with [myopenhab](https://www.openhab.org/addons/integrations/openhabcloud/) and with the Google Assistant/Alexa/HomeKit add-on, and you will be able to discover/control BTicino items.
+
+Names used will be the names of the channels (Brightness, etc.); they cannot be changed in PaperUI, usually you can change names in the assistants.
+
+Note that the most flexible configuration is obtained using `.items` file: see the examples below.
 
 See these official docs and other threads in the OH community for more information about Google Assistant/Alexa/HomeKit integration and configuration:
 
 - Google Assistant (Google Home): <https://www.openhab.org/docs/ecosystem/google-assistant/>
-    - updated list of supported tags: <https://github.com/openhab/openhab-google-assistant/blob/master/USAGE.md>
 - Amazon Alexa: <https://www.openhab.org/docs/ecosystem/alexa/>
 - Apple HomeKit (Siri): <https://www.openhab.org/addons/integrations/homekit/>
 
 ***NOTE***
-You will need to associate tags manually for items created using PaperUI when Simple Mode item linking is de-activated, or for items created using `.items` file.
+You will need to add tags manually for items created using PaperUI when Simple Mode item linking is de-activated, or for items created using `.items` file.
 
 ## Full Example
 
@@ -392,25 +395,46 @@ then
 end
 ```
 
-## Disclaimer
+## FAQs & Known Issues
 
-- This binding is not associated by any means with BTicino or Legrand companies
-- Contributors of this binding have no liability for any direct, indirect, incidental, special, exemplary, or consequential damage to things or people caused by using the binding connected to a real BTicino/Legrand (OpenWebNet) plant/system and its physical devices. The final user is the only responsible for using this binding in a real environment. See Articles 5. and 6. of [Eclipse Public Licence 1.0](https://www.eclipse.org/legal/epl-v10.html) under which this binding software is distributed
-- The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [MyOpen Community website - https://www.myopen-legrandgroup.com/developers](https://www.myopen-legrandgroup.com/developers/)
-- OpenWebNet, MyHOME and MyHOME_Play are registered trademarks by BTicino/Legrand
-- This binding uses `openwebnet-lib 0.9.x`, an OpenWebNet Java lib partly based on [openwebnet/rx-openwebnet](https://github.com/openwebnet/rx-openwebnet) client library by @niqdev, to support:
-    - gateways and OWN frames for ZigBee
-    - frame parsing
-    - monitoring events from BUS
-  The lib also uses few modified classes from the openHAB 1.x BTicino binding for socket handling and priority queues.
+### FAQs
+
+#### I want to control blinds from Google Home (Google Assistant): how?
+Blinds are not currently supported by the Google Home add-on for openHAB, this is not a limitation of this binding. 
+See: https://github.com/openhab/openhab-google-assistant/issues/59
+
+#### My BTicino devices are visible from PaperUI but cannot be discovered by Google Home / Alexa
+Not all device types are supported by Google Home / Alexa and the respective openHAB add-ons. This is not a limitation of the binding.
+Visit the links at the end of section [Integration with Assistants](#integration-with-assistants) to check compatibility with your assistant.
+
+#### When message/feature XXXX will be supported ?
+You can check if someone has already requested support for a message/feature here: [GitHub repo](https://github.com/mvalla/openhab2-addons/issues).
+If not, add a new issue. Issues are organised by milestones, but deadlines of course are not guaranteed (other volunteer developers are welcome!).
+
+### Known Issues
+For a full list of current open issues / features requests see [GitHub repo](https://github.com/mvalla/openhab2-addons/issues)
+
+- With some latest firmware versions of MyHOMEServer_1, rollershutters are not discovered because this gateways responds to device status request with a invalid OpenWebNet message. This is a bug by BTicino and not a problem of the binding.
+See: https://github.com/mvalla/openhab2-addons/issues/34
+
+- In some cases dimmers connected to a F429 Dali-interface cannot be discovered, even if switched ON and dimmed. This looks like as a limitation of some gateways that do not report status of Dali devices when requested.
+See: https://github.com/mvalla/openhab2-addons/issues/14
 
 ## Changelog
+
+**v2.5.0-M2** - xx/02/2019
+- [FIX #29] Fixed (again) Automation command translation (1000#)
+- fixed Energy Meter subscription
+- [FIX] corrected deviceWhere address management for ZigBee devices and discovery of ON_OFF_SWITCH_2UNITS
+- [FIX #56] Thermostat Cannot set setpoint temperature (now first WHERE=N is used, then WHERE=#N if it fails)
+- added FAQs section to README.md
+- [FIX #59] added discoverByActivation parameter (optional) to BUS gateway
 
 **v2.5.0-M1** - 28/01/2019
 
 - **[FIX #28] automatic discovery of BUS gateways is now supported**
 - gateway model, firmwareVersion and serialNumber are now read from UPnP discovery
-- FIX #39 set update interval 1min for Energy Meter
+- [FIX #39] set subscription interval for Energy Meter
 - [FIX #4] added support for BTicino movement sensors (like AM5658 Green Switch) 
 - updated to openHAB 2.5.0 dev branch
 
@@ -473,21 +497,25 @@ end
 
 - first public release
 
-## Known Issues
-  
-Known problems:
+## Disclaimer
 
-- In some cases dimmers connected to a F429 Dali-interface cannot be discovered, even if switched ON and dimmed. This looks like as a limitation of some gateways that do not report Dali devices states when requested
-
-For a list of current open issues / features requests see [GitHub repo](https://github.com/mvalla/openhab2-addons/issues)
+- This binding is not associated by any means with BTicino or Legrand companies
+- Contributors of this binding have no liability for any direct, indirect, incidental, special, exemplary, or consequential damage to things or people caused by using the binding connected to a real BTicino/Legrand (OpenWebNet) plant/system and its physical devices. The final user is the only responsible for using this binding in a real environment. See Articles 5. and 6. of [Eclipse Public Licence 1.0](https://www.eclipse.org/legal/epl-v10.html) under which this binding software is distributed
+- The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [MyOpen Community website - https://www.myopen-legrandgroup.com/developers](https://www.myopen-legrandgroup.com/developers/)
+- OpenWebNet, MyHOME and MyHOME_Play are registered trademarks by BTicino/Legrand
+- This binding uses `openwebnet-lib 0.9.x`, an OpenWebNet Java lib partly based on [openwebnet/rx-openwebnet](https://github.com/openwebnet/rx-openwebnet) client library by @niqdev, to support:
+    - gateways and OWN frames for ZigBee
+    - frame parsing
+    - monitoring events from BUS
+  The lib also uses few modified classes from the openHAB 1.x BTicino binding for socket handling and priority queues.
 
 ## Special thanks
 
 Special thanks for helping on testing this binding go to:
 [@m4rk](https://community.openhab.org/u/m4rk/),
+[@bastler](https://community.openhab.org/u/bastler),
 [@gozilla01](https://community.openhab.org/u/gozilla01),
 [@enrico.mcc](https://community.openhab.org/u/enrico.mcc),
-[@bastler](https://community.openhab.org/u/bastler),
 [@k0nti](https://community.openhab.org/u/k0nti/),
 [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/),
 [@llegovich](https://community.openhab.org/u/llegovich),
