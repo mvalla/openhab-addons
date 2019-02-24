@@ -150,6 +150,7 @@ public class OpenWebNetBindingConstants {
     public static final String CONFIG_PROPERTY_HOST = "host";
     public static final String CONFIG_PROPERTY_PORT = "port";
     public static final String CONFIG_PROPERTY_PASSWD = "passwd";
+    public static final String CONFIG_PROPERTY_DISCOVERY_ACTIVATION = "discoveryByActivation";
 
     // properties
     public static final String PROPERTY_FIRMWARE = "firmwareVersion";

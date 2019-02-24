@@ -87,6 +87,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
     private boolean searchingGatewayDevices = false; // devices search is in progress on gateway
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
+    private boolean discoveryByActivation = false; // discover BUS devices when they are activated also when a device
+                                                   // scan is not active
     @Nullable
     private OpenNewDeviceListener deviceDiscoveryListener = null;
 
@@ -188,6 +190,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 passwdMasked = "******" + passwd.substring(passwd.length() - 3, passwd.length());
             } else {
                 passwdMasked = "******";
+            }
+            String discoveryConfig = (String) getConfig().get(CONFIG_PROPERTY_DISCOVERY_ACTIVATION);
+            if (discoveryConfig != null && discoveryConfig.equalsIgnoreCase("true")) {
+                discoveryByActivation = true;
             }
             logger.debug("==OWN== Creating new BUS gateway with config properties: {}:{}, pwd={}", host, port,
                     passwdMasked);
@@ -309,7 +315,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
-        if (baseMsg instanceof Lighting || baseMsg instanceof CEN) {
+        if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof CEN
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof EnergyManagement) {
             OpenDeviceType type = baseMsg.detectDeviceType();
             if (type != null) {
                 deviceDiscoveryService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
@@ -369,6 +376,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.debug("==OWN==  GatewayManagement WHAT = {}", gwMgmtMsg.getWhat());
             return;
         }
+
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
@@ -378,7 +386,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.debug("==OWN==  ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = getDevice(ownId);
             if (deviceHandler == null) {
-                if (isBusGateway && deviceDiscoveryListener != null && !searchingGatewayDevices && scanIsActive) {
+                if (isBusGateway && ((deviceDiscoveryListener != null && !searchingGatewayDevices && scanIsActive)
+                        || (discoveryByActivation && !scanIsActive))) {
                     // try device discovery by activation
                     discoverByActivation(baseMsg);
                 } else {
@@ -414,9 +423,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             if (currentGwModel == null || currentGwModel.equals("Unknown")) {
                 updateProperty(PROPERTY_MODEL, ((OpenGatewayBus) gateway).getModelName());
                 logger.debug("==OWN== updated gw model: {}", ((OpenGatewayBus) gateway).getModelName());
-
             }
-
         }
         updateStatus(ThingStatus.ONLINE);
 
