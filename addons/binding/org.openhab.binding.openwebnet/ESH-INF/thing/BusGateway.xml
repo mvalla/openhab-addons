@@ -40,7 +40,7 @@
 
             <parameter name="discoveryByActivation" type="text">
                 <label>Discovery By Activation</label>
-                <description>Discover BUS devices when they are activated also when a device scan is not active</description>
+                <description>Discover BUS devices when they are activated (also when a device scan is not active)</description>
                 <required>false</required>
             </parameter>
             

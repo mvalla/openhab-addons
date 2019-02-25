@@ -14,9 +14,12 @@ package org.openhab.binding.openwebnet.handler;
 
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -75,8 +78,11 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     private boolean isDryContactIR = false;
     private boolean isCENPlus = false;
 
-    private final static int SHORT_PRESSURE_DELAY = 200; // ms
+    private final static int SHORT_PRESSURE_DELAY = 300; // ms
     private final static int EXT_PRESS_INTERVAL = 500; // ms
+
+    // ConcurrentHashMap of schedules associated to channels (buttons)
+    private Map<Channel, ScheduledFuture<?>> channelsSchedules = new ConcurrentHashMap<>();
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.SCENARIO_SUPPORTED_THING_TYPES;
 
@@ -131,7 +137,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     // @formatter:off
     /*
      * MAPPING FROM channel command to CENScenario/CENPlusScenario OWN messages (N=button number 0-31)
-     *  ch  command     | PRESSURE_TYPE                               | OWN message (CEN/CEN+)
+     *   ch command     | PRESSURE_TYPE                               | OWN message (CEN/CEN+)
      *  ------------------------------------------------------------------------------------------------------------
      *     PRESSED      | CEN:  PRESSURE then RELEASE_SHORT_PRESSURE  | CEN:  *15*N*WHERE## then *15*N#1*WHERE## /
      *                  | CEN+: SHORT_PRESSURE                        |     CEN+: *25*21#N*WHERE##
@@ -177,7 +183,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                     // do nothing
                     break;
                 case PRESSED_EXT:
-                    // TODO send more EXT PRESSURE messages every 500ms untile RELEASE_EXT command
+                    // TODO send more EXT PRESSURE messages every 500ms until RELEASE_EXT command
                     if (isCENPlus) {
                         bridgeHandler.gateway
                                 .send(CENPlusScenario.virtualStartExtendedPressure(deviceWhere, buttonNumber));
@@ -269,7 +275,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         final Channel channel = ch;
         PressureState prState;
         if (cenMsg instanceof CENScenario) {
-            prState = cenPressureToPressureState((CENScenario) cenMsg);
+            prState = cenPressureToPressureState((CENScenario) cenMsg, channel);
         } else {
             prState = cenPlusPressureToPressureState((CENPlusScenario) cenMsg);
         }
@@ -286,41 +292,64 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     // @formatter:off
     /*
-     * MAPPING FROM CENScenario and CENPlusScenario to channel (button) state:
+     * MAPPING FROM CENScenario and CENPlusScenario message to channel (button) state:
      *
      *   N=button number 0-31
      *
      *      received
      *    OWN Message     | PRESSURE_TYPE          | channel state
-     *  --------------------------------------------------------
-     *   *15*N*WHERE##    | PRESSURE               | do nothing
-     *   *15*N#1*WHERE##  | RELEASE_SHORT_PRESSURE | PRESSED, after shortPressureDelay: RELEASED
+     *  ---------------------------------------------------------------------------------------
+     *   *15*N*WHERE##    | PRESSURE               | schedule after (EXT_PRESS_INTERVAL + 10) a PRESSED-->RELEASED in case scenario is activated from Touchscreens (no new message will be received)
+     *   *15*N#1*WHERE##  | RELEASE_SHORT_PRESSURE | PRESSED, after shortPressureDelay: RELEASED (cancel schedule)
      *   *15*N#2*WHERE##  | RELEASE_EXT_PRESSURE   | RELEASED_EXT
-     *   *15*N#3*WHERE##  | EXT_PRESSURE           | PRESSED_EXT
-     *   ---------------------------------------------------------
+     *   *15*N#3*WHERE##  | EXT_PRESSURE           | PRESSED_EXT (cancel schedule)
+     *   --------------------------------------------------------------------------------------
      *   *25*21#N*WHERE## | SHORT_PRESSURE         | PRESSED, after shortPressureDelay: RELEASED
      *   *25*22#N*WHERE## | START_EXT_PRESSURE     | PRESSED_EXT
      *   *25*23#N*WHERE## | EXT_PRESSURE           | PRESSED_EXT
      *   *25*24#N*WHERE## | RELEASE_EXT_PRESSURE   | RELEASED_EXT
      *
-     *  For example, channel sequences will be:
-     *      short pressure: previous state (UNDEF/RELEASED/RELEASED_EXT) -> PRESSED -> RELEASED
-     *      long pressure:  previous state (UNDEF/RELEASED/RELEASED_EXT) -> PRESSED_EXT (*repeated if keep pressed) ... -> RELEASED_EXT
+     *  For example, channel sequences will be (for both CEN and CEN+ channels):
+     *      short pressure: previous state (UNDEF/RELEASED/RELEASED_EXT) --> PRESSED --> RELEASED
+     *      long pressure:  previous state (UNDEF/RELEASED/RELEASED_EXT) --> PRESSED_EXT (*repeated if keep pressed) ... --> RELEASED_EXT
      */
     // @formatter:on
 
-    private PressureState cenPressureToPressureState(CENScenario cMsg) {
+    private PressureState cenPressureToPressureState(CENScenario cMsg, Channel channel) {
+        ScheduledFuture<?> sch;
         CENScenario.CEN_PRESSURE_TYPE pt = cMsg.getButtonPressure();
         if (pt == null) {
             logger.warn("==OWN:ScenarioHandler== invalid CENScenario.PRESSURE_TYPE. Frame: {}", cMsg);
             return null;
         }
         switch (pt) {
-            case PRESSURE: // do nothing, let's wait RELEASE_SHORT_PRESSURE
+            case PRESSURE: // schedule a PRESSED-->RELEASED in case scenario is activated from Touchscreens (no new
+                           // message will be received)
+                sch = scheduler.schedule(() -> {
+                    logger.debug("==OWN:ScenarioHandler== # " + deviceWhere
+                            + " no message after CEN.PRESSURE, updating state to 'PRESSED'...");
+                    updateState(channel.getUID(), new StringType(PressureState.PRESSED.toString()));
+                    scheduler.schedule(() -> {
+                        logger.debug("==OWN:ScenarioHandler== # " + deviceWhere
+                                + " no message after CEN.PRESSURE, updating state to 'RELEASED'...");
+                        updateState(channel.getUID(), new StringType(PressureState.RELEASED.toString()));
+                    }, SHORT_PRESSURE_DELAY, TimeUnit.MILLISECONDS);
+                }, EXT_PRESS_INTERVAL + 10, TimeUnit.MILLISECONDS);
+                channelsSchedules.put(channel, sch);
                 return null;
             case RELEASE_SHORT_PRESSURE:
+                sch = channelsSchedules.get(channel);
+                if (sch != null) {
+                    sch.cancel(false);
+                    logger.debug("==OWN:ScenarioHandler== # " + deviceWhere + " schedule cancelled");
+                }
                 return PressureState.PRESSED;
             case EXT_PRESSURE:
+                sch = channelsSchedules.get(channel);
+                if (sch != null) {
+                    sch.cancel(false);
+                    logger.debug("==OWN:ScenarioHandler== # " + deviceWhere + " schedule cancelled");
+                }
                 return PressureState.PRESSED_EXT;
             case RELEASE_EXT_PRESSURE:
                 return PressureState.RELEASED_EXT;
