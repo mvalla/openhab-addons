@@ -9,16 +9,22 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway" />
 		</supported-bridge-type-refs>
+		
 		<label>Automation</label>
 		<description>A OpenWebNet BUS/SCS automation device to control roller shutters, blinds, etc. BTicino models: xxx/yyyy/etc.</description>
+		
 		<channels>
 			<channel id="shutter" typeId="shutter" />
 		</channels>
+		
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">BTI-xxxx/yyyy/etc.</property>
 			<property name="ownDeviceType">514</property>
 		</properties>
+		
+		<representation-property>ownId</representation-property>
+		
 		<config-description>
 			<parameter name="shutterRun" type="text">
 				<label>Shutter Run</label>

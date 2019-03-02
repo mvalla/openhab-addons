@@ -495,19 +495,30 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param OpenWebNetThingHandler thing handler
      * @return ownId string
      */
-    protected String ownIdFromWhere(String where, OpenWebNetThingHandler handler) {
-        return handler.ownIdPrefix() + "." + normalizeWhere(where);
-    }
+    /*
+     * protected String ownIdFromWhere(String where, OpenWebNetThingHandler handler) {
+     * return handler.ownIdPrefix() + "." + normalizeWhere(where);
+     * }
+     */
 
     /**
-     * Return a ownId string (=WHO.WHERE) from a deviceWhere thing config parameter and ThingHandler
+     * Return a ownId string (=WHO.WHERE) from a deviceWhere thing config parameter and ThingHandler.
+     * In case of ZigBee gatewya, ownId=Z.ADDR
      *
      * @param String                 deviceWhere
      * @param OpenWebNetThingHandler thing handler
      * @return ownId string
      */
     protected String ownIdFromDeviceWhere(String deviceWhere, OpenWebNetThingHandler handler) {
-        return handler.ownIdPrefix() + "." + deviceWhere;
+        if (isBusGateway) {
+            return handler.ownIdPrefix() + "." + deviceWhere;
+        } else {
+            return "Z" + "." + deviceWhere;
+        }
+    }
+
+    public String ownIdFromWhoWhere(String where, String who) {
+        return who + "." + normalizeWhere(where);
     }
 
     /**
@@ -534,36 +545,34 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     // @formatter:off
     /**
      *
-     *                              deviceWhere
-     *                              (DevAddrParam)
-     * TYPE         WHERE           normalized  ownId       ThingID
+     *                              deviceWhere (DevAddrParam)
+     * TYPE         WHERE           normalizeWhere   ownId       ThingID
      * ---------------------------------------------------------------
-     * Zigbee       789309801#9     7893098     1.7893098   7893098   (*)
-     * Switch       51              51          1.51        51
-     * Dimmer       25#4#01         25#4#01     1.25#4#01   25h4h01   (*)
-     * Autom        93              93          2.93        93
-     * Thermo       #1 or 1         1           4.1         1         (*)
-     * TempSen      500             500         4.500       500
-     * Energy       51              51          18.51       51
-     * CEN          51              51          15.51       51
-     * CEN+         212             212         25.212      212
-     * DryContact   399             399         25.399      399
+     * Zigbee       789309801#9     7893098          Z.7893098   7893098   (*)
+     * Switch       51              51               1.51        51
+     * Dimmer       25#4#01         25#4#01          1.25#4#01   25h4h01   (*)
+     * Autom        93              93               2.93        93
+     * Thermo       #1 or 1         1                4.1         1         (*)
+     * TempSen      500             500              4.500       500
+     * Energy       51              51               18.51       51
+     * CEN          51              51               15.51       51
+     * CEN+         212             212              25.212      212
+     * DryContact   399             399              25.399      399
      *
      *        METHOD                            CALLED FROM                                     CALLING
      *        ------                            -----------                                     -------
      *      - OpenWebNetDeviceDiscoveryService new discovery result                         --> deviceWhere = normalizeWhere()
-     *      - ThingHandler.initialize                                                       --> ownId = ownIdFromWhere(deviceWhere)
+     *      - ThingHandler.initialize                                                       --> ownId = ownIdFromDeviceWhere()
      *      - public    normalizeWhere()        locally and OpenWebNetDeviceDiscoveryService    --> getAddrFromWhere
      *      - public    getAddrFromWhere                                                    --> remove last 4
-     *      - protected ownIdFromWhere()        ThingHandler.initialize                         --> ownIdPrefix() + "." + normalizeWhere()
-     *      - protected ownIdFromDeviceWhere()  ThingHandler.initialize                         --> ownIdPrefix() + "." + normalizeWhere()
+     *      - protected ownIdFromDeviceWhere()  ThingHandler.initialize                         --> ownIdPrefix() + "." + deviceWhere
 
      *      - private   ownIdFromMessage()  onMessage()
      *      - public    thingIdFromWhere()  OpenWebNetDeviceDiscoveryService                --> normalizeWhere().replace(#)
      */
 
     public enum TEST {
-        zigbee("789309801#9","1","7893098","1.7893098","7893098"),
+        zigbee("789309801#9","Z","7893098","Z.7893098","7893098"),
         sw("51","1","51","1.51","51"),
         dimmer("25#4#01","1","25#4#01","1.25#4#01","25h4h01"),
         thermo("#1","4","1","4.1","1"),
@@ -586,10 +595,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             TEST ret = t.orElse(null);
         }
 */
-    }
-
-    protected String ownIdFromWhoWhere(String where, String who) {
-        return who + "." + normalizeWhere(where);
     }
 
     private boolean testTransformations() {

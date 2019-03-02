@@ -15,6 +15,7 @@ package org.openhab.binding.openwebnet.handler;
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Quantity;
@@ -60,7 +61,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         if (bridge != null && bridge.getHandler() != null) {
             bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
             if (getConfig().get(CONFIG_PROPERTY_WHERE) == null) {
-                logger.warn("==OWN:ThingHandler== WHERE parameter in configuration is null or invalid. thing={}",
+                logger.warn("==OWN:ThingHandler== WHERE parameter in configuration is null or invalid for thing {}",
                         thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "WHERE parameter in configuration is null or invalid");
@@ -69,6 +70,11 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
             deviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
             // TODO check range for WHERE
             ownId = bridgeHandler.ownIdFromDeviceWhere(deviceWhere, this);
+
+            Map<String, String> properties = editProperties();
+            properties.put(PROPERTY_OWNID, ownId);
+            updateProperties(properties);
+
             bridgeHandler.registerDevice(ownId, this);
             logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");

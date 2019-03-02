@@ -24,6 +24,8 @@
 			<property name="ownDeviceType">2510</property>
 		</properties>
 				
+        <representation-property>ownId</representation-property>
+
 		<config-description>
 			<parameter name="where" type="text">
 				<label>OpenWebNet Device Address (WHERE)</label>

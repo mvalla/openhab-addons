@@ -23,7 +23,9 @@
 			<property name="model">BTI-4591/3684/etc.</property> 
 			<property name="ownDeviceType">256</property>
 		</properties>
-				
+
+        <representation-property>ownId</representation-property>
+	
 		<config-description>
 			<parameter name="where" type="text">
 				<label>OpenWebNet Device Address</label>

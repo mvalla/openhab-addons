@@ -32,6 +32,8 @@
 			<property name="model">BTI-xxxx/yyyy/etc.</property>
 			<property name="ownDeviceType">---</property>
 		</properties>
+
+        <representation-property>ownId</representation-property>
 		
 		<config-description>
 			<parameter name="where" type="text">

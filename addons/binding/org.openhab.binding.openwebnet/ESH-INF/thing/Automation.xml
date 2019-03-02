@@ -23,6 +23,8 @@
 			<property name="ownDeviceType">512</property>
 		</properties>
 		
+		<representation-property>ownId</representation-property>
+		
 		<config-description>
 			<parameter name="shutterRun" type="text">
 				<label>Shutter Run</label>

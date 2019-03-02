@@ -28,6 +28,7 @@ import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.message.BaseOpenMessage;
 import org.openwebnet.message.CEN;
 import org.openwebnet.message.OpenMessageFactory;
+import org.openwebnet.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,79 +103,93 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
      *
      * @param where      the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message    the OWN message received that identified the device
+     * @param message    the OWN message received that identified the device (optional)
      */
     public void newDiscoveryResult(String where, OpenDeviceType deviceType, BaseOpenMessage baseMsg) {
         logger.info("==OWN:DeviceDiscovery== newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_DEVICE; // generic device
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_DEVICE;
+        Who deviceWho = Who.DEVICE_DIAGNOSTIC; // FIXME
         if (deviceType != null) {
             switch (deviceType) {
                 case ZIGBEE_ON_OFF_SWITCH: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_ON_OFF_SWITCH;
+                    deviceWho = Who.LIGHTING;
                     break;
                 }
                 case ZIGBEE_DIMMER_SWITCH: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_DIMMER;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_DIMMER;
+                    deviceWho = Who.LIGHTING;
                     break;
                 }
                 case SCS_ON_OFF_SWITCH: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ON_OFF_SWITCH;
+                    deviceWho = Who.LIGHTING;
                     break;
                 }
                 case SCS_DIMMER_SWITCH: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DIMMER;
+                    deviceWho = Who.LIGHTING;
                     break;
                 }
                 case SCS_SHUTTER_SWITCH:
                 case SCS_SHUTTER_CONTROL: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_AUTOMATION;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_AUTOMATION;
+                    deviceWho = Who.AUTOMATION;
                     break;
                 }
                 case ZIGBEE_SHUTTER_SWITCH:
                 case ZIGBEE_SHUTTER_CONTROL: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_AUTOMATION;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_AUTOMATION;
+                    deviceWho = Who.AUTOMATION;
                     break;
                 }
                 case SCS_TEMP_SENSOR: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_TEMP_SENSOR;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_TEMP_SENSOR;
+                    deviceWho = Who.THERMOREGULATION;
                     break;
                 }
                 case SCS_THERMOSTAT: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMOSTAT;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMOSTAT;
+                    deviceWho = Who.THERMOREGULATION;
                     break;
                 }
                 case SCS_THERMO_CENTRAL_UNIT: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CENTRAL_UNIT;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMO_CENTRAL_UNIT;
+                    deviceWho = Who.THERMOREGULATION;
                     break;
                 }
                 case SCS_ENERGY_CENTRAL_UNIT: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ENERGY_CENTRAL_UNIT;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ENERGY_CENTRAL_UNIT;
+                    deviceWho = Who.ENERGY_MANAGEMENT;
                     break;
                 }
                 case SCENARIO_CONTROL: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CEN_SCENARIO_CONTROL;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CEN_SCENARIO_CONTROL;
+                    deviceWho = Who.CEN_SCENARIO_SCHEDULER;
                     break;
                 }
                 case MULTIFUNCTION_SCENARIO_CONTROL: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL;
+                    deviceWho = Who.CEN_PLUS_SCENARIO_SCHEDULER;
                     break;
                 }
                 case SCS_DRY_CONTACT_IR: {
                     thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DRY_CONTACT_IR;
                     thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DRY_CONTACT_IR;
+                    deviceWho = Who.CEN_PLUS_SCENARIO_SCHEDULER;
                     break;
                 }
                 default:
@@ -210,14 +225,18 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
             // logger.warn("==OWN:DeviceDiscovery== discoveryResult empty after UNIT=02 discovery (WHERE={})", where);
             // }
         }
-        Map<String, Object> properties = new HashMap<>(1);
+        Map<String, Object> properties = new HashMap<>(2);
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, bridgeHandler.normalizeWhere(where));
+        properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID,
+                bridgeHandler.ownIdFromWhoWhere(bridgeHandler.normalizeWhere(where), deviceWho.value().toString()));
+
         if ((deviceType == OpenDeviceType.MULTIFUNCTION_SCENARIO_CONTROL
                 || deviceType == OpenDeviceType.SCENARIO_CONTROL) && baseMsg != null) {
             properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SCENARIO_BUTTONS,
                     ((CEN) baseMsg).getButtonNumber().toString());
         }
-        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) {
+        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) { // generic thing, let's
+                                                                                               // specify the WHO
             thingLabel = thingLabel + " (WHO=" + baseMsg.getWho() + ", WHERE=" + whereLabel + ")";
         } else {
             thingLabel = thingLabel + " (WHERE=" + whereLabel + ")";

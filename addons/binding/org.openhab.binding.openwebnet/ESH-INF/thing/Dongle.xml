@@ -14,7 +14,9 @@
 			<property name="model">BTI-3578/088328</property>
 			<property name="firmwareVersion"></property>
 		</properties>
-				
+
+        <representation-property>ownId</representation-property>
+			
 		<config-description>
 			<parameter name="serialPort" type="text">
 				<label>serialPort</label>

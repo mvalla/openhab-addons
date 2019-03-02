@@ -18,6 +18,8 @@
 			<property name="ownDeviceType">2</property>
 		</properties>
 
+        <representation-property>ownId</representation-property>
+
 		<config-description>
 			<parameter name="buttons" type="text">
 				<label>Configured buttons</label>
