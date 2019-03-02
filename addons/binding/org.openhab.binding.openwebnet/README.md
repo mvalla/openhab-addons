@@ -422,13 +422,16 @@ See: https://github.com/mvalla/openhab2-addons/issues/14
 
 ## Changelog
 
-**v2.5.0-M2** - xx/02/2019
+**v2.5.0-M2** - 02/03/2019
 - [FIX #29] Fixed (again) Automation command translation (1000#)
-- fixed Energy Meter subscription
+- [FIX] Fixed Energy Meter subscription (every 10min)
 - [FIX] corrected deviceWhere address management for ZigBee devices and discovery of ON_OFF_SWITCH_2UNITS
-- [FIX #56] Thermostat Cannot set setpoint temperature (now first WHERE=N is used, then WHERE=#N if it fails)
-- added FAQs section to README.md
+- [FIX #56] Thermostat Cannot set setpoint temperature (now WHERE=N is first used, then WHERE=#N if it fails)
 - [FIX #59] added discoverByActivation parameter (optional) to BUS gateway
+- [FIX #54] CEN scenarios are now detected when activated from Touchscreens (added PRESSURE>RELEASE schedule)
+- added FAQs section to README.md
+- added ownId as representation-property
+- added Switchable tag to shutter channel
 
 **v2.5.0-M1** - 28/01/2019
 
