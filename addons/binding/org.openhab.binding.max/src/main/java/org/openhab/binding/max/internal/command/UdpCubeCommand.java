@@ -58,14 +58,14 @@ public class UdpCubeCommand {
 
     /**
      * UDP command types
-     * RESET - R Reset
+     * REBOOT - R Reboot
      * DISCOVERY - I Identify
      * NETWORK - N Get network address
      * URL - h get URL information
      * DEFAULTNET - c get network default info
      */
     public enum UdpCommandType {
-        RESET,
+        REBOOT,
         DISCOVERY,
         NETWORK,
         URL,
@@ -77,7 +77,7 @@ public class UdpCubeCommand {
      */
     public synchronized boolean send() {
         String commandString;
-        if (commandType.equals(UdpCommandType.RESET)) {
+        if (commandType.equals(UdpCommandType.REBOOT)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "R";
         } else if (commandType.equals(UdpCommandType.DISCOVERY)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "I";
@@ -116,8 +116,10 @@ public class UdpCubeCommand {
                 // We have a response
                 String message = new String(receivePacket.getData(), receivePacket.getOffset(),
                         receivePacket.getLength(), StandardCharsets.UTF_8);
-                logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
-                        message);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
+                            message);
+                }
 
                 // Check if the message is correct
                 if (message.startsWith("eQ3Max") && !message.equals(MAXCUBE_COMMAND_STRING)) {
@@ -137,7 +139,7 @@ public class UdpCubeCommand {
                     } else {
                         // TODO: Further parsing of the other message types
                         commandResponse.put("messageResponse",
-                                Utils.getHex(message.substring(24).getBytes(StandardCharsets.UTF_8)));
+                                Utils.getHex(message.substring(20).getBytes(StandardCharsets.UTF_8)));
                     }
 
                     commandRunning = false;

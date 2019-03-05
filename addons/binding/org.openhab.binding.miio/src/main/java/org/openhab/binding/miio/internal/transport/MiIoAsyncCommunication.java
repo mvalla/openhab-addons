@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.miio.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.Message;
+import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCrypto;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
@@ -74,7 +74,7 @@ public class MiIoAsyncCommunication {
     private int timeout;
     private boolean needPing = true;
     private static final int MAX_ERRORS = 3;
-    private static final int MAX_ID = 1000;
+    private static final int MAX_ID = 15000;
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<MiIoSendCommand>();
 
