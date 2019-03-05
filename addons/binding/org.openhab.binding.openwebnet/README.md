@@ -2,14 +2,14 @@
 
 This new binding integrates BTicino / Legrand MyHOME(r) BUS & ZigBee wireless (MyHOME_Play) devices using the **[OpenWebNet](https://en.wikipedia.org/wiki/OpenWebNet) protocol**.
 It is the first known binding for openHAB 2 that **supports *both* wired BUS/SCS** as well as **wireless setups**, all in the same biding. The two networks can be configured simultaneously.
-It's also the first OpenWebNet binding with support for discovery of BUS/SCS gatways and devices.
+It's also the first OpenWebNet binding with support for discovery of BUS/SCS gateways and devices.
 Commands from openHAB and feedback (events) from BUS/SCS and wireless network are supported.
 Support for both numeric (`12345`) and alpha-numeric (`abcde` - HMAC authentication) gateway passwords is included.
 
 ## Prerequisites
 
 In order for this biding to work, a **BTicino/Legrand OpenWebNet gateway** is needed in your home system to talk to devices.
-Currently these gateways are supported by the binding:
+These gateways have been tested with the binding:
 
 - **IP gateways** or scenario programmers, such as BTicino 
 [F454](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=006), 
@@ -19,6 +19,7 @@ Currently these gateways are supported by the binding:
 [F455](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=051),
 [MH200N](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=016), 
 [F453](http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=027),  etc.
+
 - **Wireless (ZigBee) USB gateways**, such as [BTicino 3578](http://www.catalogo.bticino.it/BTI-3578-EN) and [Legrand 088328](https://www.legrand.fr/pro/catalogue/35115-interface-openradio/interface-open-webnet-et-radio-pour-pilotage-dune-installation-myhome-play)
 
 ## Supported Things
@@ -29,7 +30,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Category   | WHO   | Thing Type IDs                    | Discovery?          | Feedback from BUS?          | Description                                                 | Status           |
 | ---------- | :---: | :-------------------------------: | :----------------: | :----------------: | ----------------------------------------------------------- | ---------------- |
 | Gateway Management   | `13`  | `bus_gateway`                     | Yes *Testing*                | n/a  | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N,...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F453AV, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202  |
-| Lightning | `1`   | `bus_on_off_switch`, `bus_dimmer` | Yes                | Yes                | BUS switches and dimmers                                                                 | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
+| Lightning | `1`   | `bus_on_off_switch`, `bus_dimmer` | Yes                | Yes                | BUS switches and dimmers. Green switches.                                                                 | Successfully tested: F411/2, F411/4, F411U2, F422, F429. AM5658 Green Switch. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation | `2`   | `bus_automation`                | Yes | Yes                  | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 | Temperature Control | `4`   | `bus_thermostat`, `bus_temp_sensor`   | Yes | Yes | Zones room thermostats, external wireless temperature sensors | Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691; external probes: L/N/NT4577 + 3455 |
 | CEN & CEN+ Commands | `15` & `25`   | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`, `bus_dry_contact_ir`   | Yes (CEN/CEN+ by [activation](#discovery-by-activation) only) | Yes | CEN/CEN+ events and virtual activation for scenario control. Dry Contact and IR sensor devices events. | *Testing*: Scenario buttons: HC/HD/HS/L/N/NT4680. Contact interfaces: F428 and 3477. IR sensors: HC/HD/HS/L/N/NT4610 |
