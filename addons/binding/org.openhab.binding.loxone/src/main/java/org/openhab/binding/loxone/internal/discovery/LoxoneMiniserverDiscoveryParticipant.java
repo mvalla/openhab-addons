@@ -18,14 +18,14 @@ import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.loxone.LoxoneBindingConstants;
-import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
+import org.openhab.binding.loxone.internal.LoxoneBindingConstants;
+import org.openhab.binding.loxone.internal.handler.LoxoneMiniserverHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

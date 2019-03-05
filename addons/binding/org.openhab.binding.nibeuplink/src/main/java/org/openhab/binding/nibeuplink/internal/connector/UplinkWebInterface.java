@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nibeuplink.internal.connector;
 
-import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
+import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Queue;
@@ -27,11 +27,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
-import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.nibeuplink.internal.command.Login;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
+import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
+import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,6 +184,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      */
     public void start() {
         this.config = uplinkHandler.getConfiguration();
+        setAuthenticated(false);
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
                 WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
@@ -273,6 +274,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
     public void dispose() {
         logger.debug("Webinterface disposed.");
         cancelJobReference(requestExecutorJobReference);
+        setAuthenticated(false);
     }
 
     private boolean isAuthenticated() {
