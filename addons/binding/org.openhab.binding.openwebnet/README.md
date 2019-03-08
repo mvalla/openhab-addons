@@ -134,15 +134,15 @@ Gateway and Things discovery is supported using PaperUI by pressing the discover
 
 - BUS Gateway automatic discovery will work only for newer gateways supporting UPnP: F454, MyHOMEServer1, MH202, MH200N, MyHOME_Screen 10.
 For other gateways you can add them manually, see [Thing Configuration](#thing-configuration) below.
-- After gateway is discovered and added, a password (if needed) must be set in the gateway Thing configuration otherwise the gateway will not become online. Default password is `12345`
-- Once the gateway is added and online, a second Scan request from Inbox will discover BUS devices
+- After gateway is discovered and added a connection with default password (`12345`) is tested first: if it does not work the gateway will go offline and an error status will be set. A correct password must then be set in the gateway Thing configuration otherwise the gateway will not become online.
+- Once the gateway is online, a second Scan request from Inbox will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
 - CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details.
 After confirming a discovered CEN/CEN+ device from Inbox, activate again its scenario buttons and refresh the PaperUI Control page to see button channels appear.
 
 #### Discovery by Activation
-Ligthing and CEN/CEN+ Scenario Control devices can be discovered if activated while a Inbox Scan is active: start a new Scan, wait 15-20 seconds and then while the _Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer, push a CEN/CEN+ Scenario button) to have it discovered by the binding.
+Devices can also be discovered if activated while a Inbox Scan is active: start a new Scan, wait 15-20 seconds and then while the _Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer, push a CEN/CEN+ Scenario button, etc.) to have it discovered by the binding.
 
 If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
 
@@ -172,11 +172,11 @@ Parameters for configuration:
 - `host` : IP address / hostname of the BUS/SCS gateway (*mandatory*)
    - Example: `192.168.1.35`
 - `port` : port (*optional*, default: `20000`)
-- `passwd` : gateway password (*required* for gateways that have a passwrod set. Default: `12345`)
+- `passwd` : gateway password (*required* for gateways that have a password set. Default: `12345`)
    - Example: `abcde` or `12345`
    - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
-   - in all other cases, a passwrod must be set. This includes  gateways that have been discovered and added from Inbox that without a password settings will not become ONLINE
-- `discoveryByActivation` : **=EXPERIMENTAL=** discover BUS devices when they are activated also when a device scan is not active (*optional*, default: `false`)
+   - in all other cases, a password must be set. This includes  gateways that have been discovered and added from Inbox that without a password settings will not become ONLINE
+- `discoveryByActivation` : **=EXPERIMENTAL=** discover BUS devices when they are activated also when a device scan is not currently active (*optional*, default: `false`)
 
 Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
@@ -218,13 +218,14 @@ Devices support some of the following channels:
 | `localMode`              | String        | The zone current local mode, as set on the physical thermostat in the room: `-3/-2/-1/NORMAL/+1/+2/+3`, `PROTECTION`, or `OFF`  |      R     |
 | `setpointTemperature`    | Number        | The zone setpoint temperature (°C), as set from Central Unit or openHAB |     R/W    |
 | `setMode`                | String        | The zone set mode, as set from Central Unit or openHAB: `AUTO`, `MANUAL`, `PROTECTION`, `OFF`    |     R/W    |
-| `scenarioButton` (`button_X`)         | String        | Events or virtual pressure for CEN/CEN+ scenario buttons: `PRESSED`, `RELEASED`, `PRESSED_EXT`, `RELEASED_EXT`  |     R/W      |
+| `scenarioButton` (`button_X`)         | String        | Events or virtual pressure for CEN/CEN+ scenario buttons: `PRESSED`, `RELEASED`, `PRESSED_EXT`, `RELEASED_EXT` [see possible values](#scenariobutton)  |     R/W      |
 | `dryContactIR`  (`sensor`)        | Switch        | Indicates if a Dry Contact interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`) |     R      |
 | `power`                  | Number        | The actual active power usage from Energy Management Central Unit       |     R      |
 
 [*] = advanced channel: in PaperUI can be shown from  *Thing config > Channel list > Show More* button. Link to an item by clicking on the channel blue button.
 
 ### Notes on channels
+
 #### `shutter` position
 
 For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN.
@@ -251,7 +252,10 @@ To ensure the heating/cooling actuators are set up correctly for a Thermostat:
 - In CEN/CEN+ channels are named `button_X` where `X` is the button number on the Scenario Control device
 - Button channels appear in PaperUI after the first time the corresponding button is activated from the physical device. Refresh the PaperUI/Control page if needed
 - When using file configuration, in the Thing configuration use the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`. See [openwebnet.things](#openwebnet-things) for an example
-- Sending on channels `button_X` the commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from OpenHab. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
+- channel possible values are:
+    - `PRESSED` and then just after `RELEASED` when a CEN/CEN+ button is short-pressed (<0.5sec)
+    - `PRESSED_EXT` (updated again every 0.5sec) and then `RELEASED_EXT` when a CEN/CEN+ button is long pressed (>=0.5sec)
+- Sending on channels `button_X` the commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from openHAB. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
 
 
 ## Integration with assistants
@@ -415,7 +419,7 @@ If not, add a new issue. Issues are organised by milestones, but deadlines of co
 ### Known Issues
 For a full list of current open issues / features requests see [GitHub repo](https://github.com/mvalla/openhab2-addons/issues)
 
-- With some latest firmware versions of MyHOMEServer_1, rollershutters are not discovered because this gateways responds to device status request with a invalid OpenWebNet message. This is a bug by BTicino and not a problem of the binding.
+- With some latest firmware versions of MyHOMEServer_1, rollershutters are not discovered because this gateways responds to device status request with a invalid OpenWebNet message. This is a BUG by BTicino and not a problem of the binding.
 See: https://github.com/mvalla/openhab2-addons/issues/34
 
 - In some cases dimmers connected to a F429 Dali-interface cannot be discovered, even if switched ON and dimmed. This looks like as a limitation of some gateways that do not report status of Dali devices when requested.
@@ -423,13 +427,13 @@ See: https://github.com/mvalla/openhab2-addons/issues/14
 
 ## Changelog
 
-**v2.5.0-M2** - 02/03/2019
+**v2.5.0-M2** - 08/03/2019
 - [FIX #29] Fixed (again) Automation command translation (1000#)
 - [FIX] Fixed Energy Meter subscription (every 10min)
 - [FIX] corrected deviceWhere address management for ZigBee devices and discovery of ON_OFF_SWITCH_2UNITS
+- [FIX #54] CEN scenarios are now detected when activated from Touchscreens (added PRESSURE>RELEASE schedule)
 - [FIX #56] Thermostat Cannot set setpoint temperature (now WHERE=N is first used, then WHERE=#N if it fails)
 - [FIX #59] added discoverByActivation parameter (optional) to BUS gateway
-- [FIX #54] CEN scenarios are now detected when activated from Touchscreens (added PRESSURE>RELEASE schedule)
 - added FAQs section to README.md
 - added ownId as representation-property
 - added Switchable tag to shutter channel

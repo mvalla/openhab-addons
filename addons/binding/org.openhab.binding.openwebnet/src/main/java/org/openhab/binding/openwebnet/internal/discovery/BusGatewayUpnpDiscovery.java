@@ -39,15 +39,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BusGatewayUpnpDiscovery} is responsible for discovering new and removed supported BTicino BUS
- * gateways devices. It uses the central {@link UpnpDiscoveryService}.
+ * gateways devices using UPnP. It uses the central {@link UpnpDiscoveryService} implementing
+ * {@link UpnpDiscoveryParticipant}.
  *
  * @author Massimo Valla - Initial contribution
  */
 
 @Component(service = UpnpDiscoveryParticipant.class, immediate = true)
 public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
-
-    // TODO create null-safe GatewayDevice bean and read from RemoteDevice
 
     private final Logger logger = LoggerFactory.getLogger(BusGatewayUpnpDiscovery.class);
 
@@ -90,7 +89,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         private boolean isBTicino = false;
 
         private DeviceInfo(RemoteDevice device) {
-            logger.info("+=== UPNP =========================================");
+            logger.info("+=== UPnP =========================================");
             RemoteDeviceIdentity identity = device.getIdentity();
             if (identity != null) {
                 this.udn = identity.getUdn();
@@ -99,8 +98,8 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     logger.info("| ID.DESC URL  : {}", identity.getDescriptorURL());
                     this.host = identity.getDescriptorURL().getHost();
                 }
-                // logger.info("= ID.MAX AGE : {}", identity.getMaxAgeSeconds());
-                // logger.info("= ID.LOC_ADDR : {}", identity.getDiscoveredOnLocalAddress());
+                logger.info("| ID.MAX AGE : {}", identity.getMaxAgeSeconds());
+                // logger.info("| ID.LOC_ADDR : {}", identity.getDiscoveredOnLocalAddress());
             }
             logger.info("| --------------");
             DeviceDetails details = device.getDetails();
@@ -135,9 +134,6 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
             logger.info("+==================================================");
         }
 
-        private String getModelString() {
-            return modelName + " | " + modelDescription + " | " + modelNumber;
-        }
     } /* DeviceInfo */
 
     @Override

@@ -85,7 +85,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
                 logger.debug(
                         "==OWN:EnergyHandler== For WHERE={} could not UN-subscribe from active power changes notifications. Exception={}",
                         deviceWhere, e.getMessage());
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }, 1, TimeUnit.MINUTES);
 
