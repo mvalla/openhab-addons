@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- Thing for BUS On Off Auxiliary (BTicino xxx/xxx/...) -->
+	<thing-type id="bus_on_off_aux">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway" />
+		</supported-bridge-type-refs>
+
+		<label>Auxiliary</label>
+		<description>A OpenWebNet BUS/SCS Auxiliary. BTicino models: xxx/yyyy/etc.</description>
+		
+		<channels>
+			<channel id="switch" typeId="switch" />
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-xxxx/yyyy/etc.</property>
+			<property name="ownDeviceType">---</property>
+		</properties>
+				
+		<config-description>
+			<parameter name="where" type="text">
+				<label>OpenWebNet Device Address (WHERE)</label>
+				<description>Example: Number Auxiliary 8 --> WHERE=8. On local bus: WHERE=8#4#01</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+		
+	</thing-type>
+</thing:thing-descriptions>
