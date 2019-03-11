@@ -317,7 +317,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof CEN
-                || baseMsg instanceof Thermoregulation || baseMsg instanceof EnergyManagement) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof EnergyManagement
+                || baseMsg instanceof Auxiliary) {
             OpenDeviceType type = baseMsg.detectDeviceType();
             if (type != null) {
                 deviceDiscoveryService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
