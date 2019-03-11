@@ -69,8 +69,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
 
     private static final int GATEWAY_ONLINE_TIMEOUT = 20; // (sec) Time to wait for the gateway to become connected
-    private static final int CONFIG_GATEWAY_DEFAULT_PORT = 20000;
-    private static final String CONFIG_GATEWAY_DEFAULT_PASSWD = "12345";
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
