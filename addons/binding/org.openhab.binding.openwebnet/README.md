@@ -171,12 +171,12 @@ Parameters for configuration:
 
 - `host` : IP address / hostname of the BUS/SCS gateway (*mandatory*)
    - Example: `192.168.1.35`
-- `port` : port (*optional*, default: `20000`)
+- `port` : port (*required*, default: `20000`)
 - `passwd` : gateway password (*required* for gateways that have a password set. Default: `12345`)
    - Example: `abcde` or `12345`
    - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
    - in all other cases, a password must be set. This includes  gateways that have been discovered and added from Inbox that without a password settings will not become ONLINE
-- `discoveryByActivation` : **=EXPERIMENTAL=** discover BUS devices when they are activated also when a device scan is not currently active (*optional*, default: `false`)
+- `discoveryByActivation` : **=EXPERIMENTAL=** discover BUS devices when they are activated also when a device scan is not currently active (*required*, default: `false`)
 
 Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
@@ -208,6 +208,7 @@ Devices support some of the following channels:
 | `switch`                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
 | `brightness`             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
 | `shutter`                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+| `shutterState`           | String        | The state shutters (`UP`, `DOWN`, `STOP`)                               |     R      |
 | `temperature`            | Number        | The zone currently sensed temperature (°C)                              |     R      |
 | `targetTemperature`      | Number        | The zone target temperature (°C). It considers `setPoint` but also `activeMode` and `localMode`  |      R     |
 | `thermoFunction`         | String        | The zone set thermo function: `HEAT`, `COOL` or `GENERIC` (heating + cooling)     |      R     |
@@ -294,7 +295,7 @@ You will need to add tags manually for items created using PaperUI when Simple M
 ### openwebnet.things:
 
 ```xtend
-Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde" ] {
+Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", discoveryByActivation=true ] {
       bus_on_off_switch        LR_switch        "Living Room Light"       [ where="51" ]
       bus_dimmer               LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
       bus_dimmer               LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
@@ -305,6 +306,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_cen_scenario_control LR_CEN_scenario  "Living Room CEN" [ where="51", buttons="4,3,8"]
       bus_cenplus_scenario_control  LR_CENplus_scenario "Living Room CEN+"        [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir       LR_IR_sensor     "Living Room IR Sensor"   [ where="399" ]
+      bus_on_off_aux           LR_aux           "Alarm auxiliary"         [ where="1" ]
 }
 ``` 
 
@@ -327,11 +329,14 @@ Dimmer         iLR_dimmer        "Brightness [%.0f %%]"   <DimmableLight>  (gLiv
 Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness" }
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
 Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
+String         iLR_shutter_state "Shutter State"                           (gShutters, gLivingRoom)                     { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutterState" }
+
 Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
 Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>            { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
 String         iLR_scenario_btn4  "Scenario Button 4"     <network>           { channel="openwebnet:bus_cen_scenario_control:mybridge:LR_CEN_scenario:button_4" }  
 String         iLR_scenario_btn1  "Scenario Button 1"     <network>           { channel="openwebnet:bus_cenplus_scenario_control:mybridge:LR_CENplus_scenario:button_1" }  
 Switch         iLR_IR_sensor      "Living Room IR sensor" <motion>            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
+Switch         iLR_aux            "Alarm auxiliary 1"                         { channel="openwebnet:bus_on_off_aux:mybridge:LR_aux:switch" }
 
 /* Thermostat Setup (Google Assitant/Alexa require thermostat items to be grouped together) */
 Group   gLR_thermostat               "Living Room Thermostat"                                     [ "Thermostat" ]
@@ -359,10 +364,12 @@ Frame label="Living Room"
           Default item=iLR_dalidimmer       icon="light"
           Default item=iLR_shutter
           Default item=iEXT_tempsensor      icon="temperature"
-          Switch    item=iLR_scenario_btn4 label="CEN Scenario (btn4)[]"  mappings=[PRESSED="Scenario-A (PRESSED)", PRESSED_EXT="Scenario-B (PRESSED_EXT)", RELEASED_EXT="Scenario-B-end (RELEASED_EXT)"] 
-          Switch    item=iLR_scenario_btn1 label="CEN+ Scenario (btn1)[]" mappings=[PRESSED="Scenario-C (PRESSED)", PRESSED_EXT="Scenario-C (PRESSED_EXT)", RELEASED_EXT="Scenario-C-end (RELEASED_EXT)"] 
+          Switch  item=iLR_scenario_btn4 label="CEN Scenario (btn4)[]"  mappings=[PRESSED="Scenario-A (PRESSED)", PRESSED_EXT="Scenario-B (PRESSED_EXT)", RELEASED_EXT="Scenario-B-end (RELEASED_EXT)"] 
+          Switch  item=iLR_scenario_btn1 label="CEN+ Scenario (btn1)[]" mappings=[PRESSED="Scenario-C (PRESSED)", PRESSED_EXT="Scenario-C (PRESSED_EXT)", RELEASED_EXT="Scenario-C-end (RELEASED_EXT)"] 
 
-          Switch item=iLR_IR_sensor mappings=[ON="Presence", OFF="No Presence"]
+          Switch  item=iLR_IR_sensor mappings=[ON="Presence", OFF="No Presence"]
+          
+          Text    item=iLR_aux  labelcolor=[ON="red"] valuecolor=[ON="red"] label="Siren [%s]"       icon="siren"
 
           Group item=gLR_thermostat label="Thermostat" icon="heating"
           { 
@@ -426,6 +433,16 @@ See: https://github.com/mvalla/openhab2-addons/issues/34
 See: https://github.com/mvalla/openhab2-addons/issues/14
 
 ## Changelog
+
+**v2.5.0-M3-pre4** - 03/2019
+- **[FIX #12] [FIX #32] command auxiliary `WHO=9` of bus is now supported**
+- [FIX #63] added channel shutterState per rollershutter
+- [FIX #30] manually configured things should not be found again using an Inbox scan
+- [FIX] updating of article statuses, lighting and automation, with the received AMB-GR-GEN commands.
+- modify parameter `discoveryByActivation` from string to boolean and required, default is false
+- added examples to README.md
+- added default values for password on the bus gateway
+- added default values and required for port on the bus gateway
 
 **v2.5.0-M2** - 08/03/2019
 - [FIX #29] Fixed (again) Automation command translation (1000#)

@@ -1,0 +1,1283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>D:\eclipse-installer\openhab-master2\ws\org.openhab.binding.openwebnet\.README.md.html</title>
+
+
+<style type="text/css">
+body {
+	color: #333;
+	font: 13px/1.4 "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+	padding: 0;
+	margin: 0;
+}
+
+a {
+	background: transparent;
+	color: #4183c4;
+	text-decoration: none;
+}
+
+a:active,
+a:hover {
+	outline: 0 none;
+	text-decoration: underline;
+}
+
+abbr[title] {
+	border-bottom: 1px dotted;
+}
+
+b,
+strong {
+	font-weight: bold;
+}
+
+dfn {
+	font-style: italic;
+}
+h1 {
+	font-size: 2em;
+	margin: 0.67em 0;
+}
+mark {
+	background: #ff0;
+	color: #000;
+}
+small {
+	font-size: 80%;
+}
+sub, sup {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+sup {
+	top: -0.5em;
+}
+sub {
+	bottom: -0.25em;
+}
+img {
+	border: 0 none;
+}
+svg:not(:root) {
+	overflow: hidden;
+}
+figure {
+	margin: 1em 40px;
+}
+hr {
+	box-sizing: content-box;
+	height: 0;
+}
+
+code,
+kbd,
+pre,
+samp {
+	font-family: monospace,monospace;
+	font-size: 1em;
+}
+
+pre {
+	overflow: auto;
+	font: 12px Consolas,"Liberation Mono",Menlo,Courier,monospace;
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+.markdown-body {
+	padding: 30px;
+	font-size: 16px;
+	line-height: 1.6;
+	word-wrap: break-word;
+}
+
+.markdown-body>*:first-child {
+	margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+	margin-bottom: 0 !important;
+}
+
+.markdown-body .absent {
+	color: #c00;
+}
+
+.markdown-body .anchor {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	display: block;
+	padding-right: 6px;
+	padding-left: 30px;
+	margin-left: -30px;
+}
+
+.markdown-body .anchor:focus {
+	outline: none;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+	position: relative;
+	margin-top: 1em;
+	margin-bottom: 16px;
+	font-weight: bold;
+	line-height: 1.4;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+	display: none;
+	color: #000;
+	vertical-align: middle;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+	padding-left: 8px;
+	margin-left: -30px;
+	line-height: 1;
+	text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+	display: inline-block;
+}
+
+.markdown-body h1 tt,
+.markdown-body h1 code,
+.markdown-body h2 tt,
+.markdown-body h2 code,
+.markdown-body h3 tt,
+.markdown-body h3 code,
+.markdown-body h4 tt,
+.markdown-body h4 code,
+.markdown-body h5 tt,
+.markdown-body h5 code,
+.markdown-body h6 tt,
+.markdown-body h6 code {
+	font-size: inherit;
+}
+
+.markdown-body h1 {
+	padding-bottom: 0.3em;
+	font-size: 2.25em;
+	line-height: 1.2;
+	border-bottom: 1px solid #eee;
+}
+
+.markdown-body h2 {
+	padding-bottom: 0.3em;
+	font-size: 1.75em;
+	line-height: 1.225;
+	border-bottom: 1px solid #eee;
+}
+
+.markdown-body h3 {
+	font-size: 1.5em;
+	line-height: 1.43;
+}
+
+.markdown-body h4 {
+	font-size: 1.25em;
+}
+
+.markdown-body h5 {
+	font-size: 1em;
+}
+
+.markdown-body h6 {
+	font-size: 1em;
+	color: #777;
+}
+
+.markdown-body p,.markdown-body blockquote,
+.markdown-body ul,.markdown-body ol,
+.markdown-body dl,.markdown-body table,
+.markdown-body pre {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.markdown-body hr {
+	height: 4px;
+	padding: 0;
+	margin: 16px 0;
+	background-color: #e7e7e7;
+	border: 0 none;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+	padding-left: 2em;
+}
+
+.markdown-body ul.no-list,
+.markdown-body ol.no-list {
+	padding: 0;
+	list-style-type: none;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.markdown-body li>p {
+	margin-top: 16px;
+}
+
+.markdown-body dl {
+	padding: 0;
+}
+
+.markdown-body dl dt {
+	padding: 0;
+	margin-top: 16px;
+	font-size: 1em;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.markdown-body dl dd {
+	padding: 0 16px;
+	margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+	padding: 0 15px;
+	color: #777;
+	border-left: 4px solid #ddd;
+}
+
+.markdown-body blockquote>:first-child {
+	margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+	margin-bottom: 0;
+}
+
+.markdown-body table {
+	display: block;
+	width: 100%;
+	overflow: auto;
+	word-break: normal;
+	word-break: keep-all;
+}
+
+.markdown-body table th {
+	font-weight: bold;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+	padding: 6px 13px;
+	border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+	background-color: #fff;
+	border-top: 1px solid #ccc;
+}
+
+.markdown-body table tr:nth-child(2n) {
+	background-color: #f8f8f8;
+}
+
+.markdown-body img {
+	max-width: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.markdown-body span.frame {
+	display: block;
+	overflow: hidden;
+}
+
+.markdown-body span.frame>span {
+	display: block;
+	float: left;
+	width: auto;
+	padding: 7px;
+	margin: 13px 0 0;
+	overflow: hidden;
+	border: 1px solid #ddd;
+}
+
+.markdown-body span.frame span img {
+	display: block;
+	float: left;
+}
+
+.markdown-body span.frame span span {
+	display: block;
+	padding: 5px 0 0;
+	clear: both;
+	color: #333;
+}
+
+.markdown-body span.align-center {
+	display: block;
+	overflow: hidden;
+	clear: both;
+}
+
+.markdown-body span.align-center>span {
+	display: block;
+	margin: 13px auto 0;
+	overflow: hidden;
+	text-align: center;
+}
+
+.markdown-body span.align-center span img {
+	margin: 0 auto;
+	text-align: center;
+}
+
+.markdown-body span.align-right {
+	display: block;
+	overflow: hidden;
+	clear: both;
+}
+
+.markdown-body span.align-right>span {
+	display: block;
+	margin: 13px 0 0;
+	overflow: hidden;
+	text-align: right;
+}
+
+.markdown-body span.align-right span img {
+	margin: 0;
+	text-align: right;
+}
+
+.markdown-body span.float-left {
+	display: block;
+	float: left;
+	margin-right: 13px;
+	overflow: hidden;
+}
+
+.markdown-body span.float-left span {
+	margin: 13px 0 0;
+}
+
+.markdown-body span.float-right {
+	display: block;
+	float: right;
+	margin-left: 13px;
+	overflow: hidden;
+}
+
+.markdown-body span.float-right>span {
+	display: block;
+	margin: 13px auto 0;
+	overflow: hidden;
+	text-align: right;
+}
+
+.markdown-body code,.markdown-body tt {
+	padding: 0;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin: 0;
+	font-size: 85%;
+	background-color: rgba(0,0,0,0.04);
+	border-radius: 3px;
+}
+
+.markdown-body code:before,
+.markdown-body code:after,
+.markdown-body tt:before,
+.markdown-body tt:after {
+	letter-spacing: -0.2em;
+	content: "\00a0";
+}
+
+.markdown-body code br,
+.markdown-body tt br {
+	display: none;
+}
+
+.markdown-body del code {
+	text-decoration: inherit;
+}
+
+.markdown-body pre>code {
+	padding: 0;
+	margin: 0;
+	font-size: 100%;
+	word-break: normal;
+	white-space: pre;
+	background: transparent;
+	border: 0;
+}
+
+.markdown-body .highlight {
+	margin-bottom: 16px;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+	padding: 16px;
+	overflow: auto;
+	font-size: 85%;
+	line-height: 1.45;
+	background-color: #f7f7f7;
+	border-radius: 3px;
+}
+
+.markdown-body .highlight pre {
+	margin-bottom: 0;
+	word-break: normal;
+}
+
+.markdown-body pre {
+	word-wrap: normal;
+}
+
+.markdown-body pre code,
+.markdown-body pre tt {
+	display: inline;
+	max-width: initial;
+	padding: 0;
+	margin: 0;
+	overflow: initial;
+	line-height: inherit;
+	word-wrap: normal;
+	background-color: transparent;
+	border: 0;
+}
+
+.markdown-body pre code:before,
+.markdown-body pre code:after,
+.markdown-body pre tt:before,
+.markdown-body pre tt:after {
+	content: normal;
+}
+
+.highlight .pl-coc,
+.highlight .pl-entl,
+.highlight .pl-entm,
+.highlight .pl-eoa,
+.highlight .pl-mai .pl-sf,
+.highlight .pl-mm,
+.highlight .pl-pdv,
+.highlight .pl-sc,
+.highlight .pl-som,
+.highlight .pl-sr,
+.highlight .pl-v,
+.highlight .pl-vpf {
+	color: #0086b3;
+}
+.highlight .pl-eoac,
+.highlight .pl-mdht,
+.highlight .pl-mi1,
+.highlight .pl-mri,
+.highlight .pl-va,
+.highlight .pl-vpu {
+	color: #008080;
+}
+.highlight .pl-c,
+.highlight .pl-pdc {
+	color: #b4b7b4;
+	font-style: italic;
+}
+.highlight .pl-k,
+.highlight .pl-ko,
+.highlight .pl-kolp,
+.highlight .pl-mc,
+.highlight .pl-mr,
+.highlight .pl-ms,
+.highlight .pl-s,
+.highlight .pl-sok,
+.highlight .pl-st {
+	color: #6e5494;
+}
+.highlight .pl-ef,
+.highlight .pl-enf,
+.highlight .pl-enm,
+.highlight .pl-entc,
+.highlight .pl-eoi,
+.highlight .pl-sf,
+.highlight .pl-smc {
+	color: #d12089;
+}
+.highlight .pl-ens,
+.highlight .pl-eoai,
+.highlight .pl-kos,
+.highlight .pl-mh .pl-pdh,
+.highlight .pl-mp,
+.highlight .pl-pde,
+.highlight .pl-stp {
+	color: #458;
+}
+.highlight .pl-enti {
+	color: #d12089;
+	font-weight: bold;
+}
+.highlight .pl-cce,
+.highlight .pl-enc,
+.highlight .pl-kou,
+.highlight .pl-mq {
+	color: #f93;
+}
+.highlight .pl-mp1 .pl-sf {
+	color: #458;
+	font-weight: bold;
+}
+.highlight .pl-cos,
+.highlight .pl-ent,
+.highlight .pl-md,
+.highlight .pl-mdhf,
+.highlight .pl-ml,
+.highlight .pl-pdc1,
+.highlight .pl-pds,
+.highlight .pl-s1,
+.highlight .pl-scp,
+.highlight .pl-sol {
+	color: #df5000;
+}
+.highlight .pl-c1,
+.highlight .pl-cn,
+.highlight .pl-pse,
+.highlight .pl-pse .pl-s2,
+.highlight .pl-vi {
+	color: #a31515;
+}
+.highlight .pl-mb,
+.highlight .pl-pdb {
+	color: #df5000;
+	font-weight: bold;
+}
+.highlight .pl-mi,
+.highlight .pl-pdi {
+	color: #6e5494;
+	font-style: italic;
+}
+.highlight .pl-ms1 {
+	background-color: #f5f5f5;
+}
+.highlight .pl-mdh,
+.highlight .pl-mdi {
+	font-weight: bold;
+}
+.highlight .pl-mdr {
+	color: #0086b3;
+	font-weight: bold;
+}
+.highlight .pl-s2 {
+	color: #333;
+}
+.highlight .pl-ii {
+	background-color: #df5000;
+	color: #fff;
+}
+.highlight .pl-ib {
+	background-color: #f93;
+}
+.highlight .pl-id {
+	background-color: #a31515;
+	color: #fff;
+}
+.highlight .pl-iu {
+	background-color: #b4b7b4;
+}
+.highlight .pl-mo {
+	color: #969896;
+}
+
+</style>
+
+
+<script type="text/javascript">
+
+function getDocumentScrollTop() 
+{
+   var res = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset || 0;
+   // alert(res);
+   return res;
+}
+
+function setDocumentScrollTop(ypos) 
+{
+	window.scrollTo(0, ypos);
+}
+
+</script>
+
+
+</head>
+<body class="markdown-body">
+<h1> <a id="openwebnet-bticinolegrand-binding" class="anchor" href="#openwebnet-bticinolegrand-binding" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>OpenWebNet (BTicino/Legrand) Binding</h1> 
+<p>This new binding integrates BTicino / Legrand MyHOME(r) BUS &amp; ZigBee wireless (MyHOME_Play) devices using the <strong><a href="https://en.wikipedia.org/wiki/OpenWebNet" rel="nofollow">OpenWebNet</a> protocol</strong>. It is the first known binding for openHAB 2 that <strong>supports <em>both</em> wired BUS/SCS</strong> as well as <strong>wireless setups</strong>, all in the same biding. The two networks can be configured simultaneously. It's also the first OpenWebNet binding with support for discovery of BUS/SCS gateways and devices. Commands from openHAB and feedback (events) from BUS/SCS and wireless network are supported. Support for both numeric (<code>12345</code>) and alpha-numeric (<code>abcde</code> - HMAC authentication) gateway passwords is included.</p> 
+<h2> <a id="prerequisites" class="anchor" href="#prerequisites" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Prerequisites</h2> 
+<p>In order for this biding to work, a <strong>BTicino/Legrand OpenWebNet gateway</strong> is needed in your home system to talk to devices. These gateways have been tested with the binding:</p> 
+<ul> 
+ <li> <p><strong>IP gateways</strong> or scenario programmers, such as BTicino <a href="http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=006" rel="nofollow">F454</a>, <a href="http://www.bticino.com/products-catalogue/myhome_up-simple-home-automation-system/" rel="nofollow">MyHOMEServer1</a>, <a href="http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&amp;productId=001" rel="nofollow">MyHOME_Screen10</a>, <a href="http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=059" rel="nofollow">MH202</a>, <a href="http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=051" rel="nofollow">F455</a>, <a href="http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=016" rel="nofollow">MH200N</a>, <a href="http://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?productId=027" rel="nofollow">F453</a>, etc.</p> </li> 
+ <li> <p><strong>Wireless (ZigBee) USB gateways</strong>, such as <a href="http://www.catalogo.bticino.it/BTI-3578-EN" rel="nofollow">BTicino 3578</a> and <a href="https://www.legrand.fr/pro/catalogue/35115-interface-openradio/interface-open-webnet-et-radio-pour-pilotage-dune-installation-myhome-play" rel="nofollow">Legrand 088328</a></p> </li> 
+</ul> 
+<h2> <a id="supported-things" class="anchor" href="#supported-things" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Supported Things</h2> 
+<p>The following Things and OpenWebNet <code>WHOs</code> are supported:</p> 
+<h3> <a id="busscs" class="anchor" href="#busscs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BUS/SCS</h3> 
+<table> 
+ <thead> 
+  <tr> 
+   <th>Category</th> 
+   <th align="center">WHO</th> 
+   <th align="center">Thing Type IDs</th> 
+   <th align="center">Discovery?</th> 
+   <th align="center">Feedback from BUS?</th> 
+   <th>Description</th> 
+   <th>Status</th> 
+  </tr> 
+ </thead> 
+ <tbody> 
+  <tr> 
+   <td>Gateway Management</td> 
+   <td align="center"><code>13</code></td> 
+   <td align="center"><code>bus_gateway</code></td> 
+   <td align="center">Yes <em>Testing</em> </td> 
+   <td align="center">n/a</td> 
+   <td>Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N,...)</td> 
+   <td>Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F453AV, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202</td> 
+  </tr> 
+  <tr> 
+   <td>Lightning</td> 
+   <td align="center"><code>1</code></td> 
+   <td align="center"> <code>bus_on_off_switch</code>, <code>bus_dimmer</code> </td> 
+   <td align="center">Yes</td> 
+   <td align="center">Yes</td> 
+   <td>BUS switches and dimmers. Green switches.</td> 
+   <td>Successfully tested: F411/2, F411/4, F411U2, F422, F429. AM5658 Green Switch. Some discovery issues reported with F429 (DALI Dimmers)</td> 
+  </tr> 
+  <tr> 
+   <td>Automation</td> 
+   <td align="center"><code>2</code></td> 
+   <td align="center"><code>bus_automation</code></td> 
+   <td align="center">Yes</td> 
+   <td align="center">Yes</td> 
+   <td>BUS roller shutters, with position feedback and auto-calibration</td> 
+   <td>Successfully tested: LN4672M2</td> 
+  </tr> 
+  <tr> 
+   <td>Temperature Control</td> 
+   <td align="center"><code>4</code></td> 
+   <td align="center"> <code>bus_thermostat</code>, <code>bus_temp_sensor</code> </td> 
+   <td align="center">Yes</td> 
+   <td align="center">Yes</td> 
+   <td>Zones room thermostats, external wireless temperature sensors</td> 
+   <td>Successfully tested: HD4692/HD4693 via H3550 Central Unit; H/LN4691; external probes: L/N/NT4577 + 3455</td> 
+  </tr> 
+  <tr> 
+   <td>CEN &amp; CEN+ Commands</td> 
+   <td align="center"> <code>15</code> &amp; <code>25</code> </td> 
+   <td align="center"> <code>bus_cen_scenario_control</code>, <code>bus_cenplus_scenario_control</code>, <code>bus_dry_contact_ir</code> </td> 
+   <td align="center">Yes (CEN/CEN+ by <a href="#discovery-by-activation">activation</a> only)</td> 
+   <td align="center">Yes</td> 
+   <td>CEN/CEN+ events and virtual activation for scenario control. Dry Contact and IR sensor devices events.</td> 
+   <td> <em>Testing</em>: Scenario buttons: HC/HD/HS/L/N/NT4680. Contact interfaces: F428 and 3477. IR sensors: HC/HD/HS/L/N/NT4610</td> 
+  </tr> 
+  <tr> 
+   <td>Energy Management</td> 
+   <td align="center"><code>18</code></td> 
+   <td align="center"><code>bus_energy_central_unit</code></td> 
+   <td align="center">Yes</td> 
+   <td align="center">Yes</td> 
+   <td>Energy Management Central Unit</td> 
+   <td>Successfully tested: F520, F521</td> 
+  </tr> 
+ </tbody> 
+</table> 
+<h3> <a id="zigbee-radio" class="anchor" href="#zigbee-radio" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ZigBee (Radio)</h3> 
+<table> 
+ <thead> 
+  <tr> 
+   <th>Category</th> 
+   <th align="center">WHO</th> 
+   <th align="center">Thing Type IDs</th> 
+   <th align="center">Discovery?</th> 
+   <th align="center">Feedback from Radio?</th> 
+   <th>Description</th> 
+   <th>Status</th> 
+  </tr> 
+ </thead> 
+ <tbody> 
+  <tr> 
+   <td>Gateway</td> 
+   <td align="center"><code>13</code></td> 
+   <td align="center"><code>dongle</code></td> 
+   <td align="center">Yes</td> 
+   <td align="center">n/a</td> 
+   <td>Wireless (ZigBee) USB Dongle (BTicino/Legrand models: BTI-3578/088328)</td> 
+   <td>Tested: BTI-3578 and LG 088328</td> 
+  </tr> 
+  <tr> 
+   <td>Lightning</td> 
+   <td align="center"><code>1</code></td> 
+   <td align="center"> <code>dimmer</code>, <code>on_off_switch</code>, <code>on_off_switch2u</code> </td> 
+   <td align="center">Yes</td> 
+   <td align="center">Yes</td> 
+   <td>ZigBee dimmers, switches and 2-unit switches</td> 
+   <td>Tested: BTI-4591, BTI-3584, BTI-4585</td> 
+  </tr> 
+  <tr> 
+   <td>Automation</td> 
+   <td align="center"><code>2</code></td> 
+   <td align="center"><code>automation</code></td> 
+   <td align="center">Yes</td> 
+   <td align="center">Yes</td> 
+   <td>ZigBee roller shutters, with position feedback and auto-calibration via a <em>UP &gt;&gt; DOWN &gt;&gt; Position%</em> cycle</td> 
+   <td><em>To be tested</em></td> 
+  </tr> 
+ </tbody> 
+</table> 
+<h2> <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2> 
+<p>This binding requires <strong>openHAB 2.3</strong> or later.</p> 
+<h2> <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2> 
+<p>The binding it's still <em>under development</em> and not part of the official openHAB distribution. You must <strong>follow carefully the following instruction steps 1a/1b and 2</strong> in order to have the binding properly installed and working.</p> 
+<h3> <a id="1a-install-from-marketplace" class="anchor" href="#1a-install-from-marketplace" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1a. Install from Marketplace</h3> 
+<p>The easiest way to install this binding is from the <a href="https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing" rel="nofollow">Eclipse IoT Marketplace</a>.</p> 
+<p>Make sure that the <a href="https://www.openhab.org/docs/configuration/eclipseiotmarket.html" rel="nofollow">marketplace plugin is activated</a>, and then install the <em>OpenWebNet binding</em> from PaperUI (Add-ons -&gt; Bindings -&gt; search for 'openwebnet' then INSTALL).</p> 
+<p>If you cannot find the binding in the search, probably you have an issue with certificates in your Java environment, that must be updated. Follow <a href="https://community.openhab.org/t/solved-failed-downloading-marketplace-entries-received-fatal-alert-handshake-failure/52045" rel="nofollow">this solution</a> to add the required certificates to access all bindings on the Marketplace.</p> 
+<p>You will have to re-install the binding after an openHAB upgrade. This is a limitation of the Eclipse Marketplace plugin and will be changed in future versions of openHAB.</p> 
+<h3> <a id="1b-install-manually" class="anchor" href="#1b-install-manually" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1b. Install Manually</h3> 
+<p><em><strong>Alternatively</strong></em> this binding can be installed manually:</p> 
+<ol> 
+ <li> <p>Download the <a href="https://github.com/mvalla/openhab2-addons/releases">latest released JAR file</a></p> </li> 
+ <li> <p>Copy the JAR file to your openHAB2 <code>addons</code> folder. On Linux or RaspberryPi it is under:</p> <p><code>/usr/share/openhab2/addons/</code></p> </li> 
+</ol> 
+<h3> <a id="2-activate-dependencies" class="anchor" href="#2-activate-dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Activate Dependencies</h3> 
+<p>After the binding is installed, from Marketplace or manually, some <em>features dependencies must be activated manually</em>:</p> 
+<ul> 
+ <li>from <a href="https://www.openhab.org/docs/administration/console.html" rel="nofollow">Karaf console</a>: 
+  <ul> 
+   <li><code>feature:install openhab-transport-serial</code></li> 
+   <li><code>feature:install esh-io-transport-upnp</code></li> 
+  </ul> </li> 
+</ul> 
+<p>The binding should now be installed: check in <em>PaperUI &gt; Configuration &gt; Bindings</em>.</p> 
+<p>After upgrading the binding to a new version, there is no need to activate dependencies again.</p> 
+<p><strong>However dependencies must be activated again if you upgrade openHAB to a new version or clean its cache.</strong></p> 
+<h2> <a id="upgrade-of-the-binding" class="anchor" href="#upgrade-of-the-binding" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Upgrade of the binding</h2> 
+<p>When upgrading the binding to a new version it's suggested also to remove OpenWebNet Things before uninstalling the old binding, and discover/configure them again after binding has been updated.</p> 
+<h3> <a id="upgrade---marketplace-installation" class="anchor" href="#upgrade---marketplace-installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Upgrade - Marketplace installation</h3> 
+<ol> 
+ <li>Goto PaperUI &gt; Add-ons &gt; Bindings &gt; search <code>openweb</code> &gt; UNINSTALL</li> 
+ <li>reload the page in the browser to make sure latest version is selected</li> 
+ <li>search again <code>openweb</code> &gt; INSTALL</li> 
+</ol> 
+<h3> <a id="upgrade---manual-installation" class="anchor" href="#upgrade---manual-installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Upgrade - Manual installation</h3> 
+<p>Since openHAB uses some cache mechanisms to load bindings, it is not enough to remove and update the binding JAR file from <code>addons</code> folder:</p> 
+<ol> 
+ <li>From <a href="https://www.openhab.org/docs/administration/console.html" rel="nofollow">Karaf console</a>: 
+  <ul> 
+   <li> <code>bundle:list</code> to list all bundles and take note of current bundle <code>&lt;ID&gt;</code> for the OpenWebNet Binding</li> 
+   <li> <code>bundle:uninstall &lt;ID&gt;</code> to remove previous version of the binding</li> 
+  </ul> </li> 
+ <li>remove the previous version of the binding JAR file from <code>addons/</code> folder</li> 
+ <li>copy the new version of the binding JAR file to <code>addons/</code> folder</li> 
+</ol> 
+<p>The new version of the binding should now be installed, check the version number in <em>PaperUI &gt; Configuration &gt; Bindings</em>.</p> 
+<h2> <a id="debugging-and-log-files" class="anchor" href="#debugging-and-log-files" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Debugging and Log Files</h2> 
+<p>This binding is currently <em>under development</em>.</p> 
+<p>To help testing it and provide feedbacks, this is the procedure to set log level to <code>DEBUG</code>:</p> 
+<ul> 
+ <li>from <a href="https://www.openhab.org/docs/administration/console.html" rel="nofollow">Karaf console</a>: 
+  <ul> 
+   <li><code>log:set DEBUG org.openhab.binding.openwebnet</code></li> 
+   <li><code>log:set DEBUG org.openwebnet</code></li> 
+  </ul> </li> 
+</ul> 
+<p>Both <code>log:set</code> commands <em>are important</em> to log OWN commands exchanged between the binding and the OpenWebNet gateway.</p> 
+<p>Log files are written to either <code>userdata/log</code> (manual setup) or <code>/var/log/openhab2</code> (Linux and RaspberryPi image setup) and can be accessed using standard text reading software.</p> 
+<p>The interesting file to provide for feedback is <code>openhab.log</code> (<code>events.log</code> is not so important).</p> 
+<h2> <a id="discovery" class="anchor" href="#discovery" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Discovery</h2> 
+<p>Gateway and Things discovery is supported using PaperUI by pressing the discovery (&quot;+&quot;) button form Inbox.</p> 
+<h3> <a id="busscs-discovery" class="anchor" href="#busscs-discovery" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BUS/SCS Discovery</h3> 
+<ul> 
+ <li>BUS Gateway automatic discovery will work only for newer gateways supporting UPnP: F454, MyHOMEServer1, MH202, MH200N, MyHOME_Screen 10. For other gateways you can add them manually, see <a href="#thing-configuration">Thing Configuration</a> below.</li> 
+ <li>After gateway is discovered and added a connection with default password (<code>12345</code>) is tested first: if it does not work the gateway will go offline and an error status will be set. A correct password must then be set in the gateway Thing configuration otherwise the gateway will not become online.</li> 
+ <li>Once the gateway is online, a second Scan request from Inbox will discover BUS devices</li> 
+ <li>BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches 
+  <ul> 
+   <li> <em>KNOWN ISSUE</em>: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered</li> 
+  </ul> </li> 
+ <li>CEN/CEN+ Scenario Control devices will be discovered by activation only. See <a href="#discovery-by-activation">discovery by activation</a> for details. After confirming a discovered CEN/CEN+ device from Inbox, activate again its scenario buttons and refresh the PaperUI Control page to see button channels appear.</li> 
+</ul> 
+<h4> <a id="discovery-by-activation" class="anchor" href="#discovery-by-activation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Discovery by Activation</h4> 
+<p>Devices can also be discovered if activated while a Inbox Scan is active: start a new Scan, wait 15-20 seconds and then while the <em>Scan is still active</em> (spinning arrow in Inbox), activate the physical device (for example dim the dimmer, push a CEN/CEN+ Scenario button, etc.) to have it discovered by the binding.</p> 
+<p>If a device cannot be discovered automatically it's always possible to add them manually, see <a href="#configuring-devices">Configuring Devices</a>.</p> 
+<h3> <a id="wireless-zigbee-discovery" class="anchor" href="#wireless-zigbee-discovery" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Wireless (ZigBee) Discovery</h3> 
+<ul> 
+ <li> <p>The USB dongle must be inserted in one of the USB ports of the openHAB computer before discovery is started</p> </li> 
+ <li> <p><em><strong>IMPORTANT NOTE:</strong></em> As for the OH serial binding, on Linux the <code>openhab</code> user must be member of the <code>dialout</code> group, to be able to use USB/serial port:</p> <pre><code>$ sudo usermod -a -G dialout openhab
+</code></pre> 
+  <ul> 
+   <li>The user will need to logout and login to see the new group added. If you added your user to this group and still cannot get permission, reboot Linux to ensure the new group permission is attached to the <code>openhab</code> user.</li> 
+  </ul> </li> 
+ <li> <p>Once the gateway is discovered and added, a second discovery request from Inbox will discover devices. Because of the ZigBee radio network, discovery will take ~40-60 sec. Be patient!</p> </li> 
+ <li> <p>Wireless devices must be part of the same ZigBee network of the USB dongle to discover them. Please refer to <a href="http://www.bticino.com/products-catalogue/management-of-connected-lights-and-shutters/#installation" rel="nofollow">this guide by BTicino</a> to setup a ZigBee wirelss network which includes the USB dongle</p> </li> 
+ <li> <p>Only powered wireless devices part of the same ZigBee network and within radio coverage of the USB dongle will be discovered. Unreachable or not powered devices will be discovered as <em>GENERIC</em> devices and cannot be controlled. Control units cannot be discovered by the USB dongle and therefore are not supported</p> </li> 
+</ul> 
+<h2> <a id="thing-configuration" class="anchor" href="#thing-configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Thing Configuration</h2> 
+<h3> <a id="configuring-busscs-gateway" class="anchor" href="#configuring-busscs-gateway" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuring BUS/SCS Gateway</h3> 
+<p>To add a gateway manually using PaperUI: go to <em>Inbox &gt; &quot;+&quot; &gt; OpenWebNet &gt; click <code>ADD MANUALLY</code></em> and then select <code>OpenWebNet BUS Gateway</code> device.</p> 
+<p>Parameters for configuration:</p> 
+<ul> 
+ <li> <code>host</code> : IP address / hostname of the BUS/SCS gateway (<em>mandatory</em>) 
+  <ul> 
+   <li>Example: <code>192.168.1.35</code> </li> 
+  </ul> </li> 
+ <li> <code>port</code> : port (<em>required</em>, default: <code>20000</code>)</li> 
+ <li> <code>passwd</code> : gateway password (<em>required</em> for gateways that have a password set. Default: <code>12345</code>) 
+  <ul> 
+   <li>Example: <code>abcde</code> or <code>12345</code> </li> 
+   <li>if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required</li> 
+   <li>in all other cases, a password must be set. This includes gateways that have been discovered and added from Inbox that without a password settings will not become ONLINE</li> 
+  </ul> </li> 
+ <li> <code>discoveryByActivation</code> : <strong>=EXPERIMENTAL=</strong> discover BUS devices when they are activated also when a device scan is not currently active (<em>required</em>, default: <code>false</code>)</li> 
+</ul> 
+<p>Alternatively the BUS/SCS Gateway thing can be configured using the <code>.things</code> file, see <code>openwebnet.things</code> example <a href="#full-example">below</a>.</p> 
+<h3> <a id="configuring-wireless-zigbee-usb-dongle" class="anchor" href="#configuring-wireless-zigbee-usb-dongle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuring Wireless (ZigBee) USB Dongle</h3> 
+<p>The wirelss ZigBee USB dongle is discovered automatically and added in Inbox. Manual configuration is not supported at the moment.</p> 
+<h3> <a id="configuring-devices" class="anchor" href="#configuring-devices" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuring Devices</h3> 
+<p>Devices can be discovered automatically from Inbox after the gateway has been configured and connected.</p> 
+<p>Devices can be also added manually from PaperUI. For each device it must be configured:</p> 
+<ul> 
+ <li>the associated gateway (<code>Bridge Selection</code> menu)</li> 
+ <li>the <code>WHERE</code> config parameter (<code>OpenWebNet Device Address</code>): 
+  <ul> 
+   <li>example for BUS/SCS: Point to Point <code>A=2 PL=4</code> --&gt; <code>WHERE=&quot;24&quot;</code> </li> 
+   <li>example for BUS/SCS: Point to Point <code>A=6 PL=4</code> on local bus --&gt; <code>WHERE=&quot;64#4#01&quot;</code> </li> 
+   <li>example for BUS/SCS thermo Zones: <code>Zone=1</code> --&gt; <code>WHERE=&quot;1&quot;</code>; external probe <code>5</code> --&gt; <code>WHERE=&quot;500&quot;</code> </li> 
+   <li>example for ZigBee/wireless: use decimal format address without the UNIT part and network: ZigBee <code>WHERE=414122201#9</code> --&gt; <code>WHERE=&quot;4141222&quot;</code> </li> 
+   <li>for CEN+ use 2+N[0-2047]; example Scenario Control 5 --&gt; WHERE=25</li> 
+  </ul> </li> 
+</ul> 
+<h2> <a id="channels" class="anchor" href="#channels" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Channels</h2> 
+<p>Devices support some of the following channels:</p> 
+<table> 
+ <thead> 
+  <tr> 
+   <th>Channel Type ID (channel ID)</th> 
+   <th>Item Type</th> 
+   <th>Description</th> 
+   <th align="center">Read/Write</th> 
+  </tr> 
+ </thead> 
+ <tbody> 
+  <tr> 
+   <td><code>switch</code></td> 
+   <td>Switch</td> 
+   <td>To switch the device <code>ON</code> and <code>OFF</code> </td> 
+   <td align="center">R/W</td> 
+  </tr> 
+  <tr> 
+   <td><code>brightness</code></td> 
+   <td>Dimmer</td> 
+   <td>To adjust the brightness value (Percent, <code>ON</code>, <code>OFF</code>)</td> 
+   <td align="center">R/W</td> 
+  </tr> 
+  <tr> 
+   <td><code>shutter</code></td> 
+   <td>Rollershutter</td> 
+   <td>To activate roller shutters (<code>UP</code>, <code>DOWN</code>, <code>STOP</code>, Percent - <a href="#shutter-position">see Shutter position</a>)</td> 
+   <td align="center">R/W</td> 
+  </tr> 
+  <tr> 
+   <td><code>shutterState</code></td> 
+   <td>String</td> 
+   <td>The state shutters (<code>UP</code>, <code>DOWN</code>, <code>STOP</code>)</td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td><code>temperature</code></td> 
+   <td>Number</td> 
+   <td>The zone currently sensed temperature (&deg;C)</td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td><code>targetTemperature</code></td> 
+   <td>Number</td> 
+   <td>The zone target temperature (&deg;C). It considers <code>setPoint</code> but also <code>activeMode</code> and <code>localMode</code> </td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td><code>thermoFunction</code></td> 
+   <td>String</td> 
+   <td>The zone set thermo function: <code>HEAT</code>, <code>COOL</code> or <code>GENERIC</code> (heating + cooling)</td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td> <code>heatingCoolingMode</code> [*]</td> 
+   <td>String</td> 
+   <td>The zone mode: <code>heat</code>, <code>cool</code>, <code>heatcool</code>, <code>off</code> (same as <code>thermoFunction</code>+ <code>off</code>, useful for Google Home integration)</td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td> <code>heating</code> [*]</td> 
+   <td>Switch</td> 
+   <td> <code>ON</code> if the zone heating actuator is currently active (heating is On) <a href="#heating-and-cooling">see heating and cooling</a> </td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td> <code>cooling</code> [*]</td> 
+   <td>Switch</td> 
+   <td> <code>ON</code> if the zone cooling actuator is currently active (cooling is On) <a href="#heating-and-cooling">see heating and cooling</a> </td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td><code>activeMode</code></td> 
+   <td>String</td> 
+   <td>The zone current active mode (Operation Mode): <code>AUTO</code>, <code>MANUAL</code>, <code>PROTECTION</code>, <code>OFF</code>. It considers <code>setMode</code> and <code>localMode</code> (with priority)</td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td><code>localMode</code></td> 
+   <td>String</td> 
+   <td>The zone current local mode, as set on the physical thermostat in the room: <code>-3/-2/-1/NORMAL/+1/+2/+3</code>, <code>PROTECTION</code>, or <code>OFF</code> </td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td><code>setpointTemperature</code></td> 
+   <td>Number</td> 
+   <td>The zone setpoint temperature (&deg;C), as set from Central Unit or openHAB</td> 
+   <td align="center">R/W</td> 
+  </tr> 
+  <tr> 
+   <td><code>setMode</code></td> 
+   <td>String</td> 
+   <td>The zone set mode, as set from Central Unit or openHAB: <code>AUTO</code>, <code>MANUAL</code>, <code>PROTECTION</code>, <code>OFF</code> </td> 
+   <td align="center">R/W</td> 
+  </tr> 
+  <tr> 
+   <td> <code>scenarioButton</code> (<code>button_X</code>)</td> 
+   <td>String</td> 
+   <td>Events or virtual pressure for CEN/CEN+ scenario buttons: <code>PRESSED</code>, <code>RELEASED</code>, <code>PRESSED_EXT</code>, <code>RELEASED_EXT</code> <a href="#scenariobutton">see possible values</a> </td> 
+   <td align="center">R/W</td> 
+  </tr> 
+  <tr> 
+   <td> <code>dryContactIR</code> (<code>sensor</code>)</td> 
+   <td>Switch</td> 
+   <td>Indicates if a Dry Contact interface is <code>ON</code>/<code>OFF</code>, or if a IR Sensor is detecting movement (<code>ON</code>), or not (<code>OFF</code>)</td> 
+   <td align="center">R</td> 
+  </tr> 
+  <tr> 
+   <td><code>power</code></td> 
+   <td>Number</td> 
+   <td>The actual active power usage from Energy Management Central Unit</td> 
+   <td align="center">R</td> 
+  </tr> 
+ </tbody> 
+</table> 
+<p>[*] = advanced channel: in PaperUI can be shown from <em>Thing config &gt; Channel list &gt; Show More</em> button. Link to an item by clicking on the channel blue button.</p> 
+<h3> <a id="notes-on-channels" class="anchor" href="#notes-on-channels" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Notes on channels</h3> 
+<h4> <a id="shutter-position" class="anchor" href="#shutter-position" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>shutter</code> position</h4> 
+<p>For Percent commands and position feedback to work correctly, the <code>shutterRun</code> Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN. It's possible to enter a value manually or set <code>shutterRun=AUTO</code> (default) to calibrate shutterRun parameter automatically the first time a Percent command is sent to the shutter: a <em>UP &gt;&gt; DOWN &gt;&gt; Position%</em> cycle will be performed automatically.</p> 
+<ul> 
+ <li>if shutterRun is not set, or is set to AUTO but calibration has not been performed yet, then position estimation will remain <code>UNDEFINED</code> </li> 
+ <li>if shutterRun is set manually and too higher than the actual runtime, then position estimation will remain <code>UNDEFINED</code>: try to reduce shutterRun until you find the right value</li> 
+ <li>before adding/configuring roller shutter Things (or installing a binding update) it is suggested to have all roller shutters <code>UP</code>, otherwise the Percent command won’t work until the roller shutter is fully rolled up</li> 
+ <li>if the gateways gets disconnected then the binding cannot know anymore where the shutter was: if <code>shutterRun</code> is defined (and correct), then just roll the shutter all Up / Down and its position will be estimated again</li> 
+ <li>the shutter position is estimated based on UP/DOWN timing and therefore an error of &plusmn;2% is normal</li> 
+</ul> 
+<h4> <a id="heating-and-cooling" class="anchor" href="#heating-and-cooling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>heating</code> and <code>cooling</code> </h4> 
+<p><code>heating</code> and <code>cooling</code> channels assume that your BTicino heating/cooling actuators are configured as #1 and #2 respectively. To ensure the heating/cooling actuators are set up correctly for a Thermostat:</p> 
+<ol> 
+ <li>open <em>MyHome_Suite</em> </li> 
+ <li>go to Thermostat configuration panel &gt; <em>Plant settings</em> </li> 
+ <li>in <em>Actuators section</em> check if the first actuator listed is numbered &quot;1&quot;. This will be the actuator which state will be returned by the binding in the <code>heating</code> channel.</li> 
+ <li>if it is not numbered &quot;1&quot;, find the actuator device corresponding to the same Thermo zone of the Thermostat and set the &quot;Device number&quot; property to &quot;1&quot;</li> 
+ <li>repeat steps 3. and 4. for <code>cooling</code> using actuator number &quot;2&quot;</li> 
+</ol> 
+<h4> <a id="scenariobutton" class="anchor" href="#scenariobutton" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>scenarioButton</code> </h4> 
+<ul> 
+ <li>In CEN/CEN+ channels are named <code>button_X</code> where <code>X</code> is the button number on the Scenario Control device</li> 
+ <li>Button channels appear in PaperUI after the first time the corresponding button is activated from the physical device. Refresh the PaperUI/Control page if needed</li> 
+ <li>When using file configuration, in the Thing configuration use the <code>buttons</code> parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: <code>buttons=1,2,4</code>. See <a href="#openwebnet-things">openwebnet.things</a> for an example</li> 
+ <li>channel possible values are: 
+  <ul> 
+   <li> <code>PRESSED</code> and then just after <code>RELEASED</code> when a CEN/CEN+ button is short-pressed (&lt;0.5sec)</li> 
+   <li> <code>PRESSED_EXT</code> (updated again every 0.5sec) and then <code>RELEASED_EXT</code> when a CEN/CEN+ button is long pressed (&gt;=0.5sec)</li> 
+  </ul> </li> 
+ <li>Sending on channels <code>button_X</code> the commands: <code>PRESSED</code>, <code>RELEASED</code>, etc. will simulate a <em>virtual short/long pressure</em> of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from openHAB. See <a href="#openwebnet-sitemap">openwebnet.sitemap</a> &amp; <a href="#openwebnet-rules">openwebnet.rules</a> sections for an example</li> 
+</ul> 
+<h2> <a id="integration-with-assistants" class="anchor" href="#integration-with-assistants" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Integration with assistants</h2> 
+<p>To be visible to assistants like Google Assistant/Amazon Alexa/Apple HomeKit (Siri) an item must have the correct tag. Items created automatically with PaperUI (Simple Mode item linking: <code>Configuration &gt; System &gt; Item Linking &gt; Simple mode &gt; SAVE</code>) will get automatically the correct tag from the binding: in particular items associated with these channels will have the following tags:</p> 
+<ul> 
+ <li> <code>switch</code> / <code>brightness</code> channels will have the <code>Lighting</code> tag</li> 
+ <li> <code>shutter</code> channel will have the <code>Blinds</code> and <code>Switchable</code> tag</li> 
+ <li> <code>temperature</code> channel will have the <code>CurrentTemperature</code> tag</li> 
+ <li> <code>setpointTemperature</code> channel will have the <code>TargetTemperature</code> tag</li> 
+ <li> <code>heatingCoolingMode</code> channel will have the <code>homekit:HeatingCoolingMode</code> tag</li> 
+</ul> 
+<p>After configuration, you can double-check which tags are set looking at the <code>tags</code> attribute in the REST API: <a href="http://openhabianpi.local:8080/rest/items" rel="nofollow">http://openhabianpi.local:8080/rest/items</a>.</p> 
+<p><strong>NOTE For items created automatically with PaperUI tags are added automatically by the OpenWebNet binding, but you have to check which tags are actually supported by each openHAB add-on (Google Assistant/Alexa/HomeKit). For example the Google Assitant add-on for openHAB does not support the 'Blinds' tag yet.</strong></p> 
+<p>After items and their tags are set, it will be enough to link openHAB with <a href="https://www.openhab.org/addons/integrations/openhabcloud/" rel="nofollow">myopenhab</a> and with the Google Assistant/Alexa/HomeKit add-on, and you will be able to discover/control BTicino items.</p> 
+<p>Names used will be the names of the channels (Brightness, etc.); they cannot be changed in PaperUI, usually you can change names in the assistants.</p> 
+<p>Note that the most flexible configuration is obtained using <code>.items</code> file: see the examples below.</p> 
+<p>See these official docs and other threads in the OH community for more information about Google Assistant/Alexa/HomeKit integration and configuration:</p> 
+<ul> 
+ <li>Google Assistant (Google Home): <a href="https://www.openhab.org/docs/ecosystem/google-assistant/" rel="nofollow">https://www.openhab.org/docs/ecosystem/google-assistant/</a> </li> 
+ <li>Amazon Alexa: <a href="https://www.openhab.org/docs/ecosystem/alexa/" rel="nofollow">https://www.openhab.org/docs/ecosystem/alexa/</a> </li> 
+ <li>Apple HomeKit (Siri): <a href="https://www.openhab.org/addons/integrations/homekit/" rel="nofollow">https://www.openhab.org/addons/integrations/homekit/</a> </li> 
+</ul> 
+<p><em><strong>NOTE</strong></em> You will need to add tags manually for items created using PaperUI when Simple Mode item linking is de-activated, or for items created using <code>.items</code> file.</p> 
+<h2> <a id="full-example" class="anchor" href="#full-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Full Example</h2> 
+<h3> <a id="openwebnetthings" class="anchor" href="#openwebnetthings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>openwebnet.things:</h3> 
+<div class="highlight highlight-source-xtend">
+ <pre><span class="pl-en">Bridge</span> openwebnet<span class="pl-k">:</span>bus_gateway<span class="pl-k">:</span>mybridge <span class="pl-s"><span class="pl-pds">&quot;</span>MyHOMEServer1<span class="pl-pds">&quot;</span></span> [ host<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>192.168.1.35<span class="pl-pds">&quot;</span></span>, passwd<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>abcde<span class="pl-pds">&quot;</span></span>, discoveryByActivation<span class="pl-k">=</span><span class="pl-c1">true</span> ] {
+      bus_on_off_switch        <span class="pl-en">LR_switch</span>        <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room Light<span class="pl-pds">&quot;</span></span>       [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>51<span class="pl-pds">&quot;</span></span> ]
+      bus_dimmer               <span class="pl-en">LR_dimmer</span>        <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room Dimmer<span class="pl-pds">&quot;</span></span>      [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>25#4#01<span class="pl-pds">&quot;</span></span> ]
+      bus_dimmer               <span class="pl-en">LR_dalidimmer</span>    <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room Dali-Dimmer<span class="pl-pds">&quot;</span></span> [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>0311#4#01<span class="pl-pds">&quot;</span></span> ]
+      bus_automation           <span class="pl-en">LR_shutter</span>       <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room Shutter<span class="pl-pds">&quot;</span></span>     [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>93<span class="pl-pds">&quot;</span></span>, shutterRun<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>10050<span class="pl-pds">&quot;</span></span>]
+      bus_thermostat           <span class="pl-en">LR_thermostat</span>    <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room Thermostat<span class="pl-pds">&quot;</span></span>  [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>1<span class="pl-pds">&quot;</span></span>]
+      bus_temp_sensor          <span class="pl-en">EXT_tempsensor</span>   <span class="pl-s"><span class="pl-pds">&quot;</span>External Temperature<span class="pl-pds">&quot;</span></span>    [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>500<span class="pl-pds">&quot;</span></span>]
+      bus_energy_central_unit  <span class="pl-en">CENTRAL_energy</span>   <span class="pl-s"><span class="pl-pds">&quot;</span>Energy Management<span class="pl-pds">&quot;</span></span>       [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>51<span class="pl-pds">&quot;</span></span> ]
+      bus_cen_scenario_control <span class="pl-en">LR_CEN_scenario</span>  <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room CEN<span class="pl-pds">&quot;</span></span> [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>51<span class="pl-pds">&quot;</span></span>, buttons<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>4,3,8<span class="pl-pds">&quot;</span></span>]
+      bus_cenplus_scenario_control  <span class="pl-en">LR_CENplus_scenario</span> <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room CEN+<span class="pl-pds">&quot;</span></span>        [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>212<span class="pl-pds">&quot;</span></span>, buttons<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>1,5,18<span class="pl-pds">&quot;</span></span> ]
+      bus_dry_contact_ir       <span class="pl-en">LR_IR_sensor</span>     <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room IR Sensor<span class="pl-pds">&quot;</span></span>   [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>399<span class="pl-pds">&quot;</span></span> ]
+      bus_on_off_aux           <span class="pl-en">LR_aux</span>           <span class="pl-s"><span class="pl-pds">&quot;</span>Alarm auxiliary<span class="pl-pds">&quot;</span></span>         [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>1<span class="pl-pds">&quot;</span></span> ]
+}</pre>
+</div> 
+<div class="highlight highlight-source-xtend">
+ <pre><span class="pl-k">&lt;</span><span class="pl-c1">TODO</span><span class="pl-k">----</span><span class="pl-k">-</span> <span class="pl-en">ZigBee</span> <span class="pl-en">Dongle</span> configuration only needed <span class="pl-k">for</span> radio devices <span class="pl-k">&gt;</span>
+<span class="pl-en">Bridge</span> openwebnet<span class="pl-k">:</span>dongle<span class="pl-k">:</span>mydongle2  [serialPort<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>kkkkkkk<span class="pl-pds">&quot;</span></span>] {
+    dimmer          myzigbeedimmer [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>xxxxx<span class="pl-pds">&quot;</span></span>]
+    on_off_switch   myzigbeeswitch [ where<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>yyyyy<span class="pl-pds">&quot;</span></span>]
+}</pre>
+</div> 
+<h3> <a id="openwebnetitems" class="anchor" href="#openwebnetitems" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>openwebnet.items:</h3> 
+<p>Items in the example (Light, Dimmer, Thermostat, etc.) will be discovered by Google Assistant/Alexa/HomeKit if their tags are configured like in the example.</p> 
+<div class="highlight highlight-source-xtend">
+ <pre><span class="pl-en">Switch</span>         iLR_switch        <span class="pl-s"><span class="pl-pds">&quot;</span>Switch<span class="pl-pds">&quot;</span></span>                 <span class="pl-k">&lt;</span>light<span class="pl-k">&gt;</span>          (gLivingRoom)                [ <span class="pl-s"><span class="pl-pds">&quot;</span>Lighting<span class="pl-pds">&quot;</span></span> ]  { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_on_off_switch:mybridge:LR_switch:switch<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Dimmer</span>         iLR_dimmer        <span class="pl-s"><span class="pl-pds">&quot;</span>Brightness [%.0f %%]<span class="pl-pds">&quot;</span></span>   <span class="pl-k">&lt;</span><span class="pl-en">DimmableLight</span><span class="pl-k">&gt;</span>  (gLivingRoom)                [ <span class="pl-s"><span class="pl-pds">&quot;</span>Lighting<span class="pl-pds">&quot;</span></span> ]  { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Dimmer</span>         iLR_dalidimmer    <span class="pl-s"><span class="pl-pds">&quot;</span>Brightness [%.0f %%]<span class="pl-pds">&quot;</span></span>   <span class="pl-k">&lt;</span><span class="pl-en">DimmableLight</span><span class="pl-k">&gt;</span>  (gLivingRoom)                [ <span class="pl-s"><span class="pl-pds">&quot;</span>Lighting<span class="pl-pds">&quot;</span></span> ]  { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness<span class="pl-pds">&quot;</span></span> }
+<span class="pl-c"><span class="pl-c">/*</span> For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI <span class="pl-c">*/</span></span>
+<span class="pl-en">Rollershutter</span>  iLR_shutter       <span class="pl-s"><span class="pl-pds">&quot;</span>Shutter [%.0f %%]<span class="pl-pds">&quot;</span></span>      <span class="pl-k">&lt;</span>rollershutter<span class="pl-k">&gt;</span>  (gShutters, gLivingRoom)     [ <span class="pl-s"><span class="pl-pds">&quot;</span>Blinds<span class="pl-pds">&quot;</span></span>   ]  { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_automation:mybridge:LR_shutter:shutter<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">String</span>         iLR_shutter_state <span class="pl-s"><span class="pl-pds">&quot;</span>Shutter State<span class="pl-pds">&quot;</span></span>                           (gShutters, gLivingRoom)                     { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_automation:mybridge:LR_shutter:shutterState<span class="pl-pds">&quot;</span></span> }
+
+<span class="pl-en">Number</span>         iEXT_tempsensor   <span class="pl-s"><span class="pl-pds">&quot;</span>Temperature [%.1f &deg;C]<span class="pl-pds">&quot;</span></span>  <span class="pl-k">&lt;</span>temperature<span class="pl-k">&gt;</span>                                 [ <span class="pl-s"><span class="pl-pds">&quot;</span>CurrentTemperature<span class="pl-pds">&quot;</span></span> ]  { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Number</span>         iCENTRAL_en_power <span class="pl-s"><span class="pl-pds">&quot;</span>Power [%.0f W]<span class="pl-pds">&quot;</span></span>         <span class="pl-k">&lt;</span>energy<span class="pl-k">&gt;</span>            { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">String</span>         iLR_scenario_btn4  <span class="pl-s"><span class="pl-pds">&quot;</span>Scenario Button 4<span class="pl-pds">&quot;</span></span>     <span class="pl-k">&lt;</span>network<span class="pl-k">&gt;</span>           { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_cen_scenario_control:mybridge:LR_CEN_scenario:button_4<span class="pl-pds">&quot;</span></span> }  
+<span class="pl-en">String</span>         iLR_scenario_btn1  <span class="pl-s"><span class="pl-pds">&quot;</span>Scenario Button 1<span class="pl-pds">&quot;</span></span>     <span class="pl-k">&lt;</span>network<span class="pl-k">&gt;</span>           { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_cenplus_scenario_control:mybridge:LR_CENplus_scenario:button_1<span class="pl-pds">&quot;</span></span> }  
+<span class="pl-en">Switch</span>         iLR_IR_sensor      <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room IR sensor<span class="pl-pds">&quot;</span></span> <span class="pl-k">&lt;</span>motion<span class="pl-k">&gt;</span>            { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Switch</span>         iLR_aux            <span class="pl-s"><span class="pl-pds">&quot;</span>Alarm auxiliary 1<span class="pl-pds">&quot;</span></span>                         { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_on_off_aux:mybridge:LR_aux:switch<span class="pl-pds">&quot;</span></span> }
+
+<span class="pl-c"><span class="pl-c">/*</span> Thermostat Setup (Google Assitant/Alexa require thermostat items to be grouped together) <span class="pl-c">*/</span></span>
+<span class="pl-en">Group</span>   gLR_thermostat               <span class="pl-s"><span class="pl-pds">&quot;</span>Living Room Thermostat<span class="pl-pds">&quot;</span></span>                                     [ <span class="pl-s"><span class="pl-pds">&quot;</span>Thermostat<span class="pl-pds">&quot;</span></span> ]
+<span class="pl-en">Number</span><span class="pl-k">:</span><span class="pl-en">Temperature</span>  iLR_temp         <span class="pl-s"><span class="pl-pds">&quot;</span>Temperature [%.1f &deg;C]<span class="pl-pds">&quot;</span></span>  <span class="pl-k">&lt;</span>temperature<span class="pl-k">&gt;</span>  (gLR_Thermostat)     [ <span class="pl-s"><span class="pl-pds">&quot;</span>CurrentTemperature<span class="pl-pds">&quot;</span></span> ]          { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:temperature<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">String</span>              iLR_offset       <span class="pl-s"><span class="pl-pds">&quot;</span>Offset<span class="pl-pds">&quot;</span></span>                                (gLR_Thermostat)                                       { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:localMode<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Switch</span>              iLR_heating      <span class="pl-s"><span class="pl-pds">&quot;</span>Heating is<span class="pl-pds">&quot;</span></span>                            (gLR_Thermostat)                                       { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:heating<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Switch</span>              iLR_cooling      <span class="pl-s"><span class="pl-pds">&quot;</span>Cooling is<span class="pl-pds">&quot;</span></span>                            (gLR_Thermostat)                                       { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:cooling<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Number</span><span class="pl-k">:</span><span class="pl-en">Temperature</span>  iLR_targetTemp   <span class="pl-s"><span class="pl-pds">&quot;</span>Target [%.1f &deg;C]<span class="pl-pds">&quot;</span></span>                      (gLR_Thermostat)                                       { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:targetTemperature<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">String</span>              iLR_activeMode   <span class="pl-s"><span class="pl-pds">&quot;</span>Active Mode<span class="pl-pds">&quot;</span></span>                           (gLR_Thermostat)                                       { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:activeMode<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">String</span>              iLR_heatCool     <span class="pl-s"><span class="pl-pds">&quot;</span>HeatingCoolingMode<span class="pl-pds">&quot;</span></span>                    (gLR_Thermostat)     [ <span class="pl-s"><span class="pl-pds">&quot;</span>homekit:HeatingCoolingMode<span class="pl-pds">&quot;</span></span> ]  { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:heatingCoolingMode<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">Number</span><span class="pl-k">:</span><span class="pl-en">Temperature</span>  iLR_setpointTemp <span class="pl-s"><span class="pl-pds">&quot;</span>Setpoint Temperature [%.1f &deg;C]<span class="pl-pds">&quot;</span></span>  <span class="pl-k">&lt;</span>temperature<span class="pl-k">&gt;</span> (gLR_Thermostat)  [ <span class="pl-s"><span class="pl-pds">&quot;</span>TargetTemperature<span class="pl-pds">&quot;</span></span> ]      { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:setpointTemperature<span class="pl-pds">&quot;</span></span> }
+<span class="pl-en">String</span>              iLR_setMode      <span class="pl-s"><span class="pl-pds">&quot;</span>Set Mode<span class="pl-pds">&quot;</span></span>                              (gLR_Thermostat)                                       { channel<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>openwebnet:bus_thermostat:mybridge:LR_thermostat:setMode<span class="pl-pds">&quot;</span></span>}</pre>
+</div> 
+<h3> <a id="openwebnetsitemap" class="anchor" href="#openwebnetsitemap" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>openwebnet.sitemap</h3> 
+<div class="highlight highlight-source-xtend">
+ <pre>sitemap openwebnet label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>OpenWebNet Binding Example Sitemap<span class="pl-pds">&quot;</span></span>
+{
+
+<span class="pl-en">Frame</span> label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Living Room<span class="pl-pds">&quot;</span></span>
+    {
+          <span class="pl-en">Default</span> item<span class="pl-k">=</span>iLR_switch           icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>light<span class="pl-pds">&quot;</span></span>    
+          <span class="pl-en">Default</span> item<span class="pl-k">=</span>iLR_dimmer           icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>light<span class="pl-pds">&quot;</span></span> 
+          <span class="pl-en">Default</span> item<span class="pl-k">=</span>iLR_dalidimmer       icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>light<span class="pl-pds">&quot;</span></span>
+          <span class="pl-en">Default</span> item<span class="pl-k">=</span>iLR_shutter
+          <span class="pl-en">Default</span> item<span class="pl-k">=</span>iEXT_tempsensor      icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>temperature<span class="pl-pds">&quot;</span></span>
+          <span class="pl-en">Switch</span>  item<span class="pl-k">=</span>iLR_scenario_btn4 label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>CEN Scenario (btn4)[]<span class="pl-pds">&quot;</span></span>  mappings<span class="pl-k">=</span>[<span class="pl-c1">PRESSED</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Scenario-A (PRESSED)<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">PRESSED_EXT</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Scenario-B (PRESSED_EXT)<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">RELEASED_EXT</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Scenario-B-end (RELEASED_EXT)<span class="pl-pds">&quot;</span></span>] 
+          <span class="pl-en">Switch</span>  item<span class="pl-k">=</span>iLR_scenario_btn1 label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>CEN+ Scenario (btn1)[]<span class="pl-pds">&quot;</span></span> mappings<span class="pl-k">=</span>[<span class="pl-c1">PRESSED</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Scenario-C (PRESSED)<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">PRESSED_EXT</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Scenario-C (PRESSED_EXT)<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">RELEASED_EXT</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Scenario-C-end (RELEASED_EXT)<span class="pl-pds">&quot;</span></span>] 
+
+          <span class="pl-en">Switch</span>  item<span class="pl-k">=</span>iLR_IR_sensor mappings<span class="pl-k">=</span>[<span class="pl-c1">ON</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Presence<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">OFF</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>No Presence<span class="pl-pds">&quot;</span></span>]
+          
+          <span class="pl-en">Text</span>    item<span class="pl-k">=</span>iLR_aux  labelcolor<span class="pl-k">=</span>[<span class="pl-c1">ON</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>red<span class="pl-pds">&quot;</span></span>] valuecolor<span class="pl-k">=</span>[<span class="pl-c1">ON</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>red<span class="pl-pds">&quot;</span></span>] label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Siren [%s]<span class="pl-pds">&quot;</span></span>       icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>siren<span class="pl-pds">&quot;</span></span>
+
+          <span class="pl-en">Group</span> item<span class="pl-k">=</span>gLR_thermostat label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Thermostat<span class="pl-pds">&quot;</span></span> icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>heating<span class="pl-pds">&quot;</span></span>
+          { 
+             <span class="pl-en">Default</span>    item<span class="pl-k">=</span>iLR_temp  label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Current Temperature<span class="pl-pds">&quot;</span></span>  icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>temperature<span class="pl-pds">&quot;</span></span>
+             <span class="pl-en">Default</span>    item<span class="pl-k">=</span>iLR_targetTemp label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Target Temperature<span class="pl-pds">&quot;</span></span>  icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>temperature<span class="pl-pds">&quot;</span></span>
+             <span class="pl-en">Default</span>    item<span class="pl-k">=</span>iLR_offset  icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>heating<span class="pl-pds">&quot;</span></span>   visibility<span class="pl-k">=</span>[iLR_offset <span class="pl-k">!=</span> <span class="pl-s"><span class="pl-pds">&quot;</span>NORMAL<span class="pl-pds">&quot;</span></span>]
+             <span class="pl-en">Text</span>       item<span class="pl-k">=</span>iLR_heating icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>fire<span class="pl-pds">&quot;</span></span>  label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Heating is active<span class="pl-pds">&quot;</span></span> labelcolor<span class="pl-k">=</span>[<span class="pl-s"><span class="pl-pds">&quot;</span>red<span class="pl-pds">&quot;</span></span>]  visibility<span class="pl-k">=</span>[iLR_heating<span class="pl-k">==</span><span class="pl-s"><span class="pl-pds">&quot;</span>ON<span class="pl-pds">&quot;</span></span>]
+             <span class="pl-en">Text</span>       item<span class="pl-k">=</span>iLR_cooling icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>climate<span class="pl-pds">&quot;</span></span>  label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Cooling is active<span class="pl-pds">&quot;</span></span> labelcolor<span class="pl-k">=</span>[<span class="pl-s"><span class="pl-pds">&quot;</span>blue<span class="pl-pds">&quot;</span></span>] visibility<span class="pl-k">=</span>[iLR_cooling<span class="pl-k">==</span><span class="pl-s"><span class="pl-pds">&quot;</span>ON<span class="pl-pds">&quot;</span></span>]
+             <span class="pl-en">Selection</span>  item<span class="pl-k">=</span>iLR_activeMode icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>radiator<span class="pl-pds">&quot;</span></span> mappings<span class="pl-k">=</span>[<span class="pl-c1">AUTO</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Auto<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">MANUAL</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Manuale<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">PROTECTION</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Anti-gelo<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">OFF</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Spento<span class="pl-pds">&quot;</span></span>] valuecolor<span class="pl-k">=</span>[<span class="pl-c1">AUTO</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>green<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">MANUAL</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>orange<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">PROTECTION</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>blue<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">OFF</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>red<span class="pl-pds">&quot;</span></span>] 
+             <span class="pl-en">Selection</span>  item<span class="pl-k">=</span>iLR_setMode icon<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>heating<span class="pl-pds">&quot;</span></span>   mappings<span class="pl-k">=</span>[<span class="pl-c1">AUTO</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Auto<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">MANUAL</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Manuale<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">PROTECTION</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Anti-gelo<span class="pl-pds">&quot;</span></span>, <span class="pl-c1">OFF</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Spento<span class="pl-pds">&quot;</span></span>] 
+             <span class="pl-en">Setpoint</span>   item<span class="pl-k">=</span>iLR_setpointTemp label<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>Set Temp [%.1f &deg;C]<span class="pl-pds">&quot;</span></span> minValue<span class="pl-k">=</span><span class="pl-c1">12.5</span> maxValue<span class="pl-k">=</span><span class="pl-c1">30</span> step<span class="pl-k">=</span><span class="pl-c1">0.5</span>
+          }
+    }
+
+}</pre>
+</div> 
+<h3> <a id="openwebnetrules" class="anchor" href="#openwebnetrules" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>openwebnet.rules</h3> 
+<div class="highlight highlight-source-xtend">
+ <pre><span class="pl-c"><span class="pl-c">//</span> SCENARIO-A: short pressure on CEN+ button 1 will increase dimmer%</span>
+rule <span class="pl-s"><span class="pl-pds">&quot;</span>CEN+ dimmer increase<span class="pl-pds">&quot;</span></span>
+when
+    <span class="pl-en">Item</span> iLR_scenario_btn1 received update <span class="pl-s"><span class="pl-pds">&quot;</span>RELEASED<span class="pl-pds">&quot;</span></span>
+then
+        sendCommand(iLR_dimmer, <span class="pl-c1">INCREASE</span>)  
+end
+
+<span class="pl-c"><span class="pl-c">//</span> SCENARIO-B: long pressure on CEN+ button 1 will switch off dimmer</span>
+rule <span class="pl-s"><span class="pl-pds">&quot;</span>CEN+ dimmer off<span class="pl-pds">&quot;</span></span>
+when
+    <span class="pl-en">Item</span> iLR_scenario_btn1 received update <span class="pl-s"><span class="pl-pds">&quot;</span>RELEASED_EXT<span class="pl-pds">&quot;</span></span>
+then
+        sendCommand(iLR_dimmer, <span class="pl-c1">OFF</span>)  
+end</pre>
+</div> 
+<h2> <a id="faqs--known-issues" class="anchor" href="#faqs--known-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FAQs &amp; Known Issues</h2> 
+<h3> <a id="faqs" class="anchor" href="#faqs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FAQs</h3> 
+<h4> <a id="i-want-to-control-blinds-from-google-home-google-assistant-how" class="anchor" href="#i-want-to-control-blinds-from-google-home-google-assistant-how" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>I want to control blinds from Google Home (Google Assistant): how?</h4> 
+<p>Blinds are not currently supported by the Google Home add-on for openHAB, this is not a limitation of this binding. See: <a href="https://github.com/openhab/openhab-google-assistant/issues/59">https://github.com/openhab/openhab-google-assistant/issues/59</a></p> 
+<h4> <a id="my-bticino-devices-are-visible-from-paperui-but-cannot-be-discovered-by-google-home--alexa" class="anchor" href="#my-bticino-devices-are-visible-from-paperui-but-cannot-be-discovered-by-google-home--alexa" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>My BTicino devices are visible from PaperUI but cannot be discovered by Google Home / Alexa</h4> 
+<p>Not all device types are supported by Google Home / Alexa and the respective openHAB add-ons. This is not a limitation of the binding. Visit the links at the end of section <a href="#integration-with-assistants">Integration with Assistants</a> to check compatibility with your assistant.</p> 
+<h4> <a id="when-messagefeature-xxxx-will-be-supported-" class="anchor" href="#when-messagefeature-xxxx-will-be-supported-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>When message/feature XXXX will be supported ?</h4> 
+<p>You can check if someone has already requested support for a message/feature here: <a href="https://github.com/mvalla/openhab2-addons/issues">GitHub repo</a>. If not, add a new issue. Issues are organised by milestones, but deadlines of course are not guaranteed (other volunteer developers are welcome!).</p> 
+<h3> <a id="known-issues" class="anchor" href="#known-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Known Issues</h3> 
+<p>For a full list of current open issues / features requests see <a href="https://github.com/mvalla/openhab2-addons/issues">GitHub repo</a></p> 
+<ul> 
+ <li> <p>With some latest firmware versions of MyHOMEServer_1, rollershutters are not discovered because this gateways responds to device status request with a invalid OpenWebNet message. This is a BUG by BTicino and not a problem of the binding. See: <a href="https://github.com/mvalla/openhab2-addons/issues/34">https://github.com/mvalla/openhab2-addons/issues/34</a></p> </li> 
+ <li> <p>In some cases dimmers connected to a F429 Dali-interface cannot be discovered, even if switched ON and dimmed. This looks like as a limitation of some gateways that do not report status of Dali devices when requested. See: <a href="https://github.com/mvalla/openhab2-addons/issues/14">https://github.com/mvalla/openhab2-addons/issues/14</a></p> </li> 
+</ul> 
+<h2> <a id="changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changelog</h2> 
+<p><strong>v2.5.0-M3-pre4</strong> - 03/2019</p> 
+<ul> 
+ <li><strong>[FIX #12] [FIX #32] command auxiliary <code>WHO=9</code> of bus is now supported</strong></li> 
+ <li>[FIX #63] added channel shutterState per rollershutter</li> 
+ <li>[FIX #30] manually configured things should not be found again using an Inbox scan</li> 
+ <li>[FIX] updating of article statuses, lighting and automation, with the received AMB-GR-GEN commands.</li> 
+ <li>modify parameter <code>discoveryByActivation</code> from string to boolean and required, default is false</li> 
+ <li>added examples to README.md</li> 
+ <li>added default values for password on the bus gateway</li> 
+ <li>added default values and required for port on the bus gateway</li> 
+</ul> 
+<p><strong>v2.5.0-M2</strong> - 08/03/2019</p> 
+<ul> 
+ <li>[FIX #29] Fixed (again) Automation command translation (1000#)</li> 
+ <li>[FIX] Fixed Energy Meter subscription (every 10min)</li> 
+ <li>[FIX] corrected deviceWhere address management for ZigBee devices and discovery of ON_OFF_SWITCH_2UNITS</li> 
+ <li>[FIX #54] CEN scenarios are now detected when activated from Touchscreens (added PRESSURE&gt;RELEASE schedule)</li> 
+ <li>[FIX #56] Thermostat Cannot set setpoint temperature (now WHERE=N is first used, then WHERE=#N if it fails)</li> 
+ <li>[FIX #59] added discoverByActivation parameter (optional) to BUS gateway</li> 
+ <li>added FAQs section to README.md</li> 
+ <li>added ownId as representation-property</li> 
+ <li>added Switchable tag to shutter channel</li> 
+</ul> 
+<p><strong>v2.5.0-M1</strong> - 28/01/2019</p> 
+<ul> 
+ <li><strong>[FIX #28] automatic discovery of BUS gateways is now supported</strong></li> 
+ <li>gateway model, firmwareVersion and serialNumber are now read from UPnP discovery</li> 
+ <li>[FIX #39] set subscription interval for Energy Meter</li> 
+ <li>[FIX #4] added support for BTicino movement sensors (like AM5658 Green Switch)</li> 
+ <li>updated to openHAB 2.5.0 dev branch</li> 
+</ul> 
+<p><strong>v2.4.0-b9-2</strong> - 18/01/2019</p> 
+<ul> 
+ <li>[FIX #37] CEN commands WHAT (buttons) 0-9 are now 00-09</li> 
+ <li>[FIX] CEN/CEN+ scenarioButton channel is now able to receive commands</li> 
+ <li>[FIX #45] Thermoregulation setpoint command refused</li> 
+ <li>[FIX #46] Thermo: activeMode displays only the state “Off&quot; and &quot;anti freeze”</li> 
+ <li>[FIX #42 &amp; #43] Devices with same WHERE receive wrong messages from BUS</li> 
+ <li>[FIX] improved device registration to BridgeHandler</li> 
+</ul> 
+<p><strong>v2.4.0-b9-1</strong> - 27/12/2018</p> 
+<ul> 
+ <li>[FIX #6] and [FIX #33] Initial support for <code>WHO=15/25</code> CEN/CEN+ for receiving events from BUS Scenario Control physical devices/buttons (for example Scenario Control: HC/HD/HS/L/N/NT4680) and sending virtual pressure commands to activate MH202 scenarios on the BUS from openHAB. Use <a href="#discovery-by-activation">discovery by activation</a> to discover CEN/CEN+ scenario control devices. Further buttons/channels are discovered by pressing the corresponding physical button after the device has been added from Inbox</li> 
+ <li>[FIX #9] Support for <code>WHO=25</code> Dry Contact interfaces and IR Sensors on BUS, with discovery</li> 
+ <li>[FIX #11] Initial support for <code>WHO=18</code> Energy Management on BUS, with discovery. Currently supported: Energy Management Central Unit (F521) power measures</li> 
+ <li>[FIX #29] Added support for command translation (1000# ) for Automation</li> 
+ <li>[FIX #27] Device <strong>Discovery by Activation</strong> ( <a href="#discovery-by-activation">discovery by activation</a> ) for Lighting and CEN/CEN+: if a BUS physical device is not found in Inbox during a Scan, activate the device to discover it</li> 
+</ul> 
+<p><strong>v2.4.0-b8</strong> - 11/11/2018</p> 
+<ul> 
+ <li>[FIX #25] added <code>Blinds</code> tag for shutter channels (Rollershutter items)</li> 
+ <li>[FIX #17] now a disconnection from the gateway is detected within few minutes</li> 
+ <li>[FIX #10] now an automatic STOP command is sent when a new Position/UP/DOWN command is sent while already moving</li> 
+ <li>[FIX #18] at startup (for example after a power outage) the binding now tries periodically to connect to the BTicino Gateway</li> 
+ <li>[BUG] now a decimal setpointTemperature (21.5 &deg;C) is sent as decimal to the thermostat and not as integer</li> 
+ <li>[FIX #20] added support for dimmerLevel100 levels when dimmers are changed from myhomescreen or touchscreen</li> 
+ <li>[FIX #16] dimmers now save last state if switched off from openHAB</li> 
+ <li>[FIX] now Command Translation (1000#WHAT) is supported in Lighting</li> 
+ <li>[FIX] setpointTemperature now uses QuantityType (Number:Temperature item)</li> 
+ <li>updated README examples and added .sitemap example</li> 
+ <li>moved to new repository, forked from openhab/openhab2-addons</li> 
+</ul> 
+<p><strong>v2.4.0-b7</strong> - 01/09/2018</p> 
+<ul> 
+ <li>[FIX #5] Initial support for <code>WHO=4</code> Thermoregulation on BUS. Currently supported: zones room thermostats and external (wireless) temperature sensors. Both heating and cooling functions are supported</li> 
+ <li>The binding is now available on the <a href="https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing" rel="nofollow">Eclipse IoT Marketplace</a> </li> 
+ <li>[BUG] corrected a bad bug on the connection part (originally taken from the BTicino 1.x binding) that caused loosing many monitoring (feedback) messages from the gateway when several messages were received together</li> 
+ <li>[FIX #13] now commands sent close in a short time are sent re-using the same socket connection to the gateway. This should improve connection stability and speed in general and in particular with older BUS gateways (e.g. MH202)</li> 
+ <li>[FIX] improved Shutter management and position estimation, thanks to previous 2 enhancements</li> 
+ <li>minimum requirement is now openHAB 2.3, which is needed to support measurements units like &deg;C</li> 
+</ul> 
+<p><strong>v2.4.0-b6</strong> - 02/07/2018</p> 
+<ul> 
+ <li>updated to openHAB 2.4.0 dev branch</li> 
+ <li>[FIX #7] added support for inverted UP/DOWN automation commands for older USB ZigBee dongles</li> 
+ <li>[BUG] some switches were wrongly discovered as dimmers (now use only commands for device discovery)</li> 
+ <li>[FIX] added support for SCS/ZIGBEE_SHUTTER_SWITCH (515/513) device types</li> 
+ <li>[FIX] added support for F455 gateways using <code>*99*0##</code> command session</li> 
+</ul> 
+<p><strong>v2.3.0-b5</strong> - 26/05/2018</p> 
+<ul> 
+ <li>[FIX #1] state monitoring from BUS (feedback) is no longer stopped if unsupported messages are received from BUS</li> 
+ <li>[FIX] automatic reconnect to BUS when connection is lost</li> 
+ <li>[NEW] support for Gateways with string passwords (HMAC authentication), like MyHOMEServer1</li> 
+ <li>[NEW] support for <code>WHO=2</code> Automation (shutters), both on BUS and ZigBee, with position feedback and goto Percent. It requires setting the shutter run-time in the thing configuration. Experimental auto-calibration of the run-time is also supported!</li> 
+</ul> 
+<p><strong>v2.3.0-b4</strong> - 09/04/2018</p> 
+<ul> 
+ <li>first public release</li> 
+</ul> 
+<h2> <a id="disclaimer" class="anchor" href="#disclaimer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Disclaimer</h2> 
+<ul> 
+ <li>This binding is not associated by any means with BTicino or Legrand companies</li> 
+ <li>Contributors of this binding have no liability for any direct, indirect, incidental, special, exemplary, or consequential damage to things or people caused by using the binding connected to a real BTicino/Legrand (OpenWebNet) plant/system and its physical devices. The final user is the only responsible for using this binding in a real environment. See Articles 5. and 6. of <a href="https://www.eclipse.org/legal/epl-v10.html" rel="nofollow">Eclipse Public Licence 1.0</a> under which this binding software is distributed</li> 
+ <li>The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the <a href="https://www.myopen-legrandgroup.com/developers/" rel="nofollow">MyOpen Community website - https://www.myopen-legrandgroup.com/developers</a> </li> 
+ <li>OpenWebNet, MyHOME and MyHOME_Play are registered trademarks by BTicino/Legrand</li> 
+ <li>This binding uses <code>openwebnet-lib 0.9.x</code>, an OpenWebNet Java lib partly based on <a href="https://github.com/openwebnet/rx-openwebnet">openwebnet/rx-openwebnet</a> client library by @niqdev, to support: 
+  <ul> 
+   <li>gateways and OWN frames for ZigBee</li> 
+   <li>frame parsing</li> 
+   <li>monitoring events from BUS The lib also uses few modified classes from the openHAB 1.x BTicino binding for socket handling and priority queues.</li> 
+  </ul> </li> 
+</ul> 
+<h2> <a id="special-thanks" class="anchor" href="#special-thanks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Special thanks</h2> 
+<p>Special thanks for helping on testing this binding go to: <a href="https://community.openhab.org/u/m4rk/" rel="nofollow">@m4rk</a>, <a href="https://community.openhab.org/u/bastler" rel="nofollow">@bastler</a>, <a href="https://community.openhab.org/u/gozilla01" rel="nofollow">@gozilla01</a>, <a href="https://community.openhab.org/u/enrico.mcc" rel="nofollow">@enrico.mcc</a>, <a href="https://community.openhab.org/u/k0nti/" rel="nofollow">@k0nti</a>, <a href="https://community.openhab.org/u/gilberto.cocchi/" rel="nofollow">@gilberto.cocchi</a>, <a href="https://community.openhab.org/u/llegovich" rel="nofollow">@llegovich</a>, <a href="https://community.openhab.org/u/gabriele.daltoe" rel="nofollow">@gabriele.daltoe</a> and many others at the fantastic openHAB community!</p>
+</body>
+</html>
