@@ -15,6 +15,7 @@
 		
 		<channels>
 			<channel id="shutter" typeId="shutter" />
+            <channel id="shutterState" typeId="shutterState" />
 		</channels>
 		
 		<properties>

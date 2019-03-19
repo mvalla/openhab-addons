@@ -48,6 +48,11 @@
 			<tag>Switchable</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="shutterState">
+        <item-type>String</item-type>
+        <label>State Roller shutter</label>
+        <description>State the roller shutter Up Down Stop</description>
+    </channel-type>
 	
 	<!--  Thermo channels -->
 	<channel-type id="temperature">

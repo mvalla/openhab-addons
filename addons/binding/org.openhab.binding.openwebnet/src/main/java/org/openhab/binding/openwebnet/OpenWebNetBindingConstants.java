@@ -127,6 +127,7 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     // automation
     public static final String CHANNEL_SHUTTER = "shutter";
+    public static final String CHANNEL_SHUTTERSTATE = "shutterState";
     // thermo
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_TEMP_TARGET = "targetTemperature";

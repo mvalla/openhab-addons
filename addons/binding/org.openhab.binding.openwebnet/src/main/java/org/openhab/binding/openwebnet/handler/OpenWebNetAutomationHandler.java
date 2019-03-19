@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -87,6 +88,11 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     private static final int STEP_TIME_MIN = 50; // ms
     private Command commandRequestedWhileMoving = null;
 
+    // state channel shutterState
+    private static final String STATE_SHUTTER_UP = "UP";
+    private static final String STATE_SHUTTER_STOP = "STOP";
+    private static final String STATE_SHUTTER_DOWN = "DOWN";
+
     /// TODO GENERAL
     /// consider making all Automation calls Aynch insted of Synch (blocking), as all the behavior is based on received
     /// state notifications and not on command responses
@@ -144,6 +150,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             shutterRun = SHUTTER_RUN_UNDEFINED;
         }
         updateState(CHANNEL_SHUTTER, UnDefType.UNDEF);
+        updateState(CHANNEL_SHUTTERSTATE, UnDefType.UNDEF);
         positionEst = POSITION_UNKNOWN;
     }
 
@@ -182,6 +189,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         commandRequestedWhileMoving = null;
         if (StopMoveType.STOP.equals(command)) { // STOP
             bridgeHandler.gateway.send(Automation.requestStop(deviceWhere, automationType));
+            updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_STOP));
         } else if (command instanceof UpDownType || command instanceof PercentType) {
             if (internalState == STATE_MOVING_UP || internalState == STATE_MOVING_DOWN) { // already moving
                 logger.debug(
@@ -193,8 +201,10 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 if (command instanceof UpDownType) {
                     if (UpDownType.UP.equals(command)) { // UP
                         bridgeHandler.gateway.send(Automation.requestMoveUp(deviceWhere, automationType));
+                        updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_UP));
                     } else { // DOWN
                         bridgeHandler.gateway.send(Automation.requestMoveDown(deviceWhere, automationType));
+                        updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_DOWN));
                     }
                 } else if (command instanceof PercentType) { // PERCENT
                     handlePercentCommand((PercentType) command);
@@ -219,8 +229,10 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         }
         if (percent == POSITION_DOWN) { // GO TO 100%
             bridgeHandler.gateway.send(Automation.requestMoveDown(deviceWhere, automationType));
+            updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_DOWN));
         } else if (percent == POSITION_UP) { // GO TO 0%
             bridgeHandler.gateway.send(Automation.requestMoveUp(deviceWhere, automationType));
+            updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_UP));
         } else { // GO TO XX%
             logger.debug("==OWN:AutomationHandler== # " + deviceWhere + " # {}% requested", percent);
             if (shutterRun == SHUTTER_RUN_UNDEFINED) {
@@ -228,6 +240,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                         + " & shutterRun not configured, starting CALIBRATION...");
                 calibrating = CALIBRATION_ACTIVATED;
                 bridgeHandler.gateway.send(Automation.requestMoveUp(deviceWhere, automationType));
+                updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_UP));
                 positionRequested = percent;
             } else if (shutterRun > 0 && positionEst != POSITION_UNKNOWN) { // these two must be known to
                                                                             // calculate
@@ -251,13 +264,16 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                         logger.debug("==OWN:AutomationHandler== # " + deviceWhere
                                 + " # moveSchedule expired, sending STOP...");
                         bridgeHandler.gateway.sendHighPriority(Automation.requestStop(deviceWhere, automationType));
+                        updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_STOP));
                     }, moveTime, TimeUnit.MILLISECONDS);
                     logger.debug("==OWN:AutomationHandler== # " + deviceWhere
                             + " # ...schedule started, now sending highPriority command...");
                     if (percent < positionEst) {
                         bridgeHandler.gateway.sendHighPriority(Automation.requestMoveUp(deviceWhere, automationType));
+                        updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_UP));
                     } else {
                         bridgeHandler.gateway.sendHighPriority(Automation.requestMoveDown(deviceWhere, automationType));
+                        updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_DOWN));
                     }
                     logger.debug(
                             "==OWN:AutomationHandler== # " + deviceWhere + " # ...gateway.sendHighPriority() returned");
@@ -291,6 +307,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     private void updateAutomationState(Automation msg) {
         logger.debug("==OWN:AutomationHandler== updateAutomationState() - msg={} what={}", msg, msg.getWhat());
         if (msg.isUp()) {
+            updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_UP));
             updateStateInt(STATE_MOVING_UP);
             if (calibrating == CALIBRATION_ACTIVATED) {
                 calibrating = CALIBRATION_GOING_UP;
@@ -298,6 +315,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                         "==OWN:AutomationHandler== & " + deviceWhere + " & ...CALIBRATING: started going ALL UP...");
             }
         } else if (msg.isDown()) {
+            updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_DOWN));
             updateStateInt(STATE_MOVING_DOWN);
             if (calibrating == CALIBRATION_ACTIVATED) {
                 calibrating = CALIBRATION_GOING_DOWN;
@@ -305,6 +323,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                         "==OWN:AutomationHandler== & " + deviceWhere + " & ...CALIBRATING: started going ALL DOWN...");
             }
         } else if (msg.isStop()) {
+            updateState(CHANNEL_SHUTTERSTATE, new StringType(STATE_SHUTTER_STOP));
             long stoppedAt = System.currentTimeMillis();
             if (calibrating == CALIBRATION_GOING_DOWN && shutterRun == SHUTTER_RUN_UNDEFINED) {
                 shutterRun = (int) (stoppedAt - startedMovingAt);
