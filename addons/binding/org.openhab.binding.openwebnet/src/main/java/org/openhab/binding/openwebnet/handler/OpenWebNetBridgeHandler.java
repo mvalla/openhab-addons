@@ -375,9 +375,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 // command Auxiliary general
                 logger.debug("==OWN==  Message Auxiliary General");
             } else if (baseMsg instanceof Automation) {
-                // This is to avoid creating the thing via discoveryByActivation
-                // command Automation general or ambient
-                logger.debug("==OWN==  Message Automation General or Area");
+                if (isLocalBus(baseMsg)) {
+                    // command Automation Local bus general or ambient
+                    logger.debug("==OWN==  Message Local bus Automation General or Area");
+                    callAllThingHandlerMessage(msg, Who.AUTOMATION.value().toString());
+                } else {
+                    // This is to avoid creating the thing via discoveryByActivation
+                    // command Automation general or ambient
+                    logger.debug("==OWN==  Message Automation General or Area");
+                }
             } else if (baseMsg instanceof Lighting) {
                 // command Lighting general or ambient
                 logger.debug("==OWN==  Message Lighting General or Area");
@@ -429,12 +435,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         for (String ownIdkey : registeredDevices.keySet()) {
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownIdkey);
             if (deviceHandler != null && deviceHandler.ownIdPrefix().equals(who)) {
-                // Lighting
                 if (isGen(baseMsg)) {
-                    // General Lighting
+                    // General
                     deviceHandler.handleMessage(baseMsg);
                 } else {
-                    // Area Lighting
+                    // Area
                     if (isCompareA(baseMsg, ownIdkey)) {
                         deviceHandler.handleMessage(baseMsg);
                     }
@@ -768,6 +773,21 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 logger.debug("==OWN==  BridgeHandler - getA error extract where:{}", where);
                 return "";
         }
+    }
+
+    /**
+     * Check baseMsg is local bus
+     *
+     * @param BaseOpenMessage baseMsg
+     * @return boolean
+     */
+    // TODO push down in the OWN lib
+    private boolean isLocalBus(BaseOpenMessage baseMsg) {
+        String where = baseMsg.getWhere();
+        if (where.indexOf("#4#") > 0) {
+            return true;
+        }
+        return false;
     }
 
 }
