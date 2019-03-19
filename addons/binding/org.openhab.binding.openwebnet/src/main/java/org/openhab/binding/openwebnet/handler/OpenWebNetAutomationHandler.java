@@ -290,6 +290,10 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
      */
     private void updateAutomationState(Automation msg) {
         logger.debug("==OWN:AutomationHandler== updateAutomationState() - msg={} what={}", msg, msg.getWhat());
+        if (msg.isCommandTranslation()) {
+            logger.debug("==OWN:AutomationHandler== msg is command translation, ignoring...");
+            return;
+        }
         if (msg.isUp()) {
             updateStateInt(STATE_MOVING_UP);
             if (calibrating == CALIBRATION_ACTIVATED) {
