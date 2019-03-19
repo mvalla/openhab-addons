@@ -55,6 +55,7 @@ import org.openwebnet.message.Lighting;
 import org.openwebnet.message.OpenMessage;
 import org.openwebnet.message.OpenMessageFactory;
 import org.openwebnet.message.Thermoregulation;
+import org.openwebnet.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -363,12 +364,37 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         // GATEWAY MANAGEMENT
         if (msg instanceof GatewayManagement) {
             GatewayManagement gwMgmtMsg = (GatewayManagement) msg;
-            logger.debug("==OWN==  GatewayManagement WHAT = {}", gwMgmtMsg.getWhat());
+            logger.debug("==OWN== GatewayManagement WHAT = {}", gwMgmtMsg.getWhat());
             return;
         }
-
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
+        // ATTENTION to this logic IF with future implementation of a bus group commands
+        if (isGen(baseMsg) || isA(baseMsg)) {
+            if (baseMsg instanceof Auxiliary) {
+                // This is to avoid creating the thing via discoveryByActivation
+                // command Auxiliary general
+                logger.debug("==OWN==  Message Auxiliary General");
+            } else if (baseMsg instanceof Automation) {
+                // This is to avoid creating the thing via discoveryByActivation
+                // command Automation general or ambient
+                logger.debug("==OWN==  Message Automation General or Area");
+            } else if (baseMsg instanceof Lighting) {
+                // command Lighting general or ambient
+                logger.debug("==OWN==  Message Lighting General or Area");
+                callAllThingHandlerMessage(msg, Who.LIGHTING.value().toString());
+            } else {
+                logger.debug("==OWN==  Message General or Area not supported :{}", msg);
+            }
+            return;
+        }
+        getThingAssociated(msg);
+
+    }
+
+    /** Get the Thing associated with this message... */
+    private void getThingAssociated(OpenMessage msg) {
         // let's try to get the Thing associated with this message...
+        BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
                 || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario
                 || baseMsg instanceof CENPlusScenario || baseMsg instanceof Auxiliary) {
@@ -395,7 +421,26 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.debug("==OWN==  BridgeHandler ignoring frame {}. WHO={} is not supported by the binding", baseMsg,
                     baseMsg.getWho());
         }
+    }
 
+    /** Call all things handler associated with this message and who... */
+    private void callAllThingHandlerMessage(OpenMessage msg, String who) {
+        BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
+        for (String ownIdkey : registeredDevices.keySet()) {
+            OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownIdkey);
+            if (deviceHandler != null && deviceHandler.ownIdPrefix().equals(who)) {
+                // Lighting
+                if (isGen(baseMsg)) {
+                    // General Lighting
+                    deviceHandler.handleMessage(baseMsg);
+                } else {
+                    // Area Lighting
+                    if (isCompareA(baseMsg, ownIdkey)) {
+                        deviceHandler.handleMessage(baseMsg);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -522,6 +567,20 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
+     * Return a boolean existing ownId in Map
+     *
+     * @param string ownId
+     * @return boolean
+     */
+    public boolean ownIdExisting(String ownId) {
+        OpenWebNetThingHandler deviceHandlerEx = getDevice(ownId);
+        if (deviceHandlerEx != null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Transform a WHERE string address into a Thing id string based on bridge type (BUS/ZigBee).
      * '#' in WHERE are changed to 'h'
      *
@@ -627,6 +686,87 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return str;
         } else {
             return OpenMessageFactory.getAddrFromWhere(where);
+        }
+    }
+
+    /**
+     * Check baseMsg is General
+     *
+     * @param BaseOpenMessage baseMsg
+     * @return boolean
+     */
+    // TODO push down in the OWN lib
+    private boolean isGen(BaseOpenMessage baseMsg) {
+        String where = baseMsg.getWhere();
+        if (where.indexOf('#') > 0) {
+            where = where.substring(0, where.indexOf('#'));
+        }
+        if (where.equals("0")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check baseMsg is A
+     *
+     * @param BaseOpenMessage baseMsg
+     * @return boolean
+     */
+    // TODO push down in the OWN lib
+    private boolean isA(BaseOpenMessage baseMsg) {
+        String where = baseMsg.getWhere();
+        if (where.indexOf('#') > 0) {
+            where = where.substring(0, where.indexOf('#'));
+        }
+        int A = Integer.parseInt(where);
+        if ((A >= 1 && A <= 9) || A == 100) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Compare where between baseMsg and ownId
+     *
+     * @param BaseOpenMessage baseMsg
+     * @param String          ownId
+     * @return boolean
+     */
+    private boolean isCompareA(BaseOpenMessage baseMsg, String ownId) {
+        String ownIdwhere = ownId.substring(ownId.indexOf('.') + 1, ownId.length());
+        String AownId = getA(ownIdwhere);
+        String Amsg = getA(baseMsg.getWhere());
+        if (AownId.equals(Amsg)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get A from where
+     *
+     * @param String where
+     * @return String A
+     */
+    // TODO push down in the OWN lib
+    private String getA(String where) {
+        String whereA = where;
+        if (where.indexOf('#') > 0) {
+            whereA = where.substring(0, where.indexOf('#'));
+        }
+        switch (whereA.length()) {
+            case 1:
+                return whereA;
+            case 2:
+                return whereA.substring(0, 1);
+            case 3:
+                return whereA.substring(0, 2);
+            case 4:
+                return whereA.substring(0, 2);
+            default:
+                logger.debug("==OWN==  BridgeHandler - getA error extract where:{}", where);
+                return "";
         }
     }
 

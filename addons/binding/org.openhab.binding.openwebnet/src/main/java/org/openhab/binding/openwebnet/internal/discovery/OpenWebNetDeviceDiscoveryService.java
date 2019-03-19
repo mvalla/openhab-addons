@@ -210,52 +210,60 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
                             deviceType, where);
             }
         }
-        String tId = bridgeHandler.thingIdFromWhere(where);
-        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
-
-        DiscoveryResult discoveryResult = null;
-        // check if a device with same thingUID has been found already in discovery results
-        // if (discoveryServiceCallback != null) {
-        // discoveryResult = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
-        // }
-
-        String whereLabel = where;
-        if (BaseOpenMessage.UNIT_02.equals(OpenMessageFactory.getUnit(where))) {
-            logger.debug("==OWN:DeviceDiscovery== UNIT=02 found (WHERE={})", where);
-            // if (discoveryResult != null) {
-            logger.debug("==OWN:DeviceDiscovery== will remove previous result if exists");
-            thingRemoved(thingUID); // remove previously discovered thing
-            // re-create thingUID with new type
-            thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS;
-            thingLabel = OpenWebNetBindingConstants.THING_LABEL_ON_OFF_SWITCH_2UNITS;
-            thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
-            whereLabel = whereLabel.replace("02#", "00#"); // replace unit '02' with all unit '00'
-            logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
-                    OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH,
-                    OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS);
-            // } else {
-            // logger.warn("==OWN:DeviceDiscovery== discoveryResult empty after UNIT=02 discovery (WHERE={})", where);
-            // }
-        }
-        Map<String, Object> properties = new HashMap<>(2);
-        properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, bridgeHandler.normalizeWhere(where));
-        properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID,
-                bridgeHandler.ownIdFromWhoWhere(bridgeHandler.normalizeWhere(where), deviceWho.value().toString()));
-
-        if ((deviceType == OpenDeviceType.MULTIFUNCTION_SCENARIO_CONTROL
-                || deviceType == OpenDeviceType.SCENARIO_CONTROL) && baseMsg != null) {
-            properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SCENARIO_BUTTONS,
-                    ((CEN) baseMsg).getButtonNumber().toString());
-        }
-        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) { // generic thing, let's
-                                                                                               // specify the WHO
-            thingLabel = thingLabel + " (WHO=" + baseMsg.getWho() + ", WHERE=" + whereLabel + ")";
+        String ownId = bridgeHandler.ownIdFromWhoWhere(where, deviceWho.value().toString());
+        // check existing thing
+        if (bridgeHandler.ownIdExisting(ownId)) {
+            logger.debug("==OWN:DeviceDiscovery== thing existing ownId={}", ownId);
         } else {
-            thingLabel = thingLabel + " (WHERE=" + whereLabel + ")";
+            String tId = bridgeHandler.thingIdFromWhere(where);
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
+
+            DiscoveryResult discoveryResult = null;
+            // check if a device with same thingUID has been found already in discovery results
+            // if (discoveryServiceCallback != null) {
+            // discoveryResult = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
+            // }
+
+            String whereLabel = where;
+            if (BaseOpenMessage.UNIT_02.equals(OpenMessageFactory.getUnit(where))) {
+                logger.debug("==OWN:DeviceDiscovery== UNIT=02 found (WHERE={})", where);
+                // if (discoveryResult != null) {
+                logger.debug("==OWN:DeviceDiscovery== will remove previous result if exists");
+                thingRemoved(thingUID); // remove previously discovered thing
+                // re-create thingUID with new type
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_ON_OFF_SWITCH_2UNITS;
+                thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
+                whereLabel = whereLabel.replace("02#", "00#"); // replace unit '02' with all unit '00'
+                logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
+                        OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH,
+                        OpenWebNetBindingConstants.THING_TYPE_ON_OFF_SWITCH_2UNITS);
+                // } else {
+                // logger.warn("==OWN:DeviceDiscovery== discoveryResult empty after UNIT=02 discovery (WHERE={})",
+                // where);
+                // }
+            }
+            Map<String, Object> properties = new HashMap<>(2);
+            properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, bridgeHandler.normalizeWhere(where));
+            properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID,
+                    bridgeHandler.ownIdFromWhoWhere(bridgeHandler.normalizeWhere(where), deviceWho.value().toString()));
+
+            if ((deviceType == OpenDeviceType.MULTIFUNCTION_SCENARIO_CONTROL
+                    || deviceType == OpenDeviceType.SCENARIO_CONTROL) && baseMsg != null) {
+                properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SCENARIO_BUTTONS,
+                        ((CEN) baseMsg).getButtonNumber().toString());
+            }
+            if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) { // generic thing,
+                                                                                                   // let's
+                                                                                                   // specify the WHO
+                thingLabel = thingLabel + " (WHO=" + baseMsg.getWho() + ", WHERE=" + whereLabel + ")";
+            } else {
+                thingLabel = thingLabel + " (WHERE=" + whereLabel + ")";
+            }
+            discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(thingLabel).build();
+            thingDiscovered(discoveryResult);
         }
-        discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
-                .withBridge(bridgeUID).withLabel(thingLabel).build();
-        thingDiscovered(discoveryResult);
     }
 
     public void activate() {
