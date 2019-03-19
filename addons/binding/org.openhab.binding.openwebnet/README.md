@@ -434,7 +434,7 @@ See: https://github.com/mvalla/openhab2-addons/issues/14
 
 ## Changelog
 
-**v2.5.0-M3-pre4** - 03/2019
+**v2.5.0-M3-pre5** - 03/2019
 - **[FIX #12] [FIX #32] command auxiliary `WHO=9` of bus is now supported**
 - [FIX #63] added channel shutterState per rollershutter
 - [FIX #30] manually configured things should not be found again using an Inbox scan
