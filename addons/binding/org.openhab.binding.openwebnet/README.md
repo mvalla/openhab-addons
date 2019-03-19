@@ -427,7 +427,11 @@ See: https://github.com/mvalla/openhab2-addons/issues/14
 
 ## Changelog
 
-**v2.5.0-M2** - 08/03/2019
+**v2.5.0.M2-1** - 19/03/2019
+- removed Switchable tag to shutter channel
+
+
+**v2.5.0.M2** - 08/03/2019
 - [FIX #29] Fixed (again) Automation command translation (1000#)
 - [FIX] Fixed Energy Meter subscription (every 10min)
 - [FIX] corrected deviceWhere address management for ZigBee devices and discovery of ON_OFF_SWITCH_2UNITS
@@ -438,7 +442,7 @@ See: https://github.com/mvalla/openhab2-addons/issues/14
 - added ownId as representation-property
 - added Switchable tag to shutter channel
 
-**v2.5.0-M1** - 28/01/2019
+**v2.5.0.M1** - 28/01/2019
 
 - **[FIX #28] automatic discovery of BUS gateways is now supported**
 - gateway model, firmwareVersion and serialNumber are now read from UPnP discovery
