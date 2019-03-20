@@ -572,7 +572,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      */
 
     public enum TEST {
-        zigbee("789309801#9","Z","7893098","Z.7893098","7893098"),
+        zigbee("789309801#9","1","7893098","1.7893098","7893098"),
         sw("51","1","51","1.51","51"),
         dimmer("25#4#01","1","25#4#01","1.25#4#01","25h4h01"),
         thermo("#1","4","1","4.1","1"),
