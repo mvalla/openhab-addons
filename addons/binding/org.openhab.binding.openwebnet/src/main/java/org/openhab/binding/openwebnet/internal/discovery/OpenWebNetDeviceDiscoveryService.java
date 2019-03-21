@@ -192,6 +192,18 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
                     deviceWho = Who.CEN_PLUS_SCENARIO_SCHEDULER;
                     break;
                 }
+                case SCS_AUXILIARY_TOGGLE_CONTROL: {
+                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_AUX_TOGGLE;
+                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_AUX_TOGGLE;
+                    deviceWho = Who.AUX;
+                    break;
+                }
+                case ZIGBEE_AUXILIARY_ON_OFF_1_GANG_SWITCH: {
+                    thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_AUX_SWITCH;
+                    thingLabel = OpenWebNetBindingConstants.THING_LABEL_AUX_SWITCH;
+                    deviceWho = Who.AUX;
+                    break;
+                }
                 default:
                     logger.warn(
                             "==OWN:DeviceDiscovery== ***** device type {} is not supported, default to generic device (WHERE={}) *****",
