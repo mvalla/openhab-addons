@@ -44,6 +44,7 @@ import org.openwebnet.OpenListener;
 import org.openwebnet.OpenNewDeviceListener;
 import org.openwebnet.OpenWebNet;
 import org.openwebnet.message.Automation;
+import org.openwebnet.message.Auxiliary;
 import org.openwebnet.message.BaseOpenMessage;
 import org.openwebnet.message.CEN;
 import org.openwebnet.message.CENPlusScenario;
@@ -316,7 +317,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("==OWN==  BridgeHandler.discoverByActivation() ");
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof CEN
-                || baseMsg instanceof Thermoregulation || baseMsg instanceof EnergyManagement) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof EnergyManagement
+                || baseMsg instanceof Auxiliary) {
             OpenDeviceType type = baseMsg.detectDeviceType();
             if (type != null) {
                 deviceDiscoveryService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
@@ -381,7 +383,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof Thermoregulation
                 || baseMsg instanceof EnergyManagement || baseMsg instanceof CENScenario
-                || baseMsg instanceof CENPlusScenario) {
+                || baseMsg instanceof CENPlusScenario || baseMsg instanceof Auxiliary) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("==OWN==  ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = getDevice(ownId);
