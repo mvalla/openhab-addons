@@ -28,20 +28,23 @@
 			<parameter name="port" type="integer">
 				<label>Port</label>
 				<description>OpenWebNet gateway port (default: 20000)</description>
-				<required>false</required>
+				<default>20000</default>
+                <required>true</required>
 			</parameter>
 			
 			<parameter name="passwd" type="text">
 				<context>password-create</context>
 				<label>Password</label>
 				<description>OpenWebNet gateway password (default: 12345)</description>
-				<required>false</required>
+				<default>12345</default>
+                <required>true</required>
 			</parameter>
 
-            <parameter name="discoveryByActivation" type="text">
+            <parameter name="discoveryByActivation" type="boolean" groupName='discoveryByActivationSetup'>
                 <label>Discovery By Activation</label>
                 <description>Discover BUS devices when they are activated (also when a device scan is not active)</description>
-                <required>false</required>
+                <default>false</default>
+                <required>true</required>
             </parameter>
             
 		</config-description>

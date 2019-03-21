@@ -68,8 +68,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
 
     private static final int GATEWAY_ONLINE_TIMEOUT = 20; // (sec) Time to wait for the gateway to become connected
-    private static final int CONFIG_GATEWAY_DEFAULT_PORT = 20000;
-    private static final String CONFIG_GATEWAY_DEFAULT_PASSWD = "12345";
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
@@ -176,25 +174,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private void initBusGateway() {
         if (getConfig().get(CONFIG_PROPERTY_HOST) != null) {
             String host = (String) (getConfig().get(CONFIG_PROPERTY_HOST));
-            int port = CONFIG_GATEWAY_DEFAULT_PORT;
-            Object portConfig = getConfig().get(CONFIG_PROPERTY_PORT);
-            if (portConfig != null) {
-                port = ((BigDecimal) portConfig).intValue();
-            }
+            int port = ((BigDecimal) getConfig().get(CONFIG_PROPERTY_PORT)).intValue();
             String passwd = (String) (getConfig().get(CONFIG_PROPERTY_PASSWD));
-            if (passwd == null) {
-                passwd = CONFIG_GATEWAY_DEFAULT_PASSWD;
-            }
             String passwdMasked;
             if (passwd.length() >= 4) {
                 passwdMasked = "******" + passwd.substring(passwd.length() - 3, passwd.length());
             } else {
                 passwdMasked = "******";
             }
-            String discoveryConfig = (String) getConfig().get(CONFIG_PROPERTY_DISCOVERY_ACTIVATION);
-            if (discoveryConfig != null && discoveryConfig.equalsIgnoreCase("true")) {
-                discoveryByActivation = true;
-            }
+            discoveryByActivation = (boolean) getConfig().get(CONFIG_PROPERTY_DISCOVERY_ACTIVATION);
             logger.debug("==OWN== Creating new BUS gateway with config properties: {}:{}, pwd={}", host, port,
                     passwdMasked);
             gateway = OpenWebNet.gatewayBus(host, port, passwd);
