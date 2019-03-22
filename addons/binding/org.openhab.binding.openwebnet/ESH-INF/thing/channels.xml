@@ -47,6 +47,13 @@
 			<tag>Blinds</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="shutterState">
+        <item-type>String</item-type>
+        <label>State Roller shutter</label>
+        <description>State the roller shutter UP-DOWN-STOP</description>
+        <category>Blinds</category>
+        <state readOnly="true" />
+    </channel-type>
 	
 	<!--  Thermo channels -->
 	<channel-type id="temperature">

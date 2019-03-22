@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -144,6 +145,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             shutterRun = SHUTTER_RUN_UNDEFINED;
         }
         updateState(CHANNEL_SHUTTER, UnDefType.UNDEF);
+        updateState(CHANNEL_SHUTTERSTATE, UnDefType.UNDEF);
         positionEst = POSITION_UNKNOWN;
     }
 
@@ -294,6 +296,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             logger.debug("==OWN:AutomationHandler== msg is command translation, ignoring...");
             return;
         }
+        updateState(CHANNEL_SHUTTERSTATE, new StringType(msg.getWhat().toString()));
         if (msg.isUp()) {
             updateStateInt(STATE_MOVING_UP);
             if (calibrating == CALIBRATION_ACTIVATED) {
