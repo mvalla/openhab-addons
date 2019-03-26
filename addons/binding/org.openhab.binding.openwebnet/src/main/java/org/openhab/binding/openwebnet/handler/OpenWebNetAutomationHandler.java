@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -105,7 +105,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             deviceWhere = deviceWhere + BaseOpenMessage.UNIT_01;
         }
         /*
-         * Channel ch = thing.getChannel(CHANNEL_SHUTTER);
+         * Channel ch = thing.getChannel(CHANNEL_SHUTTERPOSITION);
          * if (ch != null) {
          * deviceChannel = ch.getUID();
          * } else {
@@ -144,8 +144,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                     "@text/offline.wrong-configuration");
             shutterRun = SHUTTER_RUN_UNDEFINED;
         }
-        updateState(CHANNEL_SHUTTER, UnDefType.UNDEF);
-        updateState(CHANNEL_SHUTTERSTATE, UnDefType.UNDEF);
+        updateState(CHANNEL_SHUTTERPOSITION, UnDefType.UNDEF);
+        updateState(CHANNEL_SHUTTERMOTION, UnDefType.UNDEF);
         positionEst = POSITION_UNKNOWN;
     }
 
@@ -160,7 +160,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
         switch (channel.getId()) {
-            case CHANNEL_SHUTTER:
+            case CHANNEL_SHUTTERPOSITION:
                 handleShutterCommand(command);
                 break;
             default: {
@@ -296,7 +296,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             logger.debug("==OWN:AutomationHandler== msg is command translation, ignoring...");
             return;
         }
-        updateState(CHANNEL_SHUTTERSTATE, new StringType(msg.getWhat().toString()));
+        updateState(CHANNEL_SHUTTERMOTION, new DecimalType(msg.getWhat().value()));
         if (msg.isUp()) {
             updateStateInt(STATE_MOVING_UP);
             if (calibrating == CALIBRATION_ACTIVATED) {
@@ -404,10 +404,10 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         }
         if (newPos != POSITION_UNKNOWN) {
             if (newPos != positionEst) {
-                updateState(CHANNEL_SHUTTER, new PercentType(newPos));
+                updateState(CHANNEL_SHUTTERPOSITION, new PercentType(newPos));
             }
         } else {
-            updateState(CHANNEL_SHUTTER, UnDefType.UNDEF);
+            updateState(CHANNEL_SHUTTERPOSITION, UnDefType.UNDEF);
         }
         positionEst = newPos;
     }

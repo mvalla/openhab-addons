@@ -38,7 +38,7 @@
 	
 
 	<!-- Shutter Channel -->
-	<channel-type id="shutter">
+	<channel-type id="shutterPosition">
 		<item-type>Rollershutter</item-type>
 		<label>Roller shutter</label>
 		<description>Control the roller shutter position</description>
@@ -47,11 +47,10 @@
 			<tag>Blinds</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="shutterState">
-        <item-type>String</item-type>
-        <label>State Roller shutter</label>
-        <description>State the roller shutter UP-DOWN-STOP</description>
-        <category>Blinds</category>
+	<channel-type id="shutterMotion">
+        <item-type>Number</item-type>
+        <label>Motion Roller shutter</label>
+        <description>Motion the roller shutter UP-DOWN-STOP</description>
         <state readOnly="true" />
     </channel-type>
 	

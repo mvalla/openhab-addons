@@ -207,7 +207,8 @@ Devices support some of the following channels:
 |--------------------------|---------------|-------------------------------------------------------------------------|:----------:|
 | `switch`                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
 | `brightness`             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
-| `shutter`                | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+| `shutterPosition`        | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+| `shutterMotion`          | Number        | The motion currently roller shutters (`0`= stop, `1`= up, `2`= down)     |     R      |
 | `temperature`            | Number        | The zone currently sensed temperature (°C)                              |     R      |
 | `targetTemperature`      | Number        | The zone target temperature (°C). It considers `setPoint` but also `activeMode` and `localMode`  |      R     |
 | `thermoFunction`         | String        | The zone set thermo function: `HEAT`, `COOL` or `GENERIC` (heating + cooling)     |      R     |
@@ -226,7 +227,7 @@ Devices support some of the following channels:
 
 ### Notes on channels
 
-#### `shutter` position
+#### `shutterPosition` position
 
 For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN.
 It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate shutterRun parameter automatically the first time a Percent command is sent to the shutter: a *UP >> DOWN >> Position%* cycle will be performed automatically.
@@ -264,7 +265,7 @@ To be visible to assistants like Google Assistant/Amazon Alexa/Apple HomeKit (Si
 Items created automatically with PaperUI (Simple Mode item linking: `Configuration > System > Item Linking > Simple mode > SAVE`) will get automatically the correct tag from the binding: in particular items associated with these channels will have the following tags:
 
 - `switch` / `brightness` channels will have the `Lighting` tag
-- `shutter` channel will have the `Blinds` and `Switchable` tag
+- `shutterPosition` channel will have the `Blinds` and `Switchable` tag
 - `temperature` channel will have the `CurrentTemperature` tag
 - `setpointTemperature` channel will have the `TargetTemperature` tag
 - `heatingCoolingMode` channel will have the `homekit:HeatingCoolingMode` tag
@@ -326,7 +327,8 @@ Switch         iLR_switch        "Switch"                 <light>          (gLiv
 Dimmer         iLR_dimmer        "Brightness [%.0f %%]"   <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
 Dimmer         iLR_dalidimmer    "Brightness [%.0f %%]"   <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness" }
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
-Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
+Rollershutter  iLR_shutter       "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutterPosition" }
+Number         iLR_shuttermotion "Shutter motion"                          (gShutters, gLivingRoom)                     { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutterMotion" }
 Number         iEXT_tempsensor   "Temperature [%.1f °C]"  <temperature>                                 [ "CurrentTemperature" ]  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
 Number         iCENTRAL_en_power "Power [%.0f W]"         <energy>            { channel="openwebnet:bus_energy_central_unit:mybridge:CENTRAL_energy:power" }
 String         iLR_scenario_btn4  "Scenario Button 4"     <network>           { channel="openwebnet:bus_cen_scenario_control:mybridge:LR_CEN_scenario:button_4" }  

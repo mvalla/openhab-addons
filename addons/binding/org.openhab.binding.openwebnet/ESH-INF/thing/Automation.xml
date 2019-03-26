@@ -14,7 +14,8 @@
 		<description>A OpenWebNet ZigBee automation device to control roller shutters, blinds, etc. BTicino models: xxx/yyyy/etc.</description>
 		
 		<channels>
-			<channel id="shutter" typeId="shutter" />
+			<channel id="shutterPosition" typeId="shutterPosition" />
+			<channel id="shutterMotion" typeId="shutterMotion" />
 		</channels>
 		
 		<properties>
