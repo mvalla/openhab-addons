@@ -1,28 +1,22 @@
-# OpenWebNet (BTicino/Legrand) Binding - Installation instructions (Beta version)
+# OpenWebNet (BTicino/Legrand) Binding - Installation instructions (TESTING version)
 
-The OpenWebNet binding is still under development. This documentation is useful during the beta phase until the binding is added to the official openHAB 2 Addons distribution.
-See the [README](./README.md) for the main documentation of the binding and configuration examples.
+//////////////////
+
+This documentation is for the **TESTING version** of the openHAB OpenWebNet binding, which is not part of the openHAB official distribution.
+
+Since the testing phase is now finished, the TESTING version of the binding is not maintained anymore and no support will be provided.
+
+For the documentation of the OpenWebNet binding - official distribution, see here: 
+[https://www.openhab.org/addons/bindings/openwebnet/](https://www.openhab.org/addons/bindings/openwebnet/)
+
+//////////////////
 
 ## Installation
 
-The binding it's still *under development* and not part of the official openHAB distribution.
+The binding is a TESTING version and not part of the official openHAB distribution.
 You must **follow carefully the following instruction steps 1. and 2.** in order to have the binding properly installed and working.
 
 ### 1. Bundle Installation
-
-To install this binding two **alternative** options are available: from Marketplace or Manually
-
-### 1a. Install from Marketplace
-
-The binding can be installed from the [Eclipse IoT Marketplace](https://marketplace.eclipse.org/content/openwebnet-2x-binding-testing).
-
-Make sure that the [marketplace plugin is activated](https://www.openhab.org/docs/configuration/eclipseiotmarket.html), and then install the *OpenWebNet binding*: from *PaperUI > Add-ons > Bindings > search for 'openwebnet' > INSTALL*.
-
-If you cannot find the binding in the search, probably you have an issue with certificates in your Java environment, that must be updated. Follow [this solution](https://community.openhab.org/t/solved-failed-downloading-marketplace-entries-received-fatal-alert-handshake-failure/52045) to add the required certificates to access all bindings on the Marketplace.
-
-You will have to re-install the binding after an openHAB upgrade. This is a limitation of the Eclipse Marketplace plugin and will be changed in future versions of openHAB.
-
-### 1b. Install Manually
 
 1. Download the [latest released JAR file](https://github.com/mvalla/openhab2-addons/releases)
 
@@ -30,7 +24,7 @@ You will have to re-install the binding after an openHAB upgrade. This is a limi
 
 ### 2. Activate Dependencies
 
-After the binding has been installed, from Marketplace or manually, some *features dependencies must be activated manually*:
+After the binding has been installed some *features dependencies must be activated manually*:
 
 - from [Karaf console](https://www.openhab.org/docs/administration/console.html):
     - `feature:install openhab-transport-serial`
@@ -52,12 +46,6 @@ When upgrading the binding to a new version you may need to remove OpenWebNet Th
 Instead of removing things also re-setting the bridge in things properties should help.
 
 If things are defined using .things file, they do not need to be removed/re-created.
-
-### Upgrade - Marketplace installation
-
-1. Go to *PaperUI > Add-ons > Bindings > search `openweb` > UNINSTALL*
-1. reload the page in the browser to make sure latest version is selected
-1. search again `openweb` > INSTALL
 
 ### Upgrade - Manual installation
 
@@ -87,29 +75,13 @@ Log files are written to either `userdata/log` (manual setup) or `/var/log/openh
 
 The interesting file to provide for feedback is `openhab.log` (`events.log` is not so important).
 
-## FAQs & Known Issues
-
-### FAQs
-
-#### My BTicino devices are visible from PaperUI but cannot be discovered by Google Home / Alexa
-
-Not all device types are supported by Google Home / Alexa and the respective openHAB add-ons. This is not a limitation of the binding.
-Visit the links at the end of section [Integration with Assistants](./README.md#integration-with-assistants) to check compatibility with your selected assistant.
-
-#### When message/feature XYZ will be supported ?
-
-You can check if someone has already requested support for a message/feature here: [GitHub repo](https://github.com/mvalla/openhab2-addons/issues).
-If not, add a new issue. Issues are organised by milestones, but deadlines -of course- are not guaranteed (other volunteer developers are welcome!).
-
-### Known Issues
-
-For a full list of current open issues / features requests see [GitHub repo](https://github.com/mvalla/openhab2-addons/issues)
-
-- In some cases dimmers connected to a F429 Dali-interface cannot be discovered, even if switched ON and dimmed. This looks like as a limitation of some gateways that do not report status of Dali devices when requested. See: https://github.com/mvalla/openhab2-addons/issues/14
-
 ## Changelog
 
-**v2.5.0** - 20/09/2020
+**v2.5.0.TESTING** - 18/01/2021
+- removed expiration
+- Now using openwebnet-lib-0.9.24
+
+**v2.5.0** (EXPIRED) - 20/09/2020
 - [FIX #105] update expire to Jan 2021
 - Now using openwebnet-lib-0.9.23
 

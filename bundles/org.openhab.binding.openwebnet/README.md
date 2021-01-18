@@ -1,5 +1,16 @@
 # OpenWebNet (BTicino/Legrand) Binding
 
+//////////////////
+
+This documentation is for the **TESTING version** of the openHAB OpenWebNet binding, which is not part of the openHAB official distribution.
+
+Since the testing phase is now finished, the TESTING version of the binding is not maintained anymore and no support will be provided.
+
+For the documentation of the OpenWebNet binding - official distribution, see here: 
+[https://www.openhab.org/addons/bindings/openwebnet/](https://www.openhab.org/addons/bindings/openwebnet/)
+
+//////////////////
+
 This binding integrates BTicino / Legrand MyHOME&reg; BUS & ZigBee wireless (MyHOME_Play&reg;) devices using the **[OpenWebNet](https://en.wikipedia.org/wiki/OpenWebNet) protocol**.
 
 It supports:
