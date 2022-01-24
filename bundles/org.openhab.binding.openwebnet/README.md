@@ -43,7 +43,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
 | Lighting             | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
-| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455 |
+| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`  | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Unit: 3550 |
 | CEN & CEN+ Scenarios  | `15` & `25`  | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | CEN/CEN+ scenarios events and virtual activation | Successfully tested: scenario buttons: HC/HD/HS/L/N/NT4680 |
 | Dry Contact and IR Interfaces | `25`  | `bus_dry_contact_ir`        | Dry Contacts and IR Interfaces                                  | Successfully tested: contact interfaces F428 and 3477;  IR sensors: HC/HD/HS/L/N/NT4610             |
 | Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
@@ -150,10 +150,13 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
     - example sensor `5` of external zone `00` --> `where="500"`
     - example: slave sensor `3` of zone `2` --> `where="302"`
 
-#### NOTE
+The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
 
-Systems with Central Units (4 or 99 zones) are not fully supported yet.
+### Central Unit integration missing points 
 
+- Read setPoint temperature and current mode
+- Holiday activation command (all zones)
+- Discovery 
 
 ## Channels 
 
@@ -173,13 +176,20 @@ Systems with Central Units (4 or 99 zones) are not fully supported yet.
 | Channel Type ID (channel ID) | Applies to Thing Type IDs           | Item Type          | Description                                       | Read/Write | Advanced |
 | ---------------------------- | ----------------------------------- | ------------------ | ------------------------------------------------- | :--------: | :------: |
 | `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | The zone currently sensed temperature       | R          | N        |
-| `setpointTemperature`        | `bus_thermo_zone`                    | Number:Temperature | The zone setpoint temperature           | R/W        | N        |
+| `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`                | Number:Temperature | The zone setpoint temperature           | R/W        | N        |
 | `function`                   | `bus_thermo_zone`                    | String             | The zone set thermo function: `COOLING`, `HEATING` or `GENERIC` (heating + cooling)  | R/W | N |
-| `mode`                       | `bus_thermo_zone`                    | String             | The zone set mode: `MANUAL`, `PROTECTION`, `OFF`  | R/W        | N        |
+| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`                       | String             | The zone set mode (`MANUAL`, `PROTECTION`, `OFF`) or the Central Unit set mode ( `MANUAL`, `PROTECTION`, `OFF`, `WEEKLY`, `SCENARIO`) | R/W        | N        |
 | `speedFanCoil`               | `bus_thermo_zone`                    | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`    | R/W | N |
 | `actuators`                   | `bus_thermo_zone`                    | String             | The zone actuator(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3` | R | Y |
 | `heatingValves`               | `bus_thermo_zone`                    | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3` | R | Y |
 | `conditioningValves`          | `bus_thermo_zone`                    | String             | The zone conditioning valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`  | R | Y |
+| `localOffset`          | `bus_thermo_zone`                    | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`  | R | Y |
+| `remoteControl`          | `bus_thermo_cu`                    | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`  | R | Y |
+| `batteryStatus`          | `bus_thermo_cu`                    | String             | The Central Unit Battery status: `OK`, `KO`  | R | Y |
+| `modeCentralUnit`                       | `bus_thermo_cu`                    | String             | The Central Unit set mode: `MANUAL`, `OFF`, `PROTECTION`, `WEEKLY`, `SCENARIO`  | R/W        | N        |
+| `weeklyProgram`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`  | R/W        | N        |
+| `scenarioProgram`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, .. ,  `16`) when Central Unit mode is `SCENARIO` | R/W        | N        |
+
 
 ### Notes on channels
 
@@ -218,6 +228,15 @@ See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-r
         - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
         - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
 
+####  `mode` for values WEEKLY and SCENARIO (Central Unit)
+
+There are three WEEKLY and sixteen SCENARIO programs defined in the central unit.
+
+In order to activate one of them you have to use two different channels: 
+- with `mode` you can set the mode (`WEEKLY` or `SCENARIO`)
+- with `weeklyProgram` (if `WEEKLY` was setted) or with `scenarioProgram` (if `SCENARIO` was setted) you can set the program number
+
+Example: if you want to activate SCENARIO #9 you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
 
 ## Full Example
 
@@ -230,10 +249,14 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
       bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
       bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="10050"]      
+
       bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"          [ where="51" ]	
       bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"          [ where="52" ]	   
+
+      bus_thermo_cu                 CU_3550              "99 zones central unit"    [ where="0" ]
       bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
+
       bus_cen_scenario_control      LR_CEN_scenario      "Living Room CEN"          [ where="51", buttons="4,3,8"]
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
@@ -255,17 +278,25 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 Example items linked to BUS devices:
 
-NOTE: lights, blinds and zones (thermostat) can be handled  from personal assistants (Google Home, Alexa). In the following example `Google Assistant` was configured  (`ga="..."`) according to the [official documentation](https://www.openhab.org/docs/ecosystem/google-assistant).
+NOTE: lights, blinds and zones (thermostat) can be handled  from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/) 
 
 ```
-Switch              iLR_switch            "Light"               (gLivingRoom) { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light" }
-Dimmer              iLR_dimmer            "Dimmer [%.0f %%]"    (gLivingRoom) { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light" }
+Switch              iLR_switch            "Light"               (gLivingRoom) { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
+Dimmer              iLR_dimmer            "Dimmer [%.0f %%]"    (gLivingRoom) { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
 
-Rollershutter       iLR_shutter           "Shutter [%.0f %%]"   (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds" }
+Rollershutter       iLR_shutter           "Shutter [%.0f %%]"   (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds", homekit = "Window" }
 
 Number:Power        iCENTRAL_Ta           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
 Number:Power        iCENTRAL_Tb           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
 
+// 99 zones central unit 
+Group   gCentralUnit                "Central Unit"                
+Number:Temperature iCU_3550_manualset "Temperature"       (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
+String iCU_3550_remote    "Remote Control"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
+String iCU_3550_battery   "Battery Status"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
+String iCU_3550_mode      "Mode"              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
+String iCU_3550_wpn       "Weekly Program"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" } 
+String iCU_3550_spn       "Scenario Program" (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" } 
 
 Group   gLivingRoomZone                         "Living Room Zone"   { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
 Number:Temperature  iLR_zone_temp               "Temperature [%.1f %unit%]"   (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:temperature", ga="thermostatTemperatureAmbient" }
