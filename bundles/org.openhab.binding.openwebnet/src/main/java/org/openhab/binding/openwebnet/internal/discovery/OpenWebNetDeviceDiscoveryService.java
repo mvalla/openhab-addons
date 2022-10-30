@@ -31,14 +31,15 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openwebnet4j.OpenDeviceType;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereAlarm;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetDeviceDiscoveryService} is responsible for discovering OpenWebNet devices connected to a
- * bridge/gateway
+ * The {@link OpenWebNetDeviceDiscoveryService} is responsible for discovering
+ * OpenWebNet devices connected to a bridge/gateway
  *
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management, Thermoregulation
@@ -86,14 +87,17 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     /**
-     * Create and notify to Inbox a new DiscoveryResult based on WHERE, OpenDeviceType and BaseOpenMessage
+     * Create and notify to Inbox a new DiscoveryResult based on WHERE,
+     * OpenDeviceType and BaseOpenMessage
      *
-     * @param where the discovered device's address (WHERE)
+     * @param where      the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device (optional)
+     * @param message    the OWN message received that identified the device
+     *                   (optional)
      */
-    public void newDiscoveryResult(Where where, OpenDeviceType deviceType, @Nullable BaseOpenMessage baseMsg) {
-        logger.info("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
+    public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
+            @Nullable BaseOpenMessage baseMsg) {
+        logger.debug("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE; // generic device
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_GENERIC_DEVICE;
         Who deviceWho = Who.UNKNOWN;
@@ -187,8 +191,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
             case SCS_ALARM_CENTRAL_UNIT: {
-                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_CENTRAL_UNIT;
-                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ALARM_CENTRAL_UNIT;
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_SYSTEM;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ALARM_SYSTEM;
                 deviceWho = Who.BURGLAR_ALARM;
                 break;
             }
@@ -208,6 +212,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 }
         }
 
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_SYSTEM.equals(thingTypeUID) && where == null) {
+            where = new WhereAlarm("0");
+        }
+
         String ownId = bridgeHandler.ownIdFromWhoWhere(deviceWho, where);
         if (OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH.equals(thingTypeUID)) {
             if (bridgeHandler.getRegisteredDevice(ownId) != null) {
@@ -222,6 +230,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
         DiscoveryResult discoveryResult = null;
 
         String whereConfig = where.value();
+
         if (where instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
             logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
             thingRemoved(thingUID); // remove previously discovered thing
