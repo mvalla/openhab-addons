@@ -94,10 +94,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      * Create and notify to Inbox a new DiscoveryResult based on WHERE,
      * OpenDeviceType and BaseOpenMessage
      *
-     * @param where the discovered device's address (WHERE)
+     * @param where      the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param baseMsg the OWN message received that identified the device
-     *            (optional)
+     * @param baseMsg    the OWN message received that identified the device
+     *                   (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
             @Nullable BaseOpenMessage baseMsg) {
@@ -233,7 +233,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
             }
         }
 
-        String tId = bridgeHandler.thingIdFromWhere(w);
+        String tId = bridgeHandler.thingIdFromWhoWhere(deviceWho, w);
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
 
         DiscoveryResult discoveryResult = null;
