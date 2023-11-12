@@ -23,7 +23,6 @@ import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+        implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetDeviceDiscoveryService.class);
 
