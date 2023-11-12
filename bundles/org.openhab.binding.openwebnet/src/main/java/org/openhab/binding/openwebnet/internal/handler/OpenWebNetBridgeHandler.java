@@ -111,8 +111,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 if (oneHandler == null) {
                     oneHandler = h;
                 }
-                logger.warn("/////////////////////// Added handler {} to Area {}", oId, area);
-                logger.warn("Map: {}", this.toString());
+                logger.warn("/////////////////////// +++++++++++++++ Added handler {} to Area {}", oId, area);
+                logger.warn("/////////////////////// Map: {}", this.toString());
             }
         }
 
@@ -124,8 +124,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     if (removed && oneHandler.equals(h)) {
                         oneHandler = getFirst();
                     }
-                    logger.warn("/////////////////////// ^^^^^^^^^^^^ Removed handler {} from Area {}", h.ownId, area);
-                    logger.warn("Map: {}", this.toString());
+                    logger.warn("/////////////////////// ---------------- Removed handler {} from Area {}", h.ownId,
+                            area);
+                    logger.warn("/////////////////////// Map: {}", this.toString());
                 }
             }
         }
@@ -172,7 +173,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     OpenWebNetThingHandler hndlr = innerEntry.getValue();
                     if (hndlr != null) {
                         WhereLightAutom wl = (WhereLightAutom) hndlr.deviceWhere;
-                        if (!wl.isGroup()) {
+                        if (wl.isArea()) {
                             return hndlr;
                         }
                     }
@@ -183,7 +184,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
         @Override
         public String toString() {
-            String log = "\n---- LightAutomHandlersMap ----";
+            String log = "\n/////////////////////// ^^^^^^^^^^^^ ---- LightAutomHandlersMap ----";
             for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
                 log += "\n- Area: " + entry.getKey() + "\n   -";
                 Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
@@ -198,7 +199,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             for (OpenWebNetThingHandler e : getAllHandlers()) {
                 log += " " + e.ownId;
             }
-            log += "\n# oneH = " + (oneHandler == null ? "null" : oneHandler.ownId);
+            OpenWebNetThingHandler one = this.getOne();
+            log += "\n# getOne() = " + (one == null ? "null" : one.ownId);
+            log += "\n/////////////////////// vvvvvvvvvvvvvvvvvv";
             return log;
         }
     }
@@ -557,7 +560,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         LightAutomHandlersMap lm = lightsMap;
         if (lm != null) {
             lm.add(area, lightHandler);
-            logger.debug("added APL {} from lightsMap", lightHandler.ownId);
+            logger.debug("/////////////////////// ^^^^^^^^^^^^ added APL {} to lightsMap", lightHandler.ownId);
         }
     }
 
@@ -571,7 +574,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         LightAutomHandlersMap lm = lightsMap;
         if (lm != null) {
             lm.remove(area, lightHandler);
-            logger.debug("removed APL {} from lightsMap", lightHandler.ownId);
+            logger.debug("/////////////////////// ^^^^^^^^^^^^ removed APL {} from lightsMap", lightHandler.ownId);
         }
     }
 
