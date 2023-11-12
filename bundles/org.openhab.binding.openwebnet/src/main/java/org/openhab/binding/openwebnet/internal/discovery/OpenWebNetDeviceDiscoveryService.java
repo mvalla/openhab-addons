@@ -48,8 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Giovanni Fabiani - Aux support
  */
 @NonNullByDefault
-public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService {
+public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetDeviceDiscoveryService.class);
 
@@ -96,10 +95,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      * Create and notify to Inbox a new DiscoveryResult based on WHERE,
      * OpenDeviceType and BaseOpenMessage
      *
-     * @param where      the discovered device's address (WHERE)
+     * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param baseMsg    the OWN message received that identified the device
-     *                   (optional)
+     * @param baseMsg the OWN message received that identified the device
+     *            (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
             @Nullable BaseOpenMessage baseMsg) {
@@ -349,13 +348,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, whereConfig);
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, ownId);
 
-        thingLabel = thingLabel + " (WHERE=" + whereConfig
-                + ")";
+        thingLabel = thingLabel + " (WHERE=" + whereConfig + ")";
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties)
-                .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID).withBridge(bridgeUID)
-                .withLabel(thingLabel).build();
+                .withProperties(properties).withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID)
+                .withBridge(bridgeUID).withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);
     }
 
